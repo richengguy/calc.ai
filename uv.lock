@@ -2,14 +2,14 @@ version = 1
 revision = 1
 requires-python = "==3.12.*"
 resolution-markers = [
-    "extra != 'extra-7-calc-ai-cpu' and extra == 'extra-7-calc-ai-cuda124'",
-    "sys_platform != 'darwin' and extra == 'extra-7-calc-ai-cpu' and extra != 'extra-7-calc-ai-cuda124'",
-    "sys_platform == 'darwin' and extra == 'extra-7-calc-ai-cpu' and extra != 'extra-7-calc-ai-cuda124'",
-    "extra != 'extra-7-calc-ai-cpu' and extra != 'extra-7-calc-ai-cuda124'",
+    "extra != 'extra-7-calc-ai-cpu' and extra == 'extra-7-calc-ai-cuda'",
+    "sys_platform != 'darwin' and extra == 'extra-7-calc-ai-cpu' and extra != 'extra-7-calc-ai-cuda'",
+    "sys_platform == 'darwin' and extra == 'extra-7-calc-ai-cpu' and extra != 'extra-7-calc-ai-cuda'",
+    "extra != 'extra-7-calc-ai-cpu' and extra != 'extra-7-calc-ai-cuda'",
 ]
 conflicts = [[
     { package = "calc-ai", extra = "cpu" },
-    { package = "calc-ai", extra = "cuda124" },
+    { package = "calc-ai", extra = "cuda" },
 ]]
 
 [[package]]
@@ -44,12 +44,14 @@ dependencies = [
 
 [package.optional-dependencies]
 cpu = [
-    { name = "torch", version = "2.6.0", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform == 'darwin' and extra == 'extra-7-calc-ai-cpu') or (extra == 'extra-7-calc-ai-cpu' and extra == 'extra-7-calc-ai-cuda124')" },
-    { name = "torch", version = "2.6.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform != 'darwin' and extra == 'extra-7-calc-ai-cpu') or (extra == 'extra-7-calc-ai-cpu' and extra == 'extra-7-calc-ai-cuda124')" },
+    { name = "torch", version = "2.6.0", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform == 'darwin' and extra == 'extra-7-calc-ai-cpu') or (extra == 'extra-7-calc-ai-cpu' and extra == 'extra-7-calc-ai-cuda')" },
+    { name = "torch", version = "2.6.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform != 'darwin' and extra == 'extra-7-calc-ai-cpu') or (extra == 'extra-7-calc-ai-cpu' and extra == 'extra-7-calc-ai-cuda')" },
 ]
-cuda124 = [
+cuda = [
     { name = "torch", version = "2.6.0+cu124", source = { registry = "https://download.pytorch.org/whl/cu124" } },
 ]
+
+[package.dev-dependencies]
 dev = [
     { name = "black" },
     { name = "flake8" },
@@ -60,25 +62,29 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "black", marker = "extra == 'dev'" },
     { name = "click", specifier = "==8.1.*" },
-    { name = "flake8", marker = "extra == 'dev'" },
     { name = "matplotlib", specifier = "==3.9.*" },
-    { name = "mypy", marker = "extra == 'dev'" },
-    { name = "pytest", marker = "extra == 'dev'" },
-    { name = "pytest-github-actions-annotate-failures", marker = "extra == 'dev'" },
     { name = "rich", specifier = "==13.3.*" },
     { name = "torch", marker = "extra == 'cpu'", specifier = "~=2.6", index = "https://download.pytorch.org/whl/cpu", conflict = { package = "calc-ai", extra = "cpu" } },
-    { name = "torch", marker = "extra == 'cuda124'", specifier = "~=2.6", index = "https://download.pytorch.org/whl/cu124", conflict = { package = "calc-ai", extra = "cuda124" } },
+    { name = "torch", marker = "extra == 'cuda'", specifier = "~=2.6", index = "https://download.pytorch.org/whl/cu124", conflict = { package = "calc-ai", extra = "cuda" } },
 ]
-provides-extras = ["cpu", "cuda124", "dev"]
+provides-extras = ["cpu", "cuda"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "black" },
+    { name = "flake8" },
+    { name = "mypy" },
+    { name = "pytest" },
+    { name = "pytest-github-actions-annotate-failures" },
+]
 
 [[package]]
 name = "click"
 version = "8.1.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'extra-7-calc-ai-cpu' and extra == 'extra-7-calc-ai-cuda124')" },
+    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'extra-7-calc-ai-cpu' and extra == 'extra-7-calc-ai-cuda')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/b9/2e/0090cbf739cee7d23781ad4b89a9894a41538e4fcf4c31dcdd705b78eb8b/click-8.1.8.tar.gz", hash = "sha256:ed53c9d8990d83c2a27deae68e4ee337473f6330c040a31d4225c9574d16096a", size = 226593 }
 wheels = [
@@ -591,7 +597,7 @@ name = "pytest"
 version = "8.3.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'extra-7-calc-ai-cpu' and extra == 'extra-7-calc-ai-cuda124')" },
+    { name = "colorama", marker = "sys_platform == 'win32' or (extra == 'extra-7-calc-ai-cpu' and extra == 'extra-7-calc-ai-cuda')" },
     { name = "iniconfig" },
     { name = "packaging" },
     { name = "pluggy" },
