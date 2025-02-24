@@ -14,6 +14,7 @@ jobs:
         with:
           version: "0.6.2"
           checksum: "37ea31f099678a3bee56f8a757d73551aad43f8025d377a8dde80dd946c1b7f2"
+          enable-cache: true
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -48,6 +49,7 @@ jobs:
         with:
           version: "0.6.2"
           checksum: "37ea31f099678a3bee56f8a757d73551aad43f8025d377a8dde80dd946c1b7f2"
+          enable-cache: true
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -72,6 +74,7 @@ jobs:
         with:
           version: "0.6.2"
           checksum: "37ea31f099678a3bee56f8a757d73551aad43f8025d377a8dde80dd946c1b7f2"
+          enable-cache: true
 
       - name: Setup Python
         uses: actions/setup-python@v5
