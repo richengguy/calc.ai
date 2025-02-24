@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "calc-ai"
+version = "0.1.0"
+description = "Add your description herve"
+readme = "README.md"
+requires-python = "==3.12.*"
+dependencies = [
+    "click == 8.1.*",
+    "matplotlib == 3.9.*",
+    "rich == 13.3.*"
+]
+
+[project.optional-dependencies]
+cpu = ["torch ~= 2.6"]
+cuda = ["torch ~= 2.6"]
+
+[dependency-groups]
+dev = [
+    "black",
+    "flake8",
+    "isort",
+    "mypy",
+    "pytest",
+    "pytest-github-actions-annotate-failures"
+]
+
+[tool.uv]
+conflicts = [
+    [
+        { extra = "cpu" },
+        { extra = "cuda"}
+    ]
+]
+
+[tool.uv.sources]
+torch = [
+    { index = "pytorch-cpu", extra="cpu" },
+    { index = "pytorch-cuda", extra="cuda" }
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cuda"
+url = "https://download.pytorch.org/whl/cu124"
+explicit = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.mypy]
+plugins = "numpy.typing.mypy_plugin"
