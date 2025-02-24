@@ -4,6 +4,7 @@ on: [pull_request]
 
 jobs:
   lint:
+    name: Run linter
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,6 +20,9 @@ jobs:
         with:
           python-version-file: ".python-version"
 
+      - name: Sync dependencies
+        run: uv sync --only-dev
+
       - name: Run black
         run: uv run black --check src/ test/
 
@@ -32,6 +36,25 @@ jobs:
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
         if: ${{ failure() }}
 
-      - name: Run tests
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup 'uv'
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "0.6.2"
+          checksum: "37ea31f099678a3bee56f8a757d73551aad43f8025d377a8dde80dd946c1b7f2"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: ".python-version"
+
+      - name: Run PyTest
         run: |
+          uv sync --extra cpu
           uv run pytest
