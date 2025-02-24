@@ -36,6 +36,30 @@ jobs:
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
         if: ${{ failure() }}
 
+  mypy:
+    name: Run mypy
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup 'uv'
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "0.6.2"
+          checksum: "37ea31f099678a3bee56f8a757d73551aad43f8025d377a8dde80dd946c1b7f2"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: ".python-version"
+
+      - name: Run mypy on source and test directories
+        run: |
+          uv sync --only-dev
+          uv run ./scripts/run-mypy src
+          uv run ./scripts/run-mypy test
+
   test:
     name: Run tests
     runs-on: ubuntu-latest
