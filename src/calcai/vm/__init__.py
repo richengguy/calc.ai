@@ -1,1 +1,1 @@
-from .grammar import Token, TokenType, tokenize
+from .scanner import Token, TokenType, tokenize

@@ -117,37 +117,3 @@ def tokenize(string: str) -> list[Token]:
             buffer = ""
 
     return tokens
-
-
-class ExpressionType(int, Enum):
-    """Set of operations the calculator VM can perform."""
-
-    EXPRESSION = auto()
-    """A complete expression that will evaluate down into a number."""
-
-    NUMBER = auto()
-    """Some integer value."""
-
-    VARIABLE = auto()
-    """A variable that stores some integer."""
-
-    ASSIGN = auto()
-    """Assigns a numerical value into a variable for later use."""
-
-    ADD = auto()
-    """Add two values together."""
-
-    SUBTRACT = auto()
-    """Subtract one value from another."""
-
-    MULTIPLY = auto()
-    """Multiply two values together."""
-
-    DIVIDE = auto()
-    """Divide one value from another (note: the VM only does integer operations)."""
-
-    POWER = auto()
-    """Compute the value of a number to some power."""
-
-    NEGATE = auto()
-    """Multiply the given value with '-1'."""
