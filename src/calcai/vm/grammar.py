@@ -35,6 +35,9 @@ class TokenType(Enum):
     EQUALS = auto()
     """Token is an '=' symbol, which also acts as an assignment operation."""
 
+    SPACE = auto()
+    """Token represents whitespace, either a ' ' or a tab."""
+
 
 @dataclass(frozen=True)
 class Token:
@@ -48,13 +51,14 @@ class Token:
 
 
 __DEFAULT_TOKENS: dict[str, Token] = {
-    '+': Token(TokenType.ADD, '+'),
-    '-': Token(TokenType.SUBTRACT, '-'),
-    '*': Token(TokenType.MULTIPLY, '*'),
-    '/': Token(TokenType.DIVIDE, '/'),
-    '^': Token(TokenType.POWER, '^'),
-    '(': Token(TokenType.OPEN_BRACKET, '('),
-    ')': Token(TokenType.CLOSE_BRACKET, ')')
+    "+": Token(TokenType.ADD, "+"),
+    "-": Token(TokenType.SUBTRACT, "-"),
+    "*": Token(TokenType.MULTIPLY, "*"),
+    "/": Token(TokenType.DIVIDE, "/"),
+    "^": Token(TokenType.POWER, "^"),
+    "(": Token(TokenType.OPEN_BRACKET, "("),
+    ")": Token(TokenType.CLOSE_BRACKET, ")"),
+    "=": Token(TokenType.EQUALS, "="),
 }
 
 
@@ -72,22 +76,45 @@ def tokenize(string: str) -> list[Token]:
         tokenized string
     """
     tokens: list[Token] = []
-    parts = string.split()
 
-    for candidate in parts:
+    string = string.lower()
+    buffer = ""
 
-        if candidate.isdecimal():
-            tokens.append(Token(TokenType.NUMBER, candidate))
-            continue
+    def resolve(ch: str) -> TokenType:
+        if ch.isspace():
+            return TokenType.SPACE
+        elif ch.isdecimal():
+            return TokenType.NUMBER
+        elif ch.islower():
+            return TokenType.SYMBOL
+        elif token := __DEFAULT_TOKENS.get(ch):
+            return token.type
 
-        if candidate.islower():
-            tokens.append(Token(TokenType.SYMBOL, candidate))
-            continue
+        raise RuntimeError(f"Could not resolve character '{ch}'.")
 
-        if token := __DEFAULT_TOKENS.get(candidate):
+    for i in range(len(string)):
+        curr_ch = string[i]
+        next_ch = string[i + 1] if i < len(string) - 1 else curr_ch
+
+        # It's obvious what token this is.  Just use it directly and reset the
+        # buffer.
+        if token := __DEFAULT_TOKENS.get(curr_ch):
             tokens.append(token)
+            continue
+
+        # Determine the types of the current and *next* characters.
+        curr_type = resolve(curr_ch)
+        next_type = resolve(next_ch)
+
+        # Now emit a token, either when reaching the end of a string or when the
+        # type changes.
+        buffer += curr_ch
+        if curr_type == next_type:
+            if i == len(string) - 1:
+                tokens.append(Token(curr_type, buffer))
         else:
-            raise RuntimeError(f"Cannot parse '{candidate}'.")
+            tokens.append(Token(curr_type, buffer))
+            buffer = ""
 
     return tokens
 
