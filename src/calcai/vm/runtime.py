@@ -1,5 +1,6 @@
 class WorkingSpace:
     """A scratch pad for storing calculation variables."""
+
     def __init__(self) -> None:
         self._data: dict[str, int] = dict()
 

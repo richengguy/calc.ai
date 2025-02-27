@@ -1,9 +1,7 @@
 from abc import ABC, abstractmethod
 from enum import Enum, auto
-from typing import Sequence
 
 from .runtime import WorkingSpace
-from .scanner import Token, TokenType
 
 
 class ExpressionType(int, Enum):
@@ -40,47 +38,137 @@ class ExpressionType(int, Enum):
     """Multiply the given value with '-1'."""
 
 
-class _Op(ABC):
-    def __init__(self, type: ExpressionType, args: Sequence[str]) -> None:
+class _Expr(ABC):
+    def __init__(self, type: ExpressionType) -> None:
         self._type = type
-        self._args = list(args)
 
     @property
     def type(self) -> ExpressionType:
         return self._type
 
+    @abstractmethod
+    def evaluate(self) -> int: ...
+
+
+class _NullaryExpr(_Expr): ...
+
+
+class _UnaryExpr(_Expr):
+    def __init__(self, type: ExpressionType, input: _Expr) -> None:
+        super().__init__(type)
+        self._input = input
+
     @property
-    def args(self) -> list[str]:
-        return self._args
+    def input(self) -> _Expr:
+        return self._input
 
 
-class _NullaryOp(_Op):
-    @abstractmethod
-    def evaluate(self, **kwargs) -> int:
-        ...
+class _BinaryExpr(_Expr):
+    def __init__(self, type: ExpressionType, left: _Expr, right: _Expr) -> None:
+        super().__init__(type)
+        self._left = left
+        self._right = right
+
+    @property
+    def left(self) -> _Expr:
+        return self._left
+
+    @property
+    def right(self) -> _Expr:
+        return self._right
 
 
-class _UnaryOp(_Op):
-    @abstractmethod
-    def evaluate(self, left: int, **kwargs) -> int:
-        ...
+# Top-level Expression
 
 
-class _BinaryOp(_Op):
-    @abstractmethod
-    def evaluate(self, left: int, right: int, **kwargs) -> int:
-        ...
+class RootExpr(_UnaryExpr):
+    def __init__(self, input: _Expr) -> None:
+        super().__init__(ExpressionType.EXPRESSION, input)
+
+    def evaluate(self):
+        return self.input.evaluate()
 
 
-class NumberExpr(_NullaryOp):
-    def __init__(self):
-        super().__init__(ExpressionType.NUMBER, ["value"])
-
-    def evaluate(self, *, value: int) -> int:
-        return value
+# Arithmetic Expressions
 
 
-class Variable(_NullaryOp):
-    def __init__(self, key: str) -> None:
-        super().__init__(ExpressionType.VARIABLE, ["key"])
+class AddExpr(_BinaryExpr):
+    def __init__(self, left: _Expr, right: _Expr) -> None:
+        super().__init__(ExpressionType.ADD, left, right)
+
+    def evaluate(self) -> int:
+        return self.left.evaluate() + self.right.evaluate()
+
+
+class SubtractExpr(_BinaryExpr):
+    def __init__(self, left: _Expr, right: _Expr) -> None:
+        super().__init__(ExpressionType.SUBTRACT, left, right)
+
+    def evaluate(self) -> int:
+        return self.left.evaluate() - self.right.evaluate()
+
+
+class MultiplyExpr(_BinaryExpr):
+    def __init__(self, left: _Expr, right: _Expr) -> None:
+        super().__init__(ExpressionType.MULTIPLY, left, right)
+
+    def evaluate(self) -> int:
+        return self.left.evaluate() * self.right.evaluate()
+
+
+class DivideExpr(_BinaryExpr):
+    def __init__(self, left: _Expr, right: _Expr) -> None:
+        super().__init__(ExpressionType.DIVIDE, left, right)
+
+    def evaluate(self) -> int:
+        return self.left.evaluate() // self.right.evaluate()
+
+
+class PowerExpr(_BinaryExpr):
+    def __init__(self, left: _Expr, right: _Expr) -> None:
+        super().__init__(ExpressionType.POWER, left, right)
+
+    def evaluate(self) -> int:
+        return self.left.evaluate() ** self.right.evaluate()
+
+
+class NegateExpr(_UnaryExpr):
+    def __init__(self, input: _Expr) -> None:
+        super().__init__(ExpressionType.NEGATE, input)
+
+    def evaluate(self) -> int:
+        return -self.input.evaluate()
+
+
+# Data Expressions
+
+
+class NumberExpr(_NullaryExpr):
+    def __init__(self, value: int) -> None:
+        super().__init__(ExpressionType.NUMBER)
+        self.value = value
+
+    def evaluate(self) -> int:
+        return self.value
+
+
+class VariableExpr(_NullaryExpr):
+    def __init__(self, key: str, ws: WorkingSpace) -> None:
+        super().__init__(ExpressionType.VARIABLE)
         self.key = key
+        self._ws = ws
+
+    def evaluate(self) -> int:
+        return self._ws.load(self.key)
+
+
+class AssignExpr(_UnaryExpr):
+    def __init__(self, key: str, input: _Expr, ws: WorkingSpace) -> None:
+        super().__init__(ExpressionType.ASSIGN, input)
+        self.key = key
+        self._ws = ws
+
+    def evaluate(self) -> int:
+        value = self.input.evaluate()
+        self._ws.store(self.key, value)
+        return value
