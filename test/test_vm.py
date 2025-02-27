@@ -1,4 +1,7 @@
-from calcai.vm import Token, TokenType, tokenize
+from calcai.vm import tokenize, build_ast
+from calcai.vm.ast import ExpressionType
+from calcai.vm.scanner import Token, TokenType
+from calcai.vm.runtime import WorkingSpace
 
 import pytest
 
@@ -81,10 +84,35 @@ def test_exception_on_invalid_token() -> None:
                 Token(TokenType.CLOSE_BRACKET, ")"),
             ],
         ),
+        (
+            "abc = 123",
+            [
+                Token(TokenType.SYMBOL, "abc"),
+                Token(TokenType.SPACE, " "),
+                Token(TokenType.EQUALS, "="),
+                Token(TokenType.SPACE, " "),
+                Token(TokenType.NUMBER, "123")
+            ]
+        )
     ],
 )
 def test_tokenize(input: str, tokens: list[Token]) -> None:
     """Test tokenization."""
-    print(tokenize(input))
-    print(tokens)
     assert tokenize(input) == tokens
+
+
+@pytest.mark.parametrize(
+    ["input", "expr_type", "value"],
+    [
+        ("123", ExpressionType.NUMBER, 123),
+        ("abc", ExpressionType.VARIABLE, 456)
+    ]
+)
+def test_single_token_ast(input: str, expr_type: ExpressionType, value: int) -> None:
+    """Verify a single-token, or terminal, AST is creating correctly."""
+    ws = WorkingSpace()
+    ws.store("abc", 456)
+    expr = build_ast(tokenize(input), ws)
+    assert expr.type == ExpressionType.EXPRESSION
+    assert expr.input.type == expr_type
+    assert expr.evaluate() == value

@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from enum import Enum, auto
+from typing import Sequence
 
+from .scanner import Token, TokenType
 from .runtime import WorkingSpace
 
 
@@ -82,8 +84,13 @@ class _BinaryExpr(_Expr):
 
 
 class RootExpr(_UnaryExpr):
-    def __init__(self, input: _Expr) -> None:
+    def __init__(self, input: _Expr, top: bool = False) -> None:
         super().__init__(ExpressionType.EXPRESSION, input)
+        self._top = top
+
+    @property
+    def top(self) -> bool:
+        return self._top
 
     def evaluate(self):
         return self.input.evaluate()
@@ -172,3 +179,45 @@ class AssignExpr(_UnaryExpr):
         value = self.input.evaluate()
         self._ws.store(self.key, value)
         return value
+
+
+def _create_terminal_token(token: Token, ws: WorkingSpace) -> _Expr:
+    match token.type:
+        case TokenType.NUMBER:
+            return NumberExpr(int(token.value))
+        case TokenType.SYMBOL:
+            return VariableExpr(token.value, ws)
+        case _:
+            raise RuntimeError(f"Did not expect a {token.value}!")
+
+
+def _build_expr(tokens: Sequence[Token], ws: WorkingSpace, left: _Expr | None = None) -> _Expr:
+    if len(tokens) == 0:
+        raise ValueError("Expected a non-empty token stream!")
+
+    if len(tokens) == 1:
+        return _create_terminal_token(tokens[0], ws)
+
+    raise NotImplementedError("Still working this out.")
+
+
+def build_ast(tokens: Sequence[Token], ws: WorkingSpace) -> RootExpr:
+    """Build up an AST from a token sequence.
+
+    The token sequence is assumed to represent a single complete line.  The
+    output is a top-level "root expression" the contains the parsed input.  Any
+    whitespace tokens are filtered out prior to creating the AST.
+
+    Parameters
+    ----------
+    tokens : sequence of :class:`Token`
+        input token stream
+
+    Returns
+    -------
+    :class:`RootExpr`
+        root expression node
+    """
+    tokens = [t for t in tokens if t.type != TokenType.SPACE]
+    expr = _build_expr(tokens, ws)
+    return RootExpr(expr, True)
