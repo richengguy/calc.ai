@@ -149,3 +149,32 @@ def test_single_token_ast(input: str, expr_type: ExpressionType, value: int) -> 
     assert expr.type == ExpressionType.EXPRESSION
     assert expr.input.type == expr_type
     assert expr.evaluate() == value
+
+
+@pytest.mark.parametrize(
+    ["var", "eqn", "value"],
+    [
+        ("x", "123", 123),
+        ("y", "1 + 2", 3)
+    ]
+)
+def test_assignment_ast(var: str, eqn: str, value: int) -> None:
+    """Check to see if assignment works as expected."""
+    ws = WorkingSpace()
+    expr = build_ast(tokenize(f"{var} = {eqn}"), ws)
+    assert expr.evaluate() == value
+    assert ws.load(var) == value
+
+
+@pytest.mark.parametrize(
+    ["input", "value"],
+    [
+        ("3 * 2 + 3", 9),
+        ("3 * (2 + 3)", 10)
+    ]
+)
+def test_brackets_ast(input: str, value: int) -> None:
+    """Check to see if grouped expressions are working."""
+    ws = WorkingSpace()
+    expr = build_ast(tokenize(input), ws)
+    assert expr.evaluate() == value

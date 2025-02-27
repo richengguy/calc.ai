@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from enum import Enum, auto
-from typing import Sequence
+from typing import Sequence, cast
 
 from .scanner import Token, TokenType
 from .runtime import WorkingSpace
@@ -191,14 +191,71 @@ def _create_terminal_token(token: Token, ws: WorkingSpace) -> _Expr:
             raise RuntimeError(f"Did not expect a {token.value}!")
 
 
-def _build_expr(tokens: Sequence[Token], ws: WorkingSpace, left: _Expr | None = None) -> _Expr:
+def _build_expr(
+    tokens: Sequence[Token], ws: WorkingSpace, left: _Expr | None = None
+) -> _Expr:
     if len(tokens) == 0:
         raise ValueError("Expected a non-empty token stream!")
 
     if len(tokens) == 1:
         return _create_terminal_token(tokens[0], ws)
 
-    raise NotImplementedError("Still working this out.")
+    match tokens[0].type:
+        case TokenType.NUMBER:
+            left = NumberExpr(int(tokens[0].value))
+            return _build_expr(tokens[1:], ws, left)
+        case TokenType.SYMBOL:
+            left = VariableExpr(tokens[0].value, ws)
+            return _build_expr(tokens[1:], ws, left)
+        case TokenType.EQUALS:
+            if left is None:
+                raise RuntimeError("Missing the left side of the assignment expression!")
+            if left.type != ExpressionType.VARIABLE:
+                raise RuntimeError(f"Expected the left side to be a variable, got a {left.type}!")
+
+            left = cast(VariableExpr, left)
+            right = _build_expr(tokens[1:], ws)
+
+            return AssignExpr(left.key, right, ws)
+        case TokenType.ADD:
+            # Note: this is allowed because '+1' is the same as '1'.
+            if left is None:
+                return _build_expr(tokens[1:], ws)
+
+            right = _build_expr(tokens[1:], ws)
+            return AddExpr(left, right)
+        case TokenType.SUBTRACT:
+            if left is None:
+                return NegateExpr(_build_expr(tokens[1:], ws))
+
+            right = _build_expr(tokens[1:], ws)
+            return SubtractExpr(left, right)
+        case TokenType.MULTIPLY:
+            if left is None:
+                raise RuntimeError("Missing the left side of the multiply expression!")
+
+            right = _build_expr(tokens[1:], ws)
+            return MultiplyExpr(left, right)
+        case TokenType.DIVIDE:
+            if left is None:
+                raise RuntimeError("Missing the left side of the divide expression!")
+
+            right = _build_expr(tokens[1:], ws)
+            return DivideExpr(left, right)
+        case TokenType.POWER:
+            if left is None:
+                raise RuntimeError("Missing the left side of the power expression!")
+
+            right = _build_expr(tokens[1:], ws)
+            return PowerExpr(left, right)
+        case TokenType.OPEN_BRACKET:
+            return _build_expr(tokens[1:], ws)
+        case TokenType.CLOSE_BRACKET:
+            if left is None:
+                raise RuntimeError("Unexpected ')'.")
+            return left
+
+    raise RuntimeError("Encountered a syntax error!")
 
 
 def build_ast(tokens: Sequence[Token], ws: WorkingSpace) -> RootExpr:
