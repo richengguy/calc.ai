@@ -75,8 +75,6 @@ def tokenize(string: str) -> list[Token]:
     list of :class:`Token`
         tokenized string
     """
-    tokens: list[Token] = []
-
     string = string.lower()
     buffer = ""
 
@@ -92,6 +90,8 @@ def tokenize(string: str) -> list[Token]:
 
         raise RuntimeError(f"Could not resolve character '{ch}'.")
 
+    # First pass, convert the character stream into tokens.
+    init_tokens: list[Token] = []
     for i in range(len(string)):
         curr_ch = string[i]
         next_ch = string[i + 1] if i < len(string) - 1 else curr_ch
@@ -99,7 +99,7 @@ def tokenize(string: str) -> list[Token]:
         # It's obvious what token this is.  Just use it directly and reset the
         # buffer.
         if token := __DEFAULT_TOKENS.get(curr_ch):
-            tokens.append(token)
+            init_tokens.append(token)
             continue
 
         # Determine the types of the current and *next* characters.
@@ -111,9 +111,25 @@ def tokenize(string: str) -> list[Token]:
         buffer += curr_ch
         if curr_type == next_type:
             if i == len(string) - 1:
-                tokens.append(Token(curr_type, buffer))
+                init_tokens.append(Token(curr_type, buffer))
         else:
-            tokens.append(Token(curr_type, buffer))
+            init_tokens.append(Token(curr_type, buffer))
             buffer = ""
+
+    # Second pass, if a number token follows a symbol token, merge it into the
+    # symbol token (allows for 'abc123' variable names).
+    tokens: list[Token] = []
+    i = 0
+    while i < len(init_tokens):
+        curr_token = init_tokens[i]
+        next_token = init_tokens[i + 1] if i < len(init_tokens) - 1 else curr_token
+
+        if curr_token.type == TokenType.SYMBOL and next_token.type == TokenType.NUMBER:
+            tokens.append(Token(TokenType.SYMBOL, curr_token.value + next_token.value))
+            i += 1
+        else:
+            tokens.append(curr_token)
+
+        i += 1
 
     return tokens

@@ -91,9 +91,45 @@ def test_exception_on_invalid_token() -> None:
                 Token(TokenType.SPACE, " "),
                 Token(TokenType.EQUALS, "="),
                 Token(TokenType.SPACE, " "),
-                Token(TokenType.NUMBER, "123")
-            ]
-        )
+                Token(TokenType.NUMBER, "123"),
+            ],
+        ),
+        (
+            "a1 = 5",
+            [
+                Token(TokenType.SYMBOL, "a1"),
+                Token(TokenType.SPACE, " "),
+                Token(TokenType.EQUALS, "="),
+                Token(TokenType.SPACE, " "),
+                Token(TokenType.NUMBER, "5"),
+            ],
+        ),
+        (
+            "y1 = (x1 - x2) / (3 + 2)",
+            [
+                Token(TokenType.SYMBOL, "y1"),
+                Token(TokenType.SPACE, " "),
+                Token(TokenType.EQUALS, "="),
+                Token(TokenType.SPACE, " "),
+                Token(TokenType.OPEN_BRACKET, "("),
+                Token(TokenType.SYMBOL, "x1"),
+                Token(TokenType.SPACE, " "),
+                Token(TokenType.SUBTRACT, "-"),
+                Token(TokenType.SPACE, " "),
+                Token(TokenType.SYMBOL, "x2"),
+                Token(TokenType.CLOSE_BRACKET, ")"),
+                Token(TokenType.SPACE, " "),
+                Token(TokenType.DIVIDE, "/"),
+                Token(TokenType.SPACE, " "),
+                Token(TokenType.OPEN_BRACKET, "("),
+                Token(TokenType.NUMBER, "3"),
+                Token(TokenType.SPACE, " "),
+                Token(TokenType.ADD, "+"),
+                Token(TokenType.SPACE, " "),
+                Token(TokenType.NUMBER, "2"),
+                Token(TokenType.CLOSE_BRACKET, ")"),
+            ],
+        ),
     ],
 )
 def test_tokenize(input: str, tokens: list[Token]) -> None:
@@ -103,10 +139,7 @@ def test_tokenize(input: str, tokens: list[Token]) -> None:
 
 @pytest.mark.parametrize(
     ["input", "expr_type", "value"],
-    [
-        ("123", ExpressionType.NUMBER, 123),
-        ("abc", ExpressionType.VARIABLE, 456)
-    ]
+    [("123", ExpressionType.NUMBER, 123), ("abc", ExpressionType.VARIABLE, 456)],
 )
 def test_single_token_ast(input: str, expr_type: ExpressionType, value: int) -> None:
     """Verify a single-token, or terminal, AST is creating correctly."""
