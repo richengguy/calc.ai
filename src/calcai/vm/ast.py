@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from enum import Enum, auto
-from typing import Sequence, cast
+from typing import Sequence
 
 from .scanner import Token, TokenType
 from .runtime import WorkingSpace
@@ -181,81 +181,112 @@ class AssignExpr(_UnaryExpr):
         return value
 
 
-def _create_terminal_token(token: Token, ws: WorkingSpace) -> _Expr:
+def _create_terminal_expr(token: Token, ws: WorkingSpace) -> _Expr | None:
     match token.type:
         case TokenType.NUMBER:
             return NumberExpr(int(token.value))
         case TokenType.SYMBOL:
             return VariableExpr(token.value, ws)
         case _:
-            raise RuntimeError(f"Did not expect a {token.value}!")
+            return None
 
 
-def _build_expr(
-    tokens: Sequence[Token], ws: WorkingSpace, left: _Expr | None = None
-) -> _Expr:
+def _create_unary_expr(
+    tokens: Sequence[Token], ws: WorkingSpace
+) -> tuple[_Expr, Sequence[Token]]:
     if len(tokens) == 0:
-        raise ValueError("Expected a non-empty token stream!")
+        raise ValueError("There are no tokens to process!")
 
-    if len(tokens) == 1:
-        return _create_terminal_token(tokens[0], ws)
+    # Check if the first token is a '+' or '-' since '+1' or '-4' is valid
+    # syntax.
+    has_prefix = tokens[0].type == TokenType.ADD or tokens[0].type == TokenType.SUBTRACT
+    is_negate = tokens[0].type == TokenType.SUBTRACT
 
-    match tokens[0].type:
-        case TokenType.NUMBER:
-            left = NumberExpr(int(tokens[0].value))
-            return _build_expr(tokens[1:], ws, left)
-        case TokenType.SYMBOL:
-            left = VariableExpr(tokens[0].value, ws)
-            return _build_expr(tokens[1:], ws, left)
-        case TokenType.EQUALS:
-            if left is None:
-                raise RuntimeError("Missing the left side of the assignment expression!")
-            if left.type != ExpressionType.VARIABLE:
-                raise RuntimeError(f"Expected the left side to be a variable, got a {left.type}!")
+    if has_prefix:
+        if len(tokens) < 2:
+            raise RuntimeError("Input is shorter than expected!")
+        tokens = tokens[1:]
 
-            left = cast(VariableExpr, left)
-            right = _build_expr(tokens[1:], ws)
+    if tokens[0].type == TokenType.OPEN_BRACKET:
+        expr, remaining = _create_addsub_expr(tokens[1:], ws)
+        if len(remaining) == 0 or remaining[0].type != TokenType.CLOSE_BRACKET:
+            raise RuntimeError("Missing a ')'!")
 
-            return AssignExpr(left.key, right, ws)
-        case TokenType.ADD:
-            # Note: this is allowed because '+1' is the same as '1'.
-            if left is None:
-                return _build_expr(tokens[1:], ws)
+        remaining = remaining[1:]
+        if is_negate:
+            return NegateExpr(expr), remaining
+        else:
+            return expr, remaining
 
-            right = _build_expr(tokens[1:], ws)
-            return AddExpr(left, right)
-        case TokenType.SUBTRACT:
-            if left is None:
-                return NegateExpr(_build_expr(tokens[1:], ws))
+    if terminal := _create_terminal_expr(tokens[0], ws):
+        if is_negate:
+            terminal = NegateExpr(terminal)
+        return terminal, tokens[1:]
 
-            right = _build_expr(tokens[1:], ws)
-            return SubtractExpr(left, right)
-        case TokenType.MULTIPLY:
-            if left is None:
-                raise RuntimeError("Missing the left side of the multiply expression!")
+    raise RuntimeError("Could not parse expression!")
 
-            right = _build_expr(tokens[1:], ws)
-            return MultiplyExpr(left, right)
-        case TokenType.DIVIDE:
-            if left is None:
-                raise RuntimeError("Missing the left side of the divide expression!")
 
-            right = _build_expr(tokens[1:], ws)
-            return DivideExpr(left, right)
-        case TokenType.POWER:
-            if left is None:
-                raise RuntimeError("Missing the left side of the power expression!")
+def _create_exp_expr(
+    tokens: Sequence[Token], ws: WorkingSpace
+) -> tuple[_Expr, Sequence[Token]]:
+    if len(tokens) == 0:
+        raise ValueError("There are no tokens to process!")
 
-            right = _build_expr(tokens[1:], ws)
-            return PowerExpr(left, right)
-        case TokenType.OPEN_BRACKET:
-            return _build_expr(tokens[1:], ws)
-        case TokenType.CLOSE_BRACKET:
-            if left is None:
-                raise RuntimeError("Unexpected ')'.")
-            return left
+    left, remaining = _create_unary_expr(tokens, ws)
+    while len(remaining) > 0:
+        type = remaining[0].type
+        match type:
+            case TokenType.POWER:
+                right, remaining = _create_unary_expr(remaining[1:], ws)
+                left = PowerExpr(left, right)
+            case _:
+                break
 
-    raise RuntimeError("Encountered a syntax error!")
+    return left, remaining
+
+
+def _create_muldiv_expr(
+    tokens: Sequence[Token], ws: WorkingSpace
+) -> tuple[_Expr, Sequence[Token]]:
+    if len(tokens) == 0:
+        raise ValueError("There are no tokens to process!")
+
+    left, remaining = _create_exp_expr(tokens, ws)
+    while len(remaining) > 0:
+        type = remaining[0].type
+        match type:
+            case TokenType.MULTIPLY:
+                right, remaining = _create_exp_expr(remaining[1:], ws)
+                left = MultiplyExpr(left, right)
+            case TokenType.DIVIDE:
+                right, remaining = _create_exp_expr(remaining[1:], ws)
+                left = DivideExpr(left, right)
+            case _:
+                break
+
+    return left, remaining
+
+
+def _create_addsub_expr(
+    tokens: Sequence[Token], ws: WorkingSpace
+) -> tuple[_Expr, Sequence[Token]]:
+    if len(tokens) == 0:
+        raise ValueError("There are no tokens to process!")
+
+    left, remaining = _create_muldiv_expr(tokens, ws)
+    while len(remaining) > 0:
+        type = remaining[0].type
+        match type:
+            case TokenType.ADD:
+                right, remaining = _create_muldiv_expr(remaining[1:], ws)
+                left = AddExpr(left, right)
+            case TokenType.SUBTRACT:
+                right, remaining = _create_muldiv_expr(remaining[1:], ws)
+                left = SubtractExpr(left, right)
+            case _:
+                break
+
+    return left, remaining
 
 
 def build_ast(tokens: Sequence[Token], ws: WorkingSpace) -> RootExpr:
@@ -276,5 +307,25 @@ def build_ast(tokens: Sequence[Token], ws: WorkingSpace) -> RootExpr:
         root expression node
     """
     tokens = [t for t in tokens if t.type != TokenType.SPACE]
-    expr = _build_expr(tokens, ws)
+    num_tokens = len(tokens)
+
+    if num_tokens == 0:
+        raise ValueError("Expected a token stream with non-whitespace characters.")
+
+    # Determine if this is an assignment expression.  This needs to be handled
+    # here since the "var =" syntax can only appear once in a token stream.
+    is_assignment = (
+        num_tokens > 2
+        and tokens[0].type == TokenType.SYMBOL
+        and tokens[1].type == TokenType.EQUALS
+    )
+    if is_assignment:
+        value_expr, remaining = _create_addsub_expr(tokens[2:], ws)
+        expr: _Expr = AssignExpr(tokens[0].value, value_expr, ws)
+    else:
+        expr, remaining = _create_addsub_expr(tokens, ws)
+
+    if len(remaining) != 0:
+        raise RuntimeError("Some tokens weren't processed!")
+
     return RootExpr(expr, True)

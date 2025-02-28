@@ -137,10 +137,15 @@ def test_tokenize(input: str, tokens: list[Token]) -> None:
     assert tokenize(input) == tokens
 
 
+# fmt: off
 @pytest.mark.parametrize(
     ["input", "expr_type", "value"],
-    [("123", ExpressionType.NUMBER, 123), ("abc", ExpressionType.VARIABLE, 456)],
+    [
+        ("123", ExpressionType.NUMBER, 123),
+        ("abc", ExpressionType.VARIABLE, 456)
+    ],
 )
+# fmt: on
 def test_single_token_ast(input: str, expr_type: ExpressionType, value: int) -> None:
     """Verify a single-token, or terminal, AST is creating correctly."""
     ws = WorkingSpace()
@@ -151,13 +156,16 @@ def test_single_token_ast(input: str, expr_type: ExpressionType, value: int) -> 
     assert expr.evaluate() == value
 
 
+# fmt: off
 @pytest.mark.parametrize(
     ["var", "eqn", "value"],
     [
         ("x", "123", 123),
-        ("y", "1 + 2", 3)
-    ]
+        ("y", "1 + 2", 3),
+        ("z", "-4 + 2 * (3 + 2)", 6)
+    ],
 )
+# fmt: on
 def test_assignment_ast(var: str, eqn: str, value: int) -> None:
     """Check to see if assignment works as expected."""
     ws = WorkingSpace()
@@ -166,13 +174,17 @@ def test_assignment_ast(var: str, eqn: str, value: int) -> None:
     assert ws.load(var) == value
 
 
+# fmt: off
 @pytest.mark.parametrize(
     ["input", "value"],
     [
+        ("(1)", 1),
         ("3 * 2 + 3", 9),
-        ("3 * (2 + 3)", 10)
+        ("3 * (2 + 3)", 15),
+        ("(5 + 5) / 2", 5)
     ]
 )
+# fmt: on
 def test_brackets_ast(input: str, value: int) -> None:
     """Check to see if grouped expressions are working."""
     ws = WorkingSpace()
