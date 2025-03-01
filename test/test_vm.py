@@ -150,10 +150,10 @@ def test_single_token_ast(input: str, expr_type: ExpressionType, value: int) -> 
     """Verify a single-token, or terminal, AST is creating correctly."""
     ws = WorkingSpace()
     ws.store("abc", 456)
-    expr = build_ast(tokenize(input), ws)
+    expr = build_ast(tokenize(input))
     assert expr.type == ExpressionType.EXPRESSION
     assert expr.input.type == expr_type
-    assert expr.evaluate() == value
+    assert expr.evaluate(ws) == value
 
 
 # fmt: off
@@ -169,8 +169,8 @@ def test_single_token_ast(input: str, expr_type: ExpressionType, value: int) -> 
 def test_assignment_ast(var: str, eqn: str, value: int) -> None:
     """Check to see if assignment works as expected."""
     ws = WorkingSpace()
-    expr = build_ast(tokenize(f"{var} = {eqn}"), ws)
-    assert expr.evaluate() == value
+    expr = build_ast(tokenize(f"{var} = {eqn}"))
+    assert expr.evaluate(ws) == value
     assert ws.load(var) == value
 
 
@@ -188,5 +188,5 @@ def test_assignment_ast(var: str, eqn: str, value: int) -> None:
 def test_brackets_ast(input: str, value: int) -> None:
     """Check to see if grouped expressions are working."""
     ws = WorkingSpace()
-    expr = build_ast(tokenize(input), ws)
-    assert expr.evaluate() == value
+    expr = build_ast(tokenize(input))
+    assert expr.evaluate(ws) == value

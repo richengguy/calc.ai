@@ -49,7 +49,7 @@ class _Expr(ABC):
         return self._type
 
     @abstractmethod
-    def evaluate(self) -> int: ...
+    def evaluate(self, ws: WorkingSpace) -> int: ...
 
 
 class _NullaryExpr(_Expr): ...
@@ -92,8 +92,8 @@ class RootExpr(_UnaryExpr):
     def top(self) -> bool:
         return self._top
 
-    def evaluate(self):
-        return self.input.evaluate()
+    def evaluate(self, ws: WorkingSpace) -> int:
+        return self.input.evaluate(ws)
 
 
 # Arithmetic Expressions
@@ -103,48 +103,48 @@ class AddExpr(_BinaryExpr):
     def __init__(self, left: _Expr, right: _Expr) -> None:
         super().__init__(ExpressionType.ADD, left, right)
 
-    def evaluate(self) -> int:
-        return self.left.evaluate() + self.right.evaluate()
+    def evaluate(self, ws: WorkingSpace) -> int:
+        return self.left.evaluate(ws) + self.right.evaluate(ws)
 
 
 class SubtractExpr(_BinaryExpr):
     def __init__(self, left: _Expr, right: _Expr) -> None:
         super().__init__(ExpressionType.SUBTRACT, left, right)
 
-    def evaluate(self) -> int:
-        return self.left.evaluate() - self.right.evaluate()
+    def evaluate(self, ws: WorkingSpace) -> int:
+        return self.left.evaluate(ws) - self.right.evaluate(ws)
 
 
 class MultiplyExpr(_BinaryExpr):
     def __init__(self, left: _Expr, right: _Expr) -> None:
         super().__init__(ExpressionType.MULTIPLY, left, right)
 
-    def evaluate(self) -> int:
-        return self.left.evaluate() * self.right.evaluate()
+    def evaluate(self, ws: WorkingSpace) -> int:
+        return self.left.evaluate(ws) * self.right.evaluate(ws)
 
 
 class DivideExpr(_BinaryExpr):
     def __init__(self, left: _Expr, right: _Expr) -> None:
         super().__init__(ExpressionType.DIVIDE, left, right)
 
-    def evaluate(self) -> int:
-        return self.left.evaluate() // self.right.evaluate()
+    def evaluate(self, ws: WorkingSpace) -> int:
+        return self.left.evaluate(ws) // self.right.evaluate(ws)
 
 
 class PowerExpr(_BinaryExpr):
     def __init__(self, left: _Expr, right: _Expr) -> None:
         super().__init__(ExpressionType.POWER, left, right)
 
-    def evaluate(self) -> int:
-        return self.left.evaluate() ** self.right.evaluate()
+    def evaluate(self, ws: WorkingSpace) -> int:
+        return self.left.evaluate(ws) ** self.right.evaluate(ws)
 
 
 class NegateExpr(_UnaryExpr):
     def __init__(self, input: _Expr) -> None:
         super().__init__(ExpressionType.NEGATE, input)
 
-    def evaluate(self) -> int:
-        return -self.input.evaluate()
+    def evaluate(self, ws: WorkingSpace) -> int:
+        return -self.input.evaluate(ws)
 
 
 # Data Expressions
@@ -155,45 +155,41 @@ class NumberExpr(_NullaryExpr):
         super().__init__(ExpressionType.NUMBER)
         self.value = value
 
-    def evaluate(self) -> int:
+    def evaluate(self, ws: WorkingSpace) -> int:
         return self.value
 
 
 class VariableExpr(_NullaryExpr):
-    def __init__(self, key: str, ws: WorkingSpace) -> None:
+    def __init__(self, key: str) -> None:
         super().__init__(ExpressionType.VARIABLE)
         self.key = key
-        self._ws = ws
 
-    def evaluate(self) -> int:
-        return self._ws.load(self.key)
+    def evaluate(self, ws: WorkingSpace) -> int:
+        return ws.load(self.key)
 
 
 class AssignExpr(_UnaryExpr):
-    def __init__(self, key: str, input: _Expr, ws: WorkingSpace) -> None:
+    def __init__(self, key: str, input: _Expr) -> None:
         super().__init__(ExpressionType.ASSIGN, input)
         self.key = key
-        self._ws = ws
 
-    def evaluate(self) -> int:
-        value = self.input.evaluate()
-        self._ws.store(self.key, value)
+    def evaluate(self, ws: WorkingSpace) -> int:
+        value = self.input.evaluate(ws)
+        ws.store(self.key, value)
         return value
 
 
-def _create_terminal_expr(token: Token, ws: WorkingSpace) -> _Expr | None:
+def _create_terminal_expr(token: Token) -> _Expr | None:
     match token.type:
         case TokenType.NUMBER:
             return NumberExpr(int(token.value))
         case TokenType.SYMBOL:
-            return VariableExpr(token.value, ws)
+            return VariableExpr(token.value)
         case _:
             return None
 
 
-def _create_unary_expr(
-    tokens: Sequence[Token], ws: WorkingSpace
-) -> tuple[_Expr, Sequence[Token]]:
+def _create_unary_expr(tokens: Sequence[Token]) -> tuple[_Expr, Sequence[Token]]:
     if len(tokens) == 0:
         raise ValueError("There are no tokens to process!")
 
@@ -208,7 +204,7 @@ def _create_unary_expr(
         tokens = tokens[1:]
 
     if tokens[0].type == TokenType.OPEN_BRACKET:
-        expr, remaining = _create_addsub_expr(tokens[1:], ws)
+        expr, remaining = _create_addsub_expr(tokens[1:])
         if len(remaining) == 0 or remaining[0].type != TokenType.CLOSE_BRACKET:
             raise RuntimeError("Missing a ')'!")
 
@@ -218,7 +214,7 @@ def _create_unary_expr(
         else:
             return expr, remaining
 
-    if terminal := _create_terminal_expr(tokens[0], ws):
+    if terminal := _create_terminal_expr(tokens[0]):
         if is_negate:
             terminal = NegateExpr(terminal)
         return terminal, tokens[1:]
@@ -226,18 +222,16 @@ def _create_unary_expr(
     raise RuntimeError("Could not parse expression!")
 
 
-def _create_exp_expr(
-    tokens: Sequence[Token], ws: WorkingSpace
-) -> tuple[_Expr, Sequence[Token]]:
+def _create_exp_expr(tokens: Sequence[Token]) -> tuple[_Expr, Sequence[Token]]:
     if len(tokens) == 0:
         raise ValueError("There are no tokens to process!")
 
-    left, remaining = _create_unary_expr(tokens, ws)
+    left, remaining = _create_unary_expr(tokens)
     while len(remaining) > 0:
         type = remaining[0].type
         match type:
             case TokenType.POWER:
-                right, remaining = _create_unary_expr(remaining[1:], ws)
+                right, remaining = _create_unary_expr(remaining[1:])
                 left = PowerExpr(left, right)
             case _:
                 break
@@ -245,21 +239,19 @@ def _create_exp_expr(
     return left, remaining
 
 
-def _create_muldiv_expr(
-    tokens: Sequence[Token], ws: WorkingSpace
-) -> tuple[_Expr, Sequence[Token]]:
+def _create_muldiv_expr(tokens: Sequence[Token]) -> tuple[_Expr, Sequence[Token]]:
     if len(tokens) == 0:
         raise ValueError("There are no tokens to process!")
 
-    left, remaining = _create_exp_expr(tokens, ws)
+    left, remaining = _create_exp_expr(tokens)
     while len(remaining) > 0:
         type = remaining[0].type
         match type:
             case TokenType.MULTIPLY:
-                right, remaining = _create_exp_expr(remaining[1:], ws)
+                right, remaining = _create_exp_expr(remaining[1:])
                 left = MultiplyExpr(left, right)
             case TokenType.DIVIDE:
-                right, remaining = _create_exp_expr(remaining[1:], ws)
+                right, remaining = _create_exp_expr(remaining[1:])
                 left = DivideExpr(left, right)
             case _:
                 break
@@ -267,21 +259,19 @@ def _create_muldiv_expr(
     return left, remaining
 
 
-def _create_addsub_expr(
-    tokens: Sequence[Token], ws: WorkingSpace
-) -> tuple[_Expr, Sequence[Token]]:
+def _create_addsub_expr(tokens: Sequence[Token]) -> tuple[_Expr, Sequence[Token]]:
     if len(tokens) == 0:
         raise ValueError("There are no tokens to process!")
 
-    left, remaining = _create_muldiv_expr(tokens, ws)
+    left, remaining = _create_muldiv_expr(tokens)
     while len(remaining) > 0:
         type = remaining[0].type
         match type:
             case TokenType.ADD:
-                right, remaining = _create_muldiv_expr(remaining[1:], ws)
+                right, remaining = _create_muldiv_expr(remaining[1:])
                 left = AddExpr(left, right)
             case TokenType.SUBTRACT:
-                right, remaining = _create_muldiv_expr(remaining[1:], ws)
+                right, remaining = _create_muldiv_expr(remaining[1:])
                 left = SubtractExpr(left, right)
             case _:
                 break
@@ -289,7 +279,7 @@ def _create_addsub_expr(
     return left, remaining
 
 
-def build_ast(tokens: Sequence[Token], ws: WorkingSpace) -> RootExpr:
+def build_ast(tokens: Sequence[Token]) -> RootExpr:
     """Build up an AST from a token sequence.
 
     The token sequence is assumed to represent a single complete line.  The
@@ -320,10 +310,10 @@ def build_ast(tokens: Sequence[Token], ws: WorkingSpace) -> RootExpr:
         and tokens[1].type == TokenType.EQUALS
     )
     if is_assignment:
-        value_expr, remaining = _create_addsub_expr(tokens[2:], ws)
-        expr: _Expr = AssignExpr(tokens[0].value, value_expr, ws)
+        value_expr, remaining = _create_addsub_expr(tokens[2:])
+        expr: _Expr = AssignExpr(tokens[0].value, value_expr)
     else:
-        expr, remaining = _create_addsub_expr(tokens, ws)
+        expr, remaining = _create_addsub_expr(tokens)
 
     if len(remaining) != 0:
         raise RuntimeError("Some tokens weren't processed!")
