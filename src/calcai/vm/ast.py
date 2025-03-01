@@ -51,6 +51,9 @@ class _Expr(ABC):
     @abstractmethod
     def evaluate(self, ws: WorkingSpace) -> int: ...
 
+    @abstractmethod
+    def print(self) -> str: ...
+
 
 class _NullaryExpr(_Expr): ...
 
@@ -95,6 +98,13 @@ class RootExpr(_UnaryExpr):
     def evaluate(self, ws: WorkingSpace) -> int:
         return self.input.evaluate(ws)
 
+    def print(self) -> str:
+        interior = self.input.print()
+        if self.top:
+            return interior
+        else:
+            return f"({interior})"
+
 
 # Arithmetic Expressions
 
@@ -106,6 +116,9 @@ class AddExpr(_BinaryExpr):
     def evaluate(self, ws: WorkingSpace) -> int:
         return self.left.evaluate(ws) + self.right.evaluate(ws)
 
+    def print(self) -> str:
+        return f"{self.left.print()} + {self.right.print()}"
+
 
 class SubtractExpr(_BinaryExpr):
     def __init__(self, left: _Expr, right: _Expr) -> None:
@@ -113,6 +126,9 @@ class SubtractExpr(_BinaryExpr):
 
     def evaluate(self, ws: WorkingSpace) -> int:
         return self.left.evaluate(ws) - self.right.evaluate(ws)
+
+    def print(self) -> str:
+        return f"{self.left.print()} - {self.right.print()}"
 
 
 class MultiplyExpr(_BinaryExpr):
@@ -122,6 +138,9 @@ class MultiplyExpr(_BinaryExpr):
     def evaluate(self, ws: WorkingSpace) -> int:
         return self.left.evaluate(ws) * self.right.evaluate(ws)
 
+    def print(self) -> str:
+        return f"{self.left.print()} * {self.right.print()}"
+
 
 class DivideExpr(_BinaryExpr):
     def __init__(self, left: _Expr, right: _Expr) -> None:
@@ -129,6 +148,9 @@ class DivideExpr(_BinaryExpr):
 
     def evaluate(self, ws: WorkingSpace) -> int:
         return self.left.evaluate(ws) // self.right.evaluate(ws)
+
+    def print(self) -> str:
+        return f"{self.left.print()} / {self.right.print()}"
 
 
 class PowerExpr(_BinaryExpr):
@@ -138,6 +160,9 @@ class PowerExpr(_BinaryExpr):
     def evaluate(self, ws: WorkingSpace) -> int:
         return self.left.evaluate(ws) ** self.right.evaluate(ws)
 
+    def print(self) -> str:
+        return f"{self.left.print()} ^ {self.right.print()}"
+
 
 class NegateExpr(_UnaryExpr):
     def __init__(self, input: _Expr) -> None:
@@ -145,6 +170,9 @@ class NegateExpr(_UnaryExpr):
 
     def evaluate(self, ws: WorkingSpace) -> int:
         return -self.input.evaluate(ws)
+
+    def print(self) -> str:
+        return f"-{self.input.print()}"
 
 
 # Data Expressions
@@ -158,6 +186,9 @@ class NumberExpr(_NullaryExpr):
     def evaluate(self, ws: WorkingSpace) -> int:
         return self.value
 
+    def print(self) -> str:
+        return str(self.value)
+
 
 class VariableExpr(_NullaryExpr):
     def __init__(self, key: str) -> None:
@@ -166,6 +197,9 @@ class VariableExpr(_NullaryExpr):
 
     def evaluate(self, ws: WorkingSpace) -> int:
         return ws.load(self.key)
+
+    def print(self) -> str:
+        return self.key
 
 
 class AssignExpr(_UnaryExpr):
@@ -177,6 +211,9 @@ class AssignExpr(_UnaryExpr):
         value = self.input.evaluate(ws)
         ws.store(self.key, value)
         return value
+
+    def print(self) -> str:
+        return f"{self.key} = {self.input.print()}"
 
 
 def _create_terminal_expr(token: Token) -> _Expr | None:
@@ -208,6 +245,7 @@ def _create_unary_expr(tokens: Sequence[Token]) -> tuple[_Expr, Sequence[Token]]
         if len(remaining) == 0 or remaining[0].type != TokenType.CLOSE_BRACKET:
             raise RuntimeError("Missing a ')'!")
 
+        expr = RootExpr(expr)
         remaining = remaining[1:]
         if is_negate:
             return NegateExpr(expr), remaining

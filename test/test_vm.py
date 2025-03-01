@@ -192,6 +192,25 @@ def test_brackets_ast(input: str, value: int) -> None:
     assert expr.evaluate(ws) == value
 
 
+# fmt: off
+@pytest.mark.parametrize(
+    "input",
+    [
+        "1",
+        "1 + 2",
+        "2 * 3 + 1",
+        "5 ^ (1 + 2)",
+        "x + 5",
+        "x = (1 + 1) / 2"
+    ]
+)
+# fmt: on
+def test_print_ast(input: str) -> None:
+    """Check if the AST can be round-tripped by printing it."""
+    expr = build_ast(tokenize(input))
+    assert expr.print() == input
+
+
 def test_oneline_script() -> None:
     """Have the interpreter parse a single-line script."""
     vm = Interpreter()
@@ -209,3 +228,11 @@ def test_multiline_script() -> None:
     assert vm.run(script) == 16
     assert vm.working_space.load("x") == 1
     assert vm.working_space.load("y") == 15
+
+
+def test_exception_on_empty_input() -> None:
+    with pytest.raises(RuntimeError) as exc:
+        vm = Interpreter()
+        vm.run("")
+
+    assert str(exc.value) == "There was no result to return!"

@@ -7,6 +7,7 @@ from .scanner import tokenize
 
 class Interpreter:
     """Interpret calc.ai scripts."""
+
     def __init__(self):
         self._ws = WorkingSpace()
 
