@@ -1,4 +1,4 @@
-from calcai.vm import tokenize, build_ast
+from calcai.vm import tokenize, build_ast, Interpreter
 from calcai.vm.ast import ExpressionType
 from calcai.vm.scanner import Token, TokenType
 from calcai.vm.runtime import WorkingSpace
@@ -190,3 +190,22 @@ def test_brackets_ast(input: str, value: int) -> None:
     ws = WorkingSpace()
     expr = build_ast(tokenize(input))
     assert expr.evaluate(ws) == value
+
+
+def test_oneline_script() -> None:
+    """Have the interpreter parse a single-line script."""
+    vm = Interpreter()
+    assert vm.run("1 + 2 + 3") == 6
+
+
+def test_multiline_script() -> None:
+    """Have the interpreter parse a multi-line script."""
+    script = """
+    x = 1
+    y = 5*3
+    x + y
+    """
+    vm = Interpreter()
+    assert vm.run(script) == 16
+    assert vm.working_space.load("x") == 1
+    assert vm.working_space.load("y") == 15
