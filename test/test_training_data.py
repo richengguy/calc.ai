@@ -30,7 +30,7 @@ def test_serialize_to_jsonlines(data: list[SampleData], tmp_path: Path) -> None:
     """Test serializing data to a JSON lines file."""
     with SampleWriter(tmp_path / "output.jsonl") as w:
         for item in data:
-            w.write(item.script, item.result)
+            w.write(item)
 
     contents = list(from_jsonlines(tmp_path / "output.jsonl"))
     assert data == contents

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import json
 from pathlib import Path
-from typing import Iterator, TextIO
+from typing import Iterator, TextIO, overload
 
 
 @dataclass(frozen=True)
@@ -72,12 +72,18 @@ class SampleWriter:
             self._io = None
         return None
 
-    def write(self, script: str, result: int) -> None:
+    def write(self, sample: SampleData) -> None:
+        """Write a sample to the output file.
+
+        Parameters
+        ----------
+        sample : :class:`SampleData`
+            sample data
+        """
         if self._io is None:
             raise RuntimeError("This can only be called in a context manager.")
 
-        line = SampleData(script, result).to_json()
-        self._io.write(f"{line}\n")
+        self._io.write(f"{sample.to_json()}\n")
 
 
 def from_jsonlines(path: Path) -> Iterator[SampleData]:
