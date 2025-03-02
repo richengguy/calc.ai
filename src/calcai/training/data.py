@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import json
 from pathlib import Path
-from typing import Iterator, TextIO, overload
+from typing import Iterator, TextIO
 
 
 @dataclass(frozen=True)
