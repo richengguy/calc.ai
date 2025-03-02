@@ -18,6 +18,9 @@ dependencies = [
 cpu = ["torch ~= 2.6"]
 cuda = ["torch ~= 2.6"]
 
+[project.scripts]
+"calc.ai" = "calcai.cli:main"
+
 [dependency-groups]
 dev = [
     "black",
