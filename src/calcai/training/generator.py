@@ -1,5 +1,6 @@
 from ..vm.ast import (
     ExprBase,
+    ExpressionType,
     AddExpr,
     AssignExpr,
     DivideExpr,
@@ -16,78 +17,111 @@ from .data import SampleData
 import random
 
 
-class AstGenerator:
-    """Generate a random expression ASTs.
+_NODE_CHOICES = [
+    ExpressionType.ADD,
+    ExpressionType.SUBTRACT,
+    ExpressionType.MULTIPLY,
+    ExpressionType.DIVIDE,
+    ExpressionType.POWER,
+    ExpressionType.NEGATE,
+    ExpressionType.EXPRESSION,
+    ExpressionType.NUMBER,
+]
 
-    The AST generator will create a random arthimetic expression of a given
-    breath and depth.  These refer to how an expression is constructed and
-    evaluated using BEDMAS rules.  It does not describe the AST, which is always
-    a binary tree.
 
-    Any expression consisting solely of additions and substractions can be
-    evaludated in any order.  So, the "breadth" is defined to be number addition
-    and subtraction options at any level of the expression.  For instance, the
-    breadth of `1 + 2` is "1", `1 + 2 - 3` is "2".  The depth is "1" for reasons
-    described below.
+class ExpressionGenerator:
+    """Generate a random expression.
 
-    The remaining operations, brackets, exponents, multiplication, and division,
-    all change the depth of an expression.  This is due to precendence rules
-    requiring them to be evaluated in a specific order.  For example, consider
-    `1 + 2 * 3`.  The `*` must be evaluated first and then the `+`.  This causes
-    the expression to have a depth of "2" and a breadth of "1".  Similarly,
-    `1 + (2 - 3)` also has a depth of "2" and breadth of "1" because the `()`
-    forces the `2 - 3` to be evaluated first.
+    The expression generator uses a simple recursive algorithm to build up
+    an arithmetic expression.  The complexity of the expression is controlled
+    by it maximum depth, as the underlying AST is (generally) an unbalanced
+    binary tree.  The deeper the tree, the more complex the expression.
     """
 
-    def __init__(self, min_value: int, max_value: int) -> None:
+    def __init__(self, max_value: int, min_value: int = 0) -> None:
+        """
+        Parameters
+        ----------
+        max_value : int
+            maximum allowed value for a terminal node
+        min_value : int
+            minimum allowed value for a terminal node
+        """
+        if max_value <= min_value:
+            raise ValueError("Maximum value must be greater than the minimum value.")
+
+        if min_value < 0 or max_value < 0:
+            raise ValueError("The maximum/minimum values cannot be negative.")
+
         self._min = min_value
         self._max = max_value
 
-    def generate_ast(self, breadth: int, depth: int, ragged: bool = True) -> RootExpr:
-        """Generate an AST root node.
+    def generate_ast(self, depth: int, seed: int | None = None) -> str:
+        """Generate a random AST.
 
         Parameters
         ----------
-        breadth : int
-            expression breadth; must be 1 or higher
         depth : int
-            expression depth; must be 1 or higher
-        ragged : bool
-            if `True` then the breadth may be lower than the specified amount
-            when building up sub-expressions
+            the maximum depth of the AST; corresponds to an expression's
+            complexity
+        seed : int, optional
+            specify the random seed used when generating the AST
 
         Returns
         -------
         :class:`RootExpr`
             AST root node
         """
-        if breadth < 1:
-            raise ValueError("Breadth must be at least '1'.")
         if depth < 1:
-            raise ValueError("Depth must be at least '1'.")
+            raise ValueError("Depth must be '1' or greater.")
 
-        return RootExpr(self._build_expr(breadth, depth - 1, 0, ragged), True)
+        prng = random.Random(seed)
+        root = self._create_ast(depth, ExpressionType.EXPRESSION, prng)
+        return RootExpr(root, True).print()
 
-    def _build_expr(
-        self, breadth: int, max_depth: int, current_depth: int, ragged: bool
+    def _create_ast(
+        self, depth: int, parent: ExpressionType, prng: random.Random
     ) -> ExprBase:
-        if max_depth == current_depth:
-            expr: ExprBase | None = None
-            for _ in range(breadth):
-                expr = self._create_add_sub_expr(expr)
+        if depth == 0:
+            value = prng.randint(self._min, self._max)
+            return NumberExpr(value)
 
-            assert expr is not None
-            return expr
+        selected = prng.choice(_NODE_CHOICES)
 
-        raise NotImplementedError()
+        # NOTE: A double negation ('--') isn't supported by the parser so some
+        # extra handling is necessary to avoid this.
+        if selected == ExpressionType.NEGATE and parent == ExpressionType.NEGATE:
+            while selected == ExpressionType.NEGATE:
+                selected = prng.choice(_NODE_CHOICES)
 
-    def _create_add_sub_expr(self, left: ExprBase | None) -> AddExpr | SubtractExpr:
-        if left is None:
-            left = NumberExpr(random.randint(self._min, self._max))
-        right = NumberExpr(random.randint(self._min, self._max))
-
-        pick_add = random.randint(0, 1) == 1
-        if pick_add:
-            return AddExpr(left, right)
-        else:
-            return SubtractExpr(left, right)
+        match selected:
+            case ExpressionType.ADD:
+                left = self._create_ast(depth - 1, ExpressionType.ADD, prng)
+                right = self._create_ast(depth - 1, ExpressionType.ADD, prng)
+                return AddExpr(left, right)
+            case ExpressionType.SUBTRACT:
+                left = self._create_ast(depth - 1, ExpressionType.SUBTRACT, prng)
+                right = self._create_ast(depth - 1, ExpressionType.SUBTRACT, prng)
+                return SubtractExpr(left, right)
+            case ExpressionType.MULTIPLY:
+                left = self._create_ast(depth - 1, ExpressionType.MULTIPLY, prng)
+                right = self._create_ast(depth - 1, ExpressionType.MULTIPLY, prng)
+                return MultiplyExpr(left, right)
+            case ExpressionType.DIVIDE:
+                left = self._create_ast(depth - 1, ExpressionType.DIVIDE, prng)
+                right = self._create_ast(depth - 1, ExpressionType.DIVIDE, prng)
+                return DivideExpr(left, right)
+            case ExpressionType.POWER:
+                left = self._create_ast(depth - 1, ExpressionType.POWER, prng)
+                right = self._create_ast(depth - 1, ExpressionType.POWER, prng)
+                return PowerExpr(left, right)
+            case ExpressionType.NEGATE:
+                left = self._create_ast(depth - 1, ExpressionType.NEGATE, prng)
+                return NegateExpr(left)
+            case ExpressionType.EXPRESSION:
+                left = self._create_ast(depth - 1, ExpressionType.EXPRESSION, prng)
+                return RootExpr(left)
+            case ExpressionType.NUMBER:
+                return NumberExpr(prng.randint(self._min, self._max))
+            case _:
+                raise RuntimeError(f"Unsupported selection '{selected}'.")
