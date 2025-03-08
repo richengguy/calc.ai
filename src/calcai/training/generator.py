@@ -15,6 +15,7 @@ from ..vm.ast import (
 from .data import SampleData
 
 import random
+import itertools
 
 
 _NODE_CHOICES = [
@@ -22,11 +23,25 @@ _NODE_CHOICES = [
     ExpressionType.SUBTRACT,
     ExpressionType.MULTIPLY,
     ExpressionType.DIVIDE,
-    ExpressionType.POWER,
+    # ExpressionType.POWER,
     ExpressionType.NEGATE,
     ExpressionType.EXPRESSION,
     ExpressionType.NUMBER,
 ]
+
+
+_NODE_WEIGHTS = [
+    4,
+    4,
+    2,
+    1,
+    # 1,
+    3,
+    3,
+    2
+]
+
+_NODE_CUM_WEIGHTS = list(itertools.accumulate(_NODE_WEIGHTS))
 
 
 class ExpressionGenerator:
@@ -86,13 +101,21 @@ class ExpressionGenerator:
             value = prng.randint(self._min, self._max)
             return NumberExpr(value)
 
-        selected = prng.choice(_NODE_CHOICES)
+        selected = prng.choices(_NODE_CHOICES, cum_weights=_NODE_CUM_WEIGHTS)[0]
+
+        # Do another selection if the parent is an expression to avoid an
+        # unnecessary '((()))' situation.  The parse can handle this but it
+        # doesn't convey anything useful.  It also avoids an infinite recursion
+        # situation.
+        if selected == ExpressionType.EXPRESSION and parent == ExpressionType.EXPRESSION:
+            while selected == ExpressionType.EXPRESSION:
+                selected = prng.choices(_NODE_CHOICES, cum_weights=_NODE_CUM_WEIGHTS)[0]
 
         # NOTE: A double negation ('--') isn't supported by the parser so some
         # extra handling is necessary to avoid this.
         if selected == ExpressionType.NEGATE and parent == ExpressionType.NEGATE:
             while selected == ExpressionType.NEGATE:
-                selected = prng.choice(_NODE_CHOICES)
+                selected = prng.choices(_NODE_CHOICES, cum_weights=_NODE_CUM_WEIGHTS)[0]
 
         match selected:
             case ExpressionType.ADD:
@@ -119,7 +142,10 @@ class ExpressionGenerator:
                 left = self._create_ast(depth - 1, ExpressionType.NEGATE, prng)
                 return NegateExpr(left)
             case ExpressionType.EXPRESSION:
-                left = self._create_ast(depth - 1, ExpressionType.EXPRESSION, prng)
+                # As expression doesn't decrease the depth because it's a method
+                # for prioritizing calculations.  It's possible to remove them
+                # from AST and still have the same result.
+                left = self._create_ast(depth, ExpressionType.EXPRESSION, prng)
                 return RootExpr(left)
             case ExpressionType.NUMBER:
                 return NumberExpr(prng.randint(self._min, self._max))
