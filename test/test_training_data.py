@@ -27,8 +27,8 @@ u * v
 @pytest.mark.parametrize(
     "data",
     [
-        [SampleData("1 + 2", 3), SampleData("5 * 2", 10)],
-        [SampleData(_MULTILINE_1, 3), SampleData(_MULTILINE_2, 10)]
+        [SampleData(1, "1 + 2", 3), SampleData(2, "5 * 2", 10)],
+        [SampleData(1, _MULTILINE_1, 3), SampleData(2, _MULTILINE_2, 10)]
     ]
 )
 # fmt: on

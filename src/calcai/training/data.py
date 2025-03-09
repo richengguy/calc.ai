@@ -6,11 +6,17 @@ from typing import Iterator, TextIO
 
 @dataclass(frozen=True)
 class SampleData:
+    seed: int
+    """The seed used for generating the sample."""
+
     script: str
     """The script or characters that will be sent into the language model."""
 
-    result: int
-    """The output from running the script through the VM."""
+    result: int | None
+    """The output from running the script through the VM.
+
+    This will be ``None`` if the sample contains a division by zero.
+    """
 
     def to_json(self) -> str:
         """Convert the data into a JSON-encoded string.
@@ -23,7 +29,7 @@ class SampleData:
         str
             a JSON-encoded string
         """
-        data = {"script": self.script, "result": self.result}
+        data = {"seed": self.seed, "script": self.script, "result": self.result}
         return json.dumps(data, separators=(",", ":"), indent=None)
 
     @staticmethod
@@ -42,7 +48,7 @@ class SampleData:
         """
         data = json.loads(string)
         try:
-            return SampleData(data["script"], data["result"])
+            return SampleData(data["seed"], data["script"], data["result"])
         except KeyError as exc:
             raise RuntimeError(
                 f"JSON object is missing the {exc.args[0]} key."
