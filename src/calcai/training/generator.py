@@ -15,6 +15,7 @@ from ..vm.ast import (
 import random
 import itertools
 from collections.abc import Sequence
+from typing import overload, Literal
 
 
 _NODE_CHOICES = [
@@ -70,6 +71,29 @@ class ExpressionGenerator:
         self._min = min_value
         self._max = max_value
 
+    @overload
+    def generate_expr(
+        self,
+        depth: int,
+        seed: int | None,
+        *,
+        assign_to: str | None,
+        vars: Sequence[str] | None,
+    ) -> str:
+        pass
+
+    @overload
+    def generate_expr(
+        self,
+        depth: int,
+        seed: int | None,
+        *,
+        assign_to: str | None,
+        vars: Sequence[str] | None,
+        ret_node: Literal[True],
+    ) -> RootExpr:
+        pass
+
     def generate_expr(
         self,
         depth: int,
@@ -77,7 +101,8 @@ class ExpressionGenerator:
         *,
         assign_to: str | None = None,
         vars: Sequence[str] | None = None,
-    ) -> str:
+        ret_node: bool = False,
+    ) -> str | RootExpr:
         """Generate a random expression.
 
         Parameters
@@ -93,10 +118,12 @@ class ExpressionGenerator:
         vars : sequence of str
             names of variables to use in the expressions, along with numerical
             values
+        ret_node : bool
+            set to ``True`` to return the AST node instead of a string
 
         Returns
         -------
-        str
+        str or :class:`RootExpr`
             generated expression
         """
         if depth < 1:
@@ -106,7 +133,9 @@ class ExpressionGenerator:
         root = self._create_ast(depth, ExpressionType.EXPRESSION, vars, prng)
         if assign_to is not None:
             root = AssignExpr(assign_to, root)
-        return RootExpr(root, True).print()
+
+        expr = RootExpr(root, True)
+        return expr if ret_node else expr.print()
 
     def _create_ast(
         self,
