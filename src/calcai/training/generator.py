@@ -7,15 +7,14 @@ from ..vm.ast import (
     MultiplyExpr,
     NegateExpr,
     NumberExpr,
-    PowerExpr,
     RootExpr,
     SubtractExpr,
     VariableExpr,
 )
-from .data import SampleData
 
 import random
 import itertools
+from collections.abc import Sequence
 
 
 _NODE_CHOICES = [
@@ -23,7 +22,6 @@ _NODE_CHOICES = [
     ExpressionType.SUBTRACT,
     ExpressionType.MULTIPLY,
     ExpressionType.DIVIDE,
-    # ExpressionType.POWER,
     ExpressionType.NEGATE,
     ExpressionType.EXPRESSION,
     ExpressionType.NUMBER,
@@ -35,7 +33,6 @@ _NODE_WEIGHTS = [
     4,
     2,
     1,
-    # 1,
     3,
     3,
     2
@@ -71,27 +68,35 @@ class ExpressionGenerator:
         self._min = min_value
         self._max = max_value
 
-    def generate_ast(self, depth: int, seed: int | None = None) -> str:
-        """Generate a random AST.
+    def generate_expr(self, depth: int, seed: int | None, *, assign_to: str | None = None, vars: Sequence[str] = []) -> str:
+        """Generate a random expression.
 
         Parameters
         ----------
         depth : int
             the maximum depth of the AST; corresponds to an expression's
             complexity
-        seed : int, optional
-            specify the random seed used when generating the AST
+        seed : int
+            specify the random seed used when generating the AST; a random seed
+            is used when this is `None`
+        assign_to : str, optional
+            if set then the generated expression is an assignment
+        vars : sequence of str
+            names of variables to use in the expressions, along with numerical
+            values
 
         Returns
         -------
-        :class:`RootExpr`
-            AST root node
+        str
+            generated expression
         """
         if depth < 1:
             raise ValueError("Depth must be '1' or greater.")
 
         prng = random.Random(seed)
         root = self._create_ast(depth, ExpressionType.EXPRESSION, prng)
+        if assign_to is not None:
+            root = AssignExpr(assign_to, root)
         return RootExpr(root, True).print()
 
     def _create_ast(
@@ -134,10 +139,6 @@ class ExpressionGenerator:
                 left = self._create_ast(depth - 1, ExpressionType.DIVIDE, prng)
                 right = self._create_ast(depth - 1, ExpressionType.DIVIDE, prng)
                 return DivideExpr(left, right)
-            case ExpressionType.POWER:
-                left = self._create_ast(depth - 1, ExpressionType.POWER, prng)
-                right = self._create_ast(depth - 1, ExpressionType.POWER, prng)
-                return PowerExpr(left, right)
             case ExpressionType.NEGATE:
                 left = self._create_ast(depth - 1, ExpressionType.NEGATE, prng)
                 return NegateExpr(left)

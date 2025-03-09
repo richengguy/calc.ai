@@ -52,7 +52,7 @@ def test_ast_validity(depth: int) -> None:
     # zero *are* possible with arbitrary expressions so hitting a divide-by-zero
     # isn't an error.
     for i in range(1000):
-        expr = g.generate_ast(depth, i)
+        expr = g.generate_expr(depth, i)
 
         try:
             result = vm.run(expr)
