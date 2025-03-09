@@ -62,13 +62,13 @@ def test_gen_expr(depth: int) -> None:
 
 
 @pytest.mark.parametrize("depth", range(1, 3))
-@pytest.mark.parametrize("vars", [['x'], ['x', 'y'], ['x', 'y', 'z']])
+@pytest.mark.parametrize("vars", [["x"], ["x", "y"], ["x", "y", "z"]])
 def test_gen_expr_with_var(depth: int, vars: list[str]) -> None:
     """Ensure the AST generator works with variables in the expression."""
     vm = Interpreter()
-    vm.working_space.store('x', 10)
-    vm.working_space.store('y', 20)
-    vm.working_space.store('z', 30)
+    vm.working_space.store("x", 10)
+    vm.working_space.store("y", 20)
+    vm.working_space.store("z", 30)
 
     g = ExpressionGenerator(10)
     for i in range(1000):
@@ -83,5 +83,5 @@ def test_gen_expr_with_var(depth: int, vars: list[str]) -> None:
 def test_gen_assign_expr() -> None:
     g = ExpressionGenerator(10)
     norm_expr = g.generate_expr(3, 1)
-    assign_expr = g.generate_expr(3, 1, assign_to='x')
+    assign_expr = g.generate_expr(3, 1, assign_to="x")
     assert assign_expr == f"x = {norm_expr}"

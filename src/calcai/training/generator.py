@@ -28,6 +28,7 @@ _NODE_CHOICES = [
 ]
 
 
+# fmt: off
 _NODE_WEIGHTS = [
     4,
     4,
@@ -37,6 +38,7 @@ _NODE_WEIGHTS = [
     3,
     2
 ]
+# fmt: on
 
 _NODE_CUM_WEIGHTS = list(itertools.accumulate(_NODE_WEIGHTS))
 
@@ -68,7 +70,14 @@ class ExpressionGenerator:
         self._min = min_value
         self._max = max_value
 
-    def generate_expr(self, depth: int, seed: int | None, *, assign_to: str | None = None, vars: Sequence[str] | None = None) -> str:
+    def generate_expr(
+        self,
+        depth: int,
+        seed: int | None,
+        *,
+        assign_to: str | None = None,
+        vars: Sequence[str] | None = None,
+    ) -> str:
         """Generate a random expression.
 
         Parameters
@@ -100,7 +109,11 @@ class ExpressionGenerator:
         return RootExpr(root, True).print()
 
     def _create_ast(
-        self, depth: int, parent: ExpressionType, vars: Sequence[str] | None, prng: random.Random
+        self,
+        depth: int,
+        parent: ExpressionType,
+        vars: Sequence[str] | None,
+        prng: random.Random,
     ) -> ExprBase:
         if depth == 0:
             return self._create_terminal(vars, prng)
@@ -111,7 +124,10 @@ class ExpressionGenerator:
         # unnecessary '((()))' situation.  The parse can handle this but it
         # doesn't convey anything useful.  It also avoids an infinite recursion
         # situation.
-        if selected == ExpressionType.EXPRESSION and parent == ExpressionType.EXPRESSION:
+        if (
+            selected == ExpressionType.EXPRESSION
+            and parent == ExpressionType.EXPRESSION
+        ):
             while selected == ExpressionType.EXPRESSION:
                 selected = prng.choices(_NODE_CHOICES, cum_weights=_NODE_CUM_WEIGHTS)[0]
 
@@ -152,7 +168,9 @@ class ExpressionGenerator:
             case _:
                 raise RuntimeError(f"Unsupported selection '{selected}'.")
 
-    def _create_terminal(self, vars: Sequence[str] | None, prng: random.Random) -> ExprBase:
+    def _create_terminal(
+        self, vars: Sequence[str] | None, prng: random.Random
+    ) -> ExprBase:
         var_name: str | None = None
         if vars is not None:
             select_var = prng.choice([True, False])
