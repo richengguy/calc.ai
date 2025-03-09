@@ -4,6 +4,7 @@ from calcai.training import (
     from_jsonlines,
     ExpressionGenerator,
 )
+from calcai.training.builder import _collect_vars
 from calcai.vm import Interpreter
 
 from pathlib import Path
@@ -85,3 +86,17 @@ def test_gen_assign_expr() -> None:
     norm_expr = g.generate_expr(3, 1)
     assign_expr = g.generate_expr(3, 1, assign_to="x")
     assert assign_expr == f"x = {norm_expr}"
+
+
+@pytest.mark.parametrize(
+    "expr,vars",
+    [
+        ("x + y", ["x", "y"]),
+        ("1 + x", ["x"]),
+        ("(1 + (x + 2) + y) + z", ["x", "y", "z"])
+    ]
+)
+def test_var_name_collection(expr: str, vars: list[str]) -> None:
+    vm = Interpreter()
+    root = list(vm.parse(expr))[0]
+    assert _collect_vars(root) == vars

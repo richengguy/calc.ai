@@ -77,8 +77,8 @@ class ExpressionGenerator:
         depth: int,
         seed: int | None,
         *,
-        assign_to: str | None,
-        vars: Sequence[str] | None,
+        assign_to: str | None = None,
+        vars: Sequence[str] | None = None,
     ) -> str:
         pass
 
@@ -88,8 +88,8 @@ class ExpressionGenerator:
         depth: int,
         seed: int | None,
         *,
-        assign_to: str | None,
-        vars: Sequence[str] | None,
+        assign_to: str | None = None,
+        vars: Sequence[str] | None = None,
         ret_node: Literal[True],
     ) -> RootExpr:
         pass
