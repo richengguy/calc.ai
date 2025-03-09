@@ -68,7 +68,7 @@ class ExpressionGenerator:
         self._min = min_value
         self._max = max_value
 
-    def generate_expr(self, depth: int, seed: int | None, *, assign_to: str | None = None, vars: Sequence[str] = []) -> str:
+    def generate_expr(self, depth: int, seed: int | None, *, assign_to: str | None = None, vars: Sequence[str] | None = None) -> str:
         """Generate a random expression.
 
         Parameters
@@ -94,17 +94,16 @@ class ExpressionGenerator:
             raise ValueError("Depth must be '1' or greater.")
 
         prng = random.Random(seed)
-        root = self._create_ast(depth, ExpressionType.EXPRESSION, prng)
+        root = self._create_ast(depth, ExpressionType.EXPRESSION, vars, prng)
         if assign_to is not None:
             root = AssignExpr(assign_to, root)
         return RootExpr(root, True).print()
 
     def _create_ast(
-        self, depth: int, parent: ExpressionType, prng: random.Random
+        self, depth: int, parent: ExpressionType, vars: Sequence[str] | None, prng: random.Random
     ) -> ExprBase:
         if depth == 0:
-            value = prng.randint(self._min, self._max)
-            return NumberExpr(value)
+            return self._create_terminal(vars, prng)
 
         selected = prng.choices(_NODE_CHOICES, cum_weights=_NODE_CUM_WEIGHTS)[0]
 
@@ -124,31 +123,43 @@ class ExpressionGenerator:
 
         match selected:
             case ExpressionType.ADD:
-                left = self._create_ast(depth - 1, ExpressionType.ADD, prng)
-                right = self._create_ast(depth - 1, ExpressionType.ADD, prng)
+                left = self._create_ast(depth - 1, ExpressionType.ADD, vars, prng)
+                right = self._create_ast(depth - 1, ExpressionType.ADD, vars, prng)
                 return AddExpr(left, right)
             case ExpressionType.SUBTRACT:
-                left = self._create_ast(depth - 1, ExpressionType.SUBTRACT, prng)
-                right = self._create_ast(depth - 1, ExpressionType.SUBTRACT, prng)
+                left = self._create_ast(depth - 1, ExpressionType.SUBTRACT, vars, prng)
+                right = self._create_ast(depth - 1, ExpressionType.SUBTRACT, vars, prng)
                 return SubtractExpr(left, right)
             case ExpressionType.MULTIPLY:
-                left = self._create_ast(depth - 1, ExpressionType.MULTIPLY, prng)
-                right = self._create_ast(depth - 1, ExpressionType.MULTIPLY, prng)
+                left = self._create_ast(depth - 1, ExpressionType.MULTIPLY, vars, prng)
+                right = self._create_ast(depth - 1, ExpressionType.MULTIPLY, vars, prng)
                 return MultiplyExpr(left, right)
             case ExpressionType.DIVIDE:
-                left = self._create_ast(depth - 1, ExpressionType.DIVIDE, prng)
-                right = self._create_ast(depth - 1, ExpressionType.DIVIDE, prng)
+                left = self._create_ast(depth - 1, ExpressionType.DIVIDE, vars, prng)
+                right = self._create_ast(depth - 1, ExpressionType.DIVIDE, vars, prng)
                 return DivideExpr(left, right)
             case ExpressionType.NEGATE:
-                left = self._create_ast(depth - 1, ExpressionType.NEGATE, prng)
+                left = self._create_ast(depth - 1, ExpressionType.NEGATE, vars, prng)
                 return NegateExpr(left)
             case ExpressionType.EXPRESSION:
                 # As expression doesn't decrease the depth because it's a method
                 # for prioritizing calculations.  It's possible to remove them
                 # from AST and still have the same result.
-                left = self._create_ast(depth, ExpressionType.EXPRESSION, prng)
+                left = self._create_ast(depth, ExpressionType.EXPRESSION, vars, prng)
                 return RootExpr(left)
             case ExpressionType.NUMBER:
-                return NumberExpr(prng.randint(self._min, self._max))
+                return self._create_terminal(vars, prng)
             case _:
                 raise RuntimeError(f"Unsupported selection '{selected}'.")
+
+    def _create_terminal(self, vars: Sequence[str] | None, prng: random.Random) -> ExprBase:
+        var_name: str | None = None
+        if vars is not None:
+            select_var = prng.choice([True, False])
+            if select_var:
+                var_name = prng.choice(vars)
+
+        if var_name is None:
+            return NumberExpr(prng.randint(self._min, self._max))
+        else:
+            return VariableExpr(var_name)
