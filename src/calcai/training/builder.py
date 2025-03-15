@@ -82,21 +82,21 @@ class ScriptBuilder:
         :class:`SampleData`
             the script and its result
         """
-        for i in range(num_scripts):
-            expr_seed = self._seed
+        for _ in range(num_scripts):
+            init_seed = self._seed
             expr = self._g.generate_expr(
-                self._expr_depth, expr_seed, vars=self._vars, ret_node=True
+                self._expr_depth, self._seed, vars=self._vars, ret_node=True
             )
+            self._seed += 1
 
             lines: list[str] = []
             if self._vars is not None:
                 expr_vars = _collect_vars(expr)
                 for var in expr_vars:
-                    # self._seed += 1
-                    expr_seed += 1
                     assign_eqn = self._g.generate_expr(
-                        self._assign_depth, expr_seed, ret_node=True
+                        self._assign_depth, self._seed, ret_node=True
                     )
+                    self._seed += 1
                     lines.append(AssignExpr(var, assign_eqn).print())
 
             lines.append(expr.print())
@@ -107,8 +107,6 @@ class ScriptBuilder:
             except ZeroDivisionError:
                 result = None
             except RuntimeError as e:
-                raise RuntimeError(f"[{self._seed}] -> {e}") from e
+                raise RuntimeError(f"[{init_seed}] -> {e}") from e
 
-            yield SampleData(expr_seed, script, result)
-
-            self._seed += 1
+            yield SampleData(init_seed, script, result)
