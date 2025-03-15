@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 from enum import Enum, auto
 from typing import Sequence
 
-from .scanner import Token, TokenType
 from .runtime import WorkingSpace
+from .scanner import Token, TokenType
 
 
 class ExpressionType(int, Enum):

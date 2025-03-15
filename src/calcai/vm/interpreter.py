@@ -1,6 +1,6 @@
 from typing import Iterator
 
-from .ast import build_ast, RootExpr
+from .ast import RootExpr, build_ast
 from .runtime import WorkingSpace
 from .scanner import tokenize
 

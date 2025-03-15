@@ -1,9 +1,9 @@
-from calcai.vm import tokenize, build_ast, Interpreter
-from calcai.vm.ast import ExpressionType
-from calcai.vm.scanner import Token, TokenType
-from calcai.vm.runtime import WorkingSpace
-
 import pytest
+
+from calcai.vm import Interpreter, build_ast, tokenize
+from calcai.vm.ast import ExpressionType
+from calcai.vm.runtime import WorkingSpace
+from calcai.vm.scanner import Token, TokenType
 
 
 def test_tokenize_empty_string() -> None:

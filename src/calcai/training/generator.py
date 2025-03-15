@@ -1,9 +1,14 @@
+import itertools
+import random
+from collections.abc import Sequence
+from typing import Literal, overload
+
 from ..vm.ast import (
-    ExprBase,
-    ExpressionType,
     AddExpr,
     AssignExpr,
     DivideExpr,
+    ExprBase,
+    ExpressionType,
     MultiplyExpr,
     NegateExpr,
     NumberExpr,
@@ -11,12 +16,6 @@ from ..vm.ast import (
     SubtractExpr,
     VariableExpr,
 )
-
-import random
-import itertools
-from collections.abc import Sequence
-from typing import overload, Literal
-
 
 _NODE_CHOICES = [
     ExpressionType.ADD,

@@ -60,3 +60,6 @@ where = ["src"]
 
 [tool.mypy]
 plugins = "numpy.typing.mypy_plugin"
+
+[tool.isort]
+profile = "black"

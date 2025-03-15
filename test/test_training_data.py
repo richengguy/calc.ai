@@ -1,15 +1,16 @@
-from calcai.training import (
-    SampleData,
-    SampleWriter,
-    from_jsonlines,
-    ExpressionGenerator,
-)
-from calcai.training.builder import _collect_vars
-from calcai.vm import Interpreter
-
 from pathlib import Path
 
 import pytest
+
+from calcai.training import (
+    ExpressionGenerator,
+    SampleData,
+    SampleWriter,
+    ScriptBuilder,
+    from_jsonlines,
+)
+from calcai.training.builder import _collect_vars
+from calcai.vm import Interpreter
 
 _MULTILINE_1 = """
 x = 1
@@ -93,10 +94,14 @@ def test_gen_assign_expr() -> None:
     [
         ("x + y", ["x", "y"]),
         ("1 + x", ["x"]),
-        ("(1 + (x + 2) + y) + z", ["x", "y", "z"])
-    ]
+        ("(1 + (x + 2) + y) + z", ["x", "y", "z"]),
+    ],
 )
 def test_var_name_collection(expr: str, vars: list[str]) -> None:
     vm = Interpreter()
     root = list(vm.parse(expr))[0]
     assert _collect_vars(root) == vars
+
+
+def test_script_builder() -> None:
+    """Script builder generates valid scripts."""

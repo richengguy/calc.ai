@@ -1,10 +1,10 @@
-from .data import SampleData
-from .generator import ExpressionGenerator
-from ..vm import Interpreter
-from ..vm.ast import VariableExpr, ExprBase, ExpressionType
-
 from collections.abc import Sequence
 from typing import Iterator, cast
+
+from ..vm import Interpreter
+from ..vm.ast import ExprBase, ExpressionType, VariableExpr
+from .data import SampleData
+from .generator import ExpressionGenerator
 
 
 def _collect_vars(node: ExprBase) -> list[str]:
