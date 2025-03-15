@@ -1,4 +1,8 @@
+from pathlib import Path
+
 import click
+
+from .training import ExpressionGenerator, SampleWriter, ScriptBuilder
 
 
 @click.group()
@@ -16,6 +20,14 @@ def main() -> None:
 )
 def generate_data(samples: int) -> None:
     """Generate training data for the language model."""
+    file = Path("samples.json")
+
+    with SampleWriter(file) as writer:
+        generator = ExpressionGenerator(25)
+        builder = ScriptBuilder(generator)
+        builder.set_variables(["x", "y"])
+        for script in builder.generate_scripts(samples):
+            writer.write(script)
 
 
 @main.command()

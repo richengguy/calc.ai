@@ -95,7 +95,7 @@ def test_gen_assign_expr() -> None:
         ("x + y", set(["x", "y"])),
         ("1 + x", set(["x"])),
         ("(1 + (x + 2) + y) + z", set(["x", "y", "z"])),
-        ("2 * x ^ 2 + x + 4", set(["x"]))
+        ("2 * x ^ 2 + x + 4", set(["x"])),
     ],
 )
 def test_var_name_collection(expr: str, vars: set[str]) -> None:
