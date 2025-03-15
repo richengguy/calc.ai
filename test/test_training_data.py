@@ -92,16 +92,25 @@ def test_gen_assign_expr() -> None:
 @pytest.mark.parametrize(
     "expr,vars",
     [
-        ("x + y", ["x", "y"]),
-        ("1 + x", ["x"]),
-        ("(1 + (x + 2) + y) + z", ["x", "y", "z"]),
+        ("x + y", set(["x", "y"])),
+        ("1 + x", set(["x"])),
+        ("(1 + (x + 2) + y) + z", set(["x", "y", "z"])),
+        ("2 * x ^ 2 + x + 4", set(["x"]))
     ],
 )
-def test_var_name_collection(expr: str, vars: list[str]) -> None:
+def test_var_name_collection(expr: str, vars: set[str]) -> None:
     vm = Interpreter()
     root = list(vm.parse(expr))[0]
     assert _collect_vars(root) == vars
 
 
-def test_script_builder() -> None:
+@pytest.mark.parametrize("vars", [["x"], ["x", "y"], ["x", "y", "z"]])
+def test_script_builder(vars: list[str]) -> None:
     """Script builder generates valid scripts."""
+    g = ExpressionGenerator(10)
+    builder = ScriptBuilder(g)
+    builder.set_variables(vars)
+    for output in builder.generate_scripts(10):
+        print(output.script)
+        print(f"=> {output.result}")
+        print("--")

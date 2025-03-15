@@ -2,28 +2,28 @@ from collections.abc import Sequence
 from typing import Iterator, cast
 
 from ..vm import Interpreter
-from ..vm.ast import ExprBase, ExpressionType, VariableExpr
+from ..vm.ast import AssignExpr, ExprBase, ExpressionType, VariableExpr
 from .data import SampleData
 from .generator import ExpressionGenerator
 
 
-def _collect_vars(node: ExprBase) -> list[str]:
-    var_names: list[str] = []
+def _collect_vars(node: ExprBase) -> set[str]:
+    var_names: set[str] = set()
 
     if node.type == ExpressionType.VARIABLE:
         node = cast(VariableExpr, node)
-        return [node.key]
+        return set([node.key])
 
     if hasattr(node, "left") and hasattr(node, "right"):
-        var_names.extend(_collect_vars(node.left))
-        var_names.extend(_collect_vars(node.right))
+        var_names.update(_collect_vars(node.left))
+        var_names.update(_collect_vars(node.right))
         return var_names
 
     if hasattr(node, "input"):
-        var_names.extend(_collect_vars(node.input))
+        var_names.update(_collect_vars(node.input))
         return var_names
 
-    return []
+    return set()
 
 
 class ScriptBuilder:
@@ -93,7 +93,10 @@ class ScriptBuilder:
                 expr_vars = _collect_vars(expr)
                 for var in expr_vars:
                     self._seed += 1
-                    lines.append(self._g.generate_expr(self._assign_depth, self._seed))
+                    assign_eqn = self._g.generate_expr(
+                        self._assign_depth, self._seed, ret_node=True
+                    )
+                    lines.append(AssignExpr(var, assign_eqn).print())
 
             lines.append(expr.print())
             script = "\n".join(lines)
