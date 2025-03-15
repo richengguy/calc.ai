@@ -5,6 +5,7 @@ import click
 from ._console import print
 from .training import ExpressionGenerator, ScriptBuilder, SampleWriter
 
+
 @click.group()
 def main() -> None:
     """Transformer-based Calculator"""
