@@ -188,7 +188,10 @@ class ExpressionGenerator:
                 # This is necessary when the contents aren't a terminal node.
                 # For example, if 'left' is "1 + 2", then this creates
                 # "-(1 + 2)", which is correct, instead of "-1 + 2".
-                if left.type != ExpressionType.NUMBER and left.type != ExpressionType.VARIABLE:
+                if (
+                    left.type != ExpressionType.NUMBER
+                    and left.type != ExpressionType.VARIABLE
+                ):
                     left = RootExpr(left)
 
                 return NegateExpr(left)
