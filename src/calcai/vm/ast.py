@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 from enum import Enum, auto
 from typing import Sequence
 
-from .scanner import Token, TokenType
 from .runtime import WorkingSpace
+from .scanner import Token, TokenType
 
 
 class ExpressionType(int, Enum):
@@ -40,7 +40,7 @@ class ExpressionType(int, Enum):
     """Multiply the given value with '-1'."""
 
 
-class _Expr(ABC):
+class ExprBase(ABC):
     def __init__(self, type: ExpressionType) -> None:
         self._type = type
 
@@ -55,31 +55,31 @@ class _Expr(ABC):
     def print(self) -> str: ...
 
 
-class _NullaryExpr(_Expr): ...
+class _NullaryExpr(ExprBase): ...
 
 
-class _UnaryExpr(_Expr):
-    def __init__(self, type: ExpressionType, input: _Expr) -> None:
+class _UnaryExpr(ExprBase):
+    def __init__(self, type: ExpressionType, input: ExprBase) -> None:
         super().__init__(type)
         self._input = input
 
     @property
-    def input(self) -> _Expr:
+    def input(self) -> ExprBase:
         return self._input
 
 
-class _BinaryExpr(_Expr):
-    def __init__(self, type: ExpressionType, left: _Expr, right: _Expr) -> None:
+class _BinaryExpr(ExprBase):
+    def __init__(self, type: ExpressionType, left: ExprBase, right: ExprBase) -> None:
         super().__init__(type)
         self._left = left
         self._right = right
 
     @property
-    def left(self) -> _Expr:
+    def left(self) -> ExprBase:
         return self._left
 
     @property
-    def right(self) -> _Expr:
+    def right(self) -> ExprBase:
         return self._right
 
 
@@ -87,7 +87,7 @@ class _BinaryExpr(_Expr):
 
 
 class RootExpr(_UnaryExpr):
-    def __init__(self, input: _Expr, top: bool = False) -> None:
+    def __init__(self, input: ExprBase, top: bool = False) -> None:
         super().__init__(ExpressionType.EXPRESSION, input)
         self._top = top
 
@@ -110,7 +110,7 @@ class RootExpr(_UnaryExpr):
 
 
 class AddExpr(_BinaryExpr):
-    def __init__(self, left: _Expr, right: _Expr) -> None:
+    def __init__(self, left: ExprBase, right: ExprBase) -> None:
         super().__init__(ExpressionType.ADD, left, right)
 
     def evaluate(self, ws: WorkingSpace) -> int:
@@ -121,7 +121,7 @@ class AddExpr(_BinaryExpr):
 
 
 class SubtractExpr(_BinaryExpr):
-    def __init__(self, left: _Expr, right: _Expr) -> None:
+    def __init__(self, left: ExprBase, right: ExprBase) -> None:
         super().__init__(ExpressionType.SUBTRACT, left, right)
 
     def evaluate(self, ws: WorkingSpace) -> int:
@@ -132,7 +132,7 @@ class SubtractExpr(_BinaryExpr):
 
 
 class MultiplyExpr(_BinaryExpr):
-    def __init__(self, left: _Expr, right: _Expr) -> None:
+    def __init__(self, left: ExprBase, right: ExprBase) -> None:
         super().__init__(ExpressionType.MULTIPLY, left, right)
 
     def evaluate(self, ws: WorkingSpace) -> int:
@@ -143,7 +143,7 @@ class MultiplyExpr(_BinaryExpr):
 
 
 class DivideExpr(_BinaryExpr):
-    def __init__(self, left: _Expr, right: _Expr) -> None:
+    def __init__(self, left: ExprBase, right: ExprBase) -> None:
         super().__init__(ExpressionType.DIVIDE, left, right)
 
     def evaluate(self, ws: WorkingSpace) -> int:
@@ -154,7 +154,7 @@ class DivideExpr(_BinaryExpr):
 
 
 class PowerExpr(_BinaryExpr):
-    def __init__(self, left: _Expr, right: _Expr) -> None:
+    def __init__(self, left: ExprBase, right: ExprBase) -> None:
         super().__init__(ExpressionType.POWER, left, right)
 
     def evaluate(self, ws: WorkingSpace) -> int:
@@ -165,7 +165,7 @@ class PowerExpr(_BinaryExpr):
 
 
 class NegateExpr(_UnaryExpr):
-    def __init__(self, input: _Expr) -> None:
+    def __init__(self, input: ExprBase) -> None:
         super().__init__(ExpressionType.NEGATE, input)
 
     def evaluate(self, ws: WorkingSpace) -> int:
@@ -203,7 +203,7 @@ class VariableExpr(_NullaryExpr):
 
 
 class AssignExpr(_UnaryExpr):
-    def __init__(self, key: str, input: _Expr) -> None:
+    def __init__(self, key: str, input: ExprBase) -> None:
         super().__init__(ExpressionType.ASSIGN, input)
         self.key = key
 
@@ -216,7 +216,7 @@ class AssignExpr(_UnaryExpr):
         return f"{self.key} = {self.input.print()}"
 
 
-def _create_terminal_expr(token: Token) -> _Expr | None:
+def _create_terminal_expr(token: Token) -> ExprBase | None:
     match token.type:
         case TokenType.NUMBER:
             return NumberExpr(int(token.value))
@@ -226,7 +226,7 @@ def _create_terminal_expr(token: Token) -> _Expr | None:
             return None
 
 
-def _create_unary_expr(tokens: Sequence[Token]) -> tuple[_Expr, Sequence[Token]]:
+def _create_unary_expr(tokens: Sequence[Token]) -> tuple[ExprBase, Sequence[Token]]:
     if len(tokens) == 0:
         raise ValueError("There are no tokens to process!")
 
@@ -260,7 +260,7 @@ def _create_unary_expr(tokens: Sequence[Token]) -> tuple[_Expr, Sequence[Token]]
     raise RuntimeError("Could not parse expression!")
 
 
-def _create_exp_expr(tokens: Sequence[Token]) -> tuple[_Expr, Sequence[Token]]:
+def _create_exp_expr(tokens: Sequence[Token]) -> tuple[ExprBase, Sequence[Token]]:
     if len(tokens) == 0:
         raise ValueError("There are no tokens to process!")
 
@@ -277,7 +277,7 @@ def _create_exp_expr(tokens: Sequence[Token]) -> tuple[_Expr, Sequence[Token]]:
     return left, remaining
 
 
-def _create_muldiv_expr(tokens: Sequence[Token]) -> tuple[_Expr, Sequence[Token]]:
+def _create_muldiv_expr(tokens: Sequence[Token]) -> tuple[ExprBase, Sequence[Token]]:
     if len(tokens) == 0:
         raise ValueError("There are no tokens to process!")
 
@@ -297,7 +297,7 @@ def _create_muldiv_expr(tokens: Sequence[Token]) -> tuple[_Expr, Sequence[Token]
     return left, remaining
 
 
-def _create_addsub_expr(tokens: Sequence[Token]) -> tuple[_Expr, Sequence[Token]]:
+def _create_addsub_expr(tokens: Sequence[Token]) -> tuple[ExprBase, Sequence[Token]]:
     if len(tokens) == 0:
         raise ValueError("There are no tokens to process!")
 
@@ -349,7 +349,7 @@ def build_ast(tokens: Sequence[Token]) -> RootExpr:
     )
     if is_assignment:
         value_expr, remaining = _create_addsub_expr(tokens[2:])
-        expr: _Expr = AssignExpr(tokens[0].value, value_expr)
+        expr: ExprBase = AssignExpr(tokens[0].value, value_expr)
     else:
         expr, remaining = _create_addsub_expr(tokens)
 

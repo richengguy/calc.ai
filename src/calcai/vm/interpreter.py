@@ -1,6 +1,6 @@
 from typing import Iterator
 
-from .ast import build_ast, RootExpr
+from .ast import RootExpr, build_ast
 from .runtime import WorkingSpace
 from .scanner import tokenize
 
@@ -58,4 +58,7 @@ class Interpreter:
             line = line.strip()
             if len(line) == 0:
                 continue
-            yield build_ast(tokenize(line))
+            try:
+                yield build_ast(tokenize(line))
+            except Exception as e:
+                raise RuntimeError(f"Could not parse '{line}'.") from e

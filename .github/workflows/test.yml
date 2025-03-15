@@ -24,18 +24,14 @@ jobs:
       - name: Sync dependencies
         run: uv sync --only-dev
 
+      - name: Run flake8
+        run: uv run flake8 src/ test/
+
       - name: Run black
         run: uv run black --check src/ test/
 
-      - name: Show formatting errors
-        run: |
-          out=$(uv run black --diff src/ test/)
-
-          echo "${out}"
-          echo "\`\`\`python" >> $GITHUB_STEP_SUMMARY
-          echo "${out}" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-        if: ${{ failure() }}
+      - name: Run isort
+        run: uv run isort --check src/ test/
 
   mypy:
     name: Run mypy
