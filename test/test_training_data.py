@@ -44,7 +44,7 @@ def test_serialize_to_jsonlines(data: list[SampleData], tmp_path: Path) -> None:
     assert data == contents
 
 
-@pytest.mark.parametrize("depth", range(1, 3))
+@pytest.mark.parametrize("depth", range(1, 4))
 def test_gen_expr(depth: int) -> None:
     """Ensure the AST generator is generating expression the VM can parse."""
     g = ExpressionGenerator(10)
@@ -104,13 +104,16 @@ def test_var_name_collection(expr: str, vars: set[str]) -> None:
     assert _collect_vars(root) == vars
 
 
-@pytest.mark.parametrize("vars", [["x"], ["x", "y"], ["x", "y", "z"]])
+@pytest.mark.parametrize("vars", [[], ["x"], ["x", "y"], ["x", "y", "z"]])
 def test_script_builder(vars: list[str]) -> None:
     """Script builder generates valid scripts."""
     g = ExpressionGenerator(10)
     builder = ScriptBuilder(g)
     builder.set_variables(vars)
-    for output in builder.generate_scripts(10):
+
+    for i, output in enumerate(builder.generate_scripts(100)):
+        print(f"[{i}::{output.seed}]")
         print(output.script)
         print(f"=> {output.result}")
         print("--")
+        assert output.seed >= i
