@@ -3,7 +3,7 @@ from pathlib import Path
 import click
 
 from ._console import print
-from .training import ExpressionGenerator, ScriptBuilder, SampleWriter
+from .training import ExpressionGenerator, SampleWriter, ScriptBuilder
 
 
 @click.group()
