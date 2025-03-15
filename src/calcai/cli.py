@@ -5,8 +5,6 @@ import click
 from ._console import print
 from .training import ExpressionGenerator, SampleWriter, ScriptBuilder
 
-_TRAINING_DATA = Path("samples.jsonl")
-
 
 @click.group()
 def main() -> None:
@@ -22,23 +20,38 @@ def main() -> None:
     help="Number of training samples to generate.",
 )
 @click.option(
+    "-n",
     "--max",
     "max_value",
     metavar="N",
     default=25,
     help="Maximum integer value in any generated expression.",
 )
-@click.option("--variable", "-v", multiple=True)
-def generate_data(samples: int, max_value: int) -> None:
-    """Generate training data for the language model."""
-    with SampleWriter(_TRAINING_DATA) as writer:
+@click.option(
+    "--variable",
+    "-v",
+    "vars",
+    multiple=True,
+    help="Specify a possible variable name.  Can be repeated.",
+)
+@click.argument("output", type=click.Path(path_type=Path))
+def generate_data(samples: int, max_value: int, vars: list[str], output: Path) -> None:
+    """Generate training data for the language model.
+
+    The training data is saved into OUTPUT as a JSONL file, where each line is a
+    single JSON object.
+    """
+    with SampleWriter(output) as writer:
         generator = ExpressionGenerator(max_value)
         builder = ScriptBuilder(generator)
-        builder.set_variables(["x", "y"])
+        builder.set_variables(vars)
         for script in builder.generate_scripts(samples):
             writer.write(script)
 
-    print(f"Generated {samples} in {_TRAINING_DATA}")
+    if len(vars) > 0:
+        print(f"Script Variables: {' '.join(vars)}")
+
+    print(f"Generated {samples} in {output}")
 
 
 @main.command()
