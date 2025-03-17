@@ -60,6 +60,11 @@ class Tokenizer:
         """The token ID to string mapping."""
         return self._rev_map
 
+    @property
+    def num_tokens(self) -> int:
+        """The number of tokens that the tokenizer recognizes."""
+        return len(self._fwd_map)
+
     def to_tokens(self, input: str) -> Iterator[int]:
         """Convert a string into a token sequence.
 
