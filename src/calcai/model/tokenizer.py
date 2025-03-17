@@ -60,7 +60,7 @@ class Tokenizer:
         """The token ID to string mapping."""
         return self._rev_map
 
-    def to_token(self, input: str) -> Iterator[int]:
+    def to_tokens(self, input: str) -> Iterator[int]:
         """Convert a string into a token sequence.
 
         Parameters
@@ -80,7 +80,7 @@ class Tokenizer:
             except KeyError as e:
                 raise RuntimeError(f"Unknown string sequence '{token}'.") from e
 
-    def from_token(self, tokens: Sequence[int]) -> Iterator[str]:
+    def from_tokens(self, tokens: Sequence[int]) -> Iterator[str]:
         """Convert the tokens back into a character sequence.
 
         Parameters
