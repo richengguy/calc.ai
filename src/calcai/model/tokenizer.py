@@ -1,5 +1,7 @@
 from enum import StrEnum
 import string
+from collections.abc import Mapping
+from typing import Iterator, Sequence
 
 
 class ControlToken(StrEnum):
@@ -45,3 +47,87 @@ class Tokenizer:
             self._rev_map[i] = tok
 
         assert len(self._fwd_map) == len(self._rev_map)
+
+    @property
+    def forward_map(self) -> Mapping[str, int]:
+        """The string to token ID mapping."""
+        return self._fwd_map
+
+    @property
+    def reverse_map(self) -> Mapping[int, str]:
+        """The token ID to string mapping."""
+        return self._rev_map
+
+    def to_token(self, input: str) -> Iterator[int]:
+        """Convert a string into a token sequence.
+
+        Parameters
+        ----------
+        input : str
+            input string
+
+        Yields
+        ------
+        int
+            the next token ID
+        """
+        input_iter = iter(input)
+        for token in self._get_next_token(input_iter):
+            try:
+                yield self._fwd_map[token]
+            except KeyError as e:
+                raise RuntimeError(f"Unknown string sequence '{token}'.") from e
+
+    def from_token(self, tokens: Sequence[int]) -> Iterator[str]:
+        """Convert the tokens back into a character sequence.
+
+        Parameters
+        ----------
+        tokens : int sequence
+            a list or other sequence of token IDs
+
+        Yields
+        ------
+        str
+            the string for each token
+        """
+        for token_id in tokens:
+            try:
+                yield self._rev_map[token_id]
+            except KeyError as e:
+                raise RuntimeError(f"Unknown token ID '{token_id}'.") from e
+
+    def _get_next_token(self, chars: Iterator[str]) -> Iterator[str]:
+        ctrl_token = False
+        token = ''
+
+        try:
+            while True:
+                ch = next(chars)
+
+                # Special handling for control tokens.  These take the form of
+                # '{tag=}' or '{=tag}', where 'tag' is a string for the specific
+                # token.  Whenever a '{' or '}' is encountered then everything
+                # inside must be collected into a single string.
+                if ctrl_token:
+                    token += ch
+                    if ch == '}':
+                        ctrl_token = False
+                    else:
+                        continue
+                else:
+                    token += ch
+                    if ch == '{':
+                        ctrl_token = True
+                        continue
+
+                yield token
+
+                if not ctrl_token:
+                    token = ''
+
+        except StopIteration:
+            pass
+
+        if ctrl_token:
+            raise RuntimeError(f"Unclosed control token '{token}'.")
