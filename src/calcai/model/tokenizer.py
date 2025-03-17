@@ -1,11 +1,12 @@
-from enum import StrEnum
 import string
 from collections.abc import Mapping
+from enum import StrEnum
 from typing import Iterator, Sequence
 
 
 class ControlToken(StrEnum):
     """Control tokens used to control lanuage model actions."""
+
     EXPR_START = "{expr=}"
     """Denotes the start of a arithmetic expression script.
 
@@ -30,13 +31,14 @@ class ControlToken(StrEnum):
 
 class Tokenizer:
     """Maps between characters and language model tokens."""
+
     def __init__(self) -> None:
         self._fwd_map: dict[str, int] = {}
         self._rev_map: dict[int, str] = {}
 
         # Add in all the usual alphanumeric characters, including punctuation
         # and whitespace (only ' ' and '\n', no tabs)
-        valid_chars = string.ascii_letters + string.digits + '+-*/^()' + ' \n'
+        valid_chars = string.ascii_letters + string.digits + "+-*/^()" + " \n"
         for i, c in enumerate(valid_chars):
             self._fwd_map[c] = i
             self._rev_map[i] = c
@@ -99,7 +101,7 @@ class Tokenizer:
 
     def _get_next_token(self, chars: Iterator[str]) -> Iterator[str]:
         ctrl_token = False
-        token = ''
+        token = ""
 
         try:
             while True:
@@ -111,20 +113,20 @@ class Tokenizer:
                 # inside must be collected into a single string.
                 if ctrl_token:
                     token += ch
-                    if ch == '}':
+                    if ch == "}":
                         ctrl_token = False
                     else:
                         continue
                 else:
                     token += ch
-                    if ch == '{':
+                    if ch == "{":
                         ctrl_token = True
                         continue
 
                 yield token
 
                 if not ctrl_token:
-                    token = ''
+                    token = ""
 
         except StopIteration:
             pass

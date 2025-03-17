@@ -1,12 +1,9 @@
-from calcai.model.tokenizer import ControlToken, Tokenizer
-
 import pytest
 
+from calcai.model.tokenizer import ControlToken, Tokenizer
 
-@pytest.mark.parametrize(
-    "token",
-    list(ControlToken)
-)
+
+@pytest.mark.parametrize("token", list(ControlToken))
 def test_control_tokens(token: ControlToken) -> None:
     """Verify control tokens are handled correctly."""
     t = Tokenizer()
@@ -16,19 +13,21 @@ def test_control_tokens(token: ControlToken) -> None:
     assert t.reverse_map[token_id] == token.value
 
 
+# fmt: off
 @pytest.mark.parametrize(
     "input",
     [
         "{expr=}1 + 2 * 3{=expr}",
         "3 * (1 + 4)",
-        "x+y{result=}10{=result}"
+        "x+y{result=}10{=result}",
     ]
 )
+# fmt: on
 def test_tokenizer_roundtrip(input: str) -> None:
     """Can roundtrip between a string and a token list."""
     t = Tokenizer()
     tokens = list(t.to_token(input))
-    output = ''.join(t.from_token(tokens))
+    output = "".join(t.from_token(tokens))
     assert input == output
 
 
@@ -39,7 +38,7 @@ def test_tokenizer_roundtrip(input: str) -> None:
         ("1+2{=expr", "{=expr"),
         ("abc+{=result}}", "}"),
         ("{unknown=}{=unknown}", "{unknown=}"),
-    ]
+    ],
 )
 def test_tokenizer_error_handling(input: str, bad_token: str) -> None:
     """Can correctly report bad token syntax."""
