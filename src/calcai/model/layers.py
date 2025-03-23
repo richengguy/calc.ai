@@ -82,6 +82,7 @@ class PositionEncoding(Module):
             defaults to 10'000 since this is what was used in the original
             paper
         """
+        super().__init__()
         if num_dim % 2 != 0:
             # This isn't strictly necessary but odd-valued embedding spaces make
             # the indexing math a bit messy.
@@ -110,7 +111,7 @@ class PositionEncoding(Module):
 
         if x.shape[2] != self._num_dim:
             raise RuntimeError(
-                f"The last dimension in the input tensor was {x.shape[-1]}, expected {self._num_dim}."
+                f"The last dimension in the input tensor was {x.shape[2]}, expected {self._num_dim}."  # noqa: E501
             )
 
         num_tokens = x.shape[1]
