@@ -134,3 +134,46 @@ class PositionEncoding(Module):
         encoding[:, :, 1::2] = evn_dim
 
         return x + encoding
+
+
+class MaskedAttentionHead(Module):
+    """A masked "Attention is all you need" attention head.  That's it."""
+    def __init__(self, num_dim: int, d_k: int, d_v: int) -> None:
+        """
+        Parameters
+        ----------
+        num_dim : int
+            the dimensionality of the token embedding space
+        d_k : int
+            the number of columns (dimensions) for the "key" and "query"
+            projection matrices
+        d_v : int
+            the number of columns (dimensions) for the "value" matrix
+        """
+        super().__init__()
+        if num_dim < 1:
+            raise ValueError("Number of dimensions is less than 1")
+        if d_k < 1:
+            raise ValueError("Number of columns in the query/key matrix are less than 1")
+        if d_v < 1:
+            raise ValueError("Number of columns in the value matrix are less than 1")
+
+        self._key = Linear(num_dim, d_k, False)
+        self._query = Linear(num_dim, d_k, False)
+        self._value = Linear(num_dim, d_v, False)
+
+    def forward(self, x: Tensor) -> Tensor:
+        """Apply the masked attention.
+
+        Parameters
+        ----------
+        x : Tensor
+            input tensor shaped `(B, N_tokens, N_dim)`
+
+        Returns
+        -------
+        Tensor
+            the "attention" tensor, the same shape as the input
+        """
+        # TODO: Figure this out
+        raise NotImplementedError()
