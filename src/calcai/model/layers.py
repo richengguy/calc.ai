@@ -1,9 +1,9 @@
 import math
 
 import torch
+import torch.nn.functional as F
 from torch import Tensor
-from torch.nn import Linear, Module
-from torch.nn import functional as F
+from torch.nn import Linear, Module, Sequential, ReLU, LayerNorm
 from torch.nn.init import kaiming_uniform_
 
 
@@ -55,7 +55,7 @@ class TokenEmbedding(Module):
             projected tokens
         """
         one_hot = F.one_hot(tokens.long(), self._vocab_size).float()
-        projected = self._linear.forward(one_hot)
+        projected: Tensor = self._linear(one_hot)
         return projected
 
 
@@ -192,9 +192,9 @@ class MaskedAttentionHead(Module):
         if x.ndim != 3:
             raise ValueError("Expected input tensor to be (B, N_tokens, N_dim).")
 
-        key = self._key.forward(x)
-        query = self._query.forward(x)
-        value = self._value.forward(x)
+        key: Tensor = self._key(x)
+        query: Tensor = self._query(x)
+        value: Tensor = self._value(x)
 
         distances = (query @ key.mT) / self._scale
         infs = torch.full_like(distances, float("-inf"))
@@ -204,3 +204,85 @@ class MaskedAttentionHead(Module):
         attention = similarity @ value
 
         return attention, similarity
+
+
+class TransformerLayer(Module):
+    """A single transformer layer.
+
+    This is a combination of a masked attention head, fully-connected network,
+    and normalization layers.  This is the same configuration as described in
+    "Improving Language Understanding by Generative Pre-Training" by Radford
+    et al.
+    """
+
+    def __init__(
+        self,
+        num_dim: int,
+        *,
+        d_k: int | None = None,
+        d_v: int | None = None,
+        d_ff: int | None = None,
+    ) -> None:
+        """
+        Parameters
+        ----------
+        num_dim : int
+            the dimensionality of the token embedding space
+        d_k : int, optional
+            the number of columns (dimensions) for the "key" and "query"
+            projection matrices in the attention head; uses `num_dim` if not
+            provided
+        d_v : int, optional
+            the number of columns (dimensions) for the "value" projection
+            matrix in the attention head; uses `num_dim` if not provided
+        d_ff : int, optional
+            the size of the hidden layer in the fully-connected network that
+            follows the attention head; uses `4 * num-dim` if not provided
+        """
+        super().__init__()
+        if num_dim < 1:
+            raise ValueError("The embedding space dimension must be greater than 0.")
+
+        d_k = num_dim if d_k is None else d_k
+        d_v = num_dim if d_v is None else d_v
+        d_ff = 4 * num_dim if d_ff is None else d_ff
+
+        if d_ff < 1:
+            raise ValueError("The value of d_ff must be greater than zero.")
+
+        self._attention = MaskedAttentionHead(num_dim, d_k, d_v)
+        self._post_attention_layer_norm = LayerNorm(num_dim)
+        # fmt: off
+        self._fully_connected = Sequential(
+            Linear(num_dim, d_ff),
+            ReLU(),
+            Linear(d_ff, num_dim)
+        )
+        # fmt: on
+        self._post_fcn_layer_norm = LayerNorm(num_dim)
+
+    def forward(self, x: Tensor) -> Tensor:
+        """Apply the transformer layer.
+
+        Parameters
+        ----------
+        x : Tensor
+            input tensor shaped `(B, N_tokens, N_dim)`
+
+        Returns
+        -------
+        Tensor
+            the transformer output, same shape as the input
+        """
+        attention: Tensor
+        attention, _ = self._attention(x)
+
+        # Do all of the post-attention processing.  This includes the residual
+        # connections (the additions).
+        attention_normalized: Tensor = self._post_attention_layer_norm(attention + x)
+        fcn: Tensor = self._fully_connected(attention_normalized)
+        fcn_normalized: Tensor = self._post_attention_layer_norm(
+            fcn + attention_normalized
+        )
+
+        return fcn_normalized

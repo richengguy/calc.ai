@@ -18,11 +18,12 @@ def test_embedding_layer(vocab_size: int, num_tokens: int, num_dim: int) -> None
     assert output.shape == (num_tokens, num_dim)
 
 
+@pytest.mark.parametrize("batch", (1, 2, 3))
 @pytest.mark.parametrize("num_tokens", (2, 3, 4, 5))
 @pytest.mark.parametrize("num_dim", (4, 6, 8, 10))
-def test_position_encoding(num_tokens: int, num_dim: int) -> None:
+def test_position_encoding(batch: int, num_tokens: int, num_dim: int) -> None:
     """Verify the position encoding is applied correctly."""
-    input = torch.zeros((2, num_tokens, num_dim))
+    input = torch.zeros((batch, num_tokens, num_dim))
     encoding = layers.PositionEncoding(num_dim)
     output = encoding.forward(input)
     assert output.shape == input.shape
@@ -32,7 +33,7 @@ def test_position_encoding(num_tokens: int, num_dim: int) -> None:
 @pytest.mark.parametrize("num_tokens", (2, 3, 4, 5))
 @pytest.mark.parametrize("num_dim", (4, 6, 8, 10))
 def test_attention_layer(batch: int, num_tokens: int, num_dim: int) -> None:
-    """Verify the attention layer is being applied correctly."""
+    """Verify the attention layer is being calculated correctly."""
     input = torch.zeros((batch, num_tokens, num_dim))
     for i in range(num_tokens):
         input[:, i, (i % num_dim)] = 1
@@ -74,6 +75,17 @@ def test_attention_layer(batch: int, num_tokens: int, num_dim: int) -> None:
     output, similarity = attention.forward(input)
     torch.testing.assert_close(similarity, expected_similarity)
     torch.testing.assert_close(expected_similarity @ input, output)
+
+
+@pytest.mark.parametrize("batch", (1, 2, 3))
+@pytest.mark.parametrize("num_tokens", (2, 3, 4, 5))
+@pytest.mark.parametrize("num_dim", (4, 6, 8, 10))
+def test_transformer_layer(batch: int, num_tokens, num_dim: int) -> None:
+    """Verify the transformer input/output are correctly shaped."""
+    input = torch.zeros((batch, num_tokens, num_dim))
+    transform = layers.TransformerLayer(num_dim)
+    output = transform.forward(input)
+    assert output.shape == input.shape
 
 
 def test_error_on_odd_embedding_size_for_position_encoding() -> None:
