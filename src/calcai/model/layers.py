@@ -4,7 +4,7 @@ from collections import OrderedDict
 import torch
 import torch.nn.functional as F
 from torch import Tensor
-from torch.nn import LayerNorm, Linear, LogSoftmax, Module, ReLU, Sequential
+from torch.nn import LayerNorm, Linear, Module, ReLU, Sequential
 from torch.nn.init import kaiming_uniform_
 
 
