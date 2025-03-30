@@ -55,7 +55,7 @@ class TokenEmbedding(Module):
             projected tokens
         """
         one_hot = F.one_hot(tokens.long(), self._vocab_size).float()
-        projected = self._linear(one_hot)
+        projected = self._linear.forward(one_hot)
         return projected
 
 
@@ -138,31 +138,42 @@ class PositionEncoding(Module):
 
 class MaskedAttentionHead(Module):
     """A masked "Attention is all you need" attention head.  That's it."""
-    def __init__(self, num_dim: int, d_k: int, d_v: int) -> None:
+
+    def __init__(
+        self, num_dim: int, d_k: int | None = None, d_v: int | None = None
+    ) -> None:
         """
         Parameters
         ----------
         num_dim : int
             the dimensionality of the token embedding space
-        d_k : int
+        d_k : int, optional
             the number of columns (dimensions) for the "key" and "query"
-            projection matrices
-        d_v : int
-            the number of columns (dimensions) for the "value" matrix
+            projection matrices; uses `num_dim` if not provided
+        d_v : int, optional
+            the number of columns (dimensions) for the "value" matrix; uses
+            `num_dim` if not provided
         """
         super().__init__()
         if num_dim < 1:
             raise ValueError("Number of dimensions is less than 1")
+
+        d_k = num_dim if d_k is None else d_k
+        d_v = num_dim if d_v is None else d_v
+
         if d_k < 1:
-            raise ValueError("Number of columns in the query/key matrix are less than 1")
+            raise ValueError(
+                "Number of columns in the query/key matrix are less than 1"
+            )
         if d_v < 1:
             raise ValueError("Number of columns in the value matrix are less than 1")
 
-        self._key = Linear(num_dim, d_k, False)
-        self._query = Linear(num_dim, d_k, False)
-        self._value = Linear(num_dim, d_v, False)
+        self._key = Linear(num_dim, d_k, bias=False)
+        self._query = Linear(num_dim, d_k, bias=False)
+        self._value = Linear(num_dim, d_v, bias=False)
+        self._scale = math.sqrt(d_k)
 
-    def forward(self, x: Tensor) -> Tensor:
+    def forward(self, x: Tensor) -> tuple[Tensor, Tensor]:
         """Apply the masked attention.
 
         Parameters
@@ -172,8 +183,24 @@ class MaskedAttentionHead(Module):
 
         Returns
         -------
-        Tensor
+        attention : Tensor
             the "attention" tensor, the same shape as the input
+        similarity : Tensor
+            a `(B, N_tokens, N_tokens)` similarity or "interest" matrix returned
+            after computing a softmax
         """
-        # TODO: Figure this out
-        raise NotImplementedError()
+        if x.ndim != 3:
+            raise ValueError("Expected input tensor to be (B, N_tokens, N_dim).")
+
+        key = self._key.forward(x)
+        query = self._query.forward(x)
+        value = self._value.forward(x)
+
+        distances = (query @ key.mT) / self._scale
+        infs = torch.full_like(distances, float("-inf"))
+        masked = distances + torch.triu(infs, 1)
+        similarity = F.softmax(masked, 2)
+
+        attention = similarity @ value
+
+        return attention, similarity
