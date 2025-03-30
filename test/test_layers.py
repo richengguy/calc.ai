@@ -2,8 +2,8 @@ import math
 
 import pytest
 import torch
-from torch import Tensor
 import torch.nn.functional as F
+from torch import Tensor
 
 from calcai.model import layers
 
@@ -86,6 +86,21 @@ def test_transformer_layer(batch: int, num_tokens, num_dim: int) -> None:
     transform = layers.TransformerLayer(num_dim)
     output = transform.forward(input)
     assert output.shape == input.shape
+
+
+@pytest.mark.parametrize("batch", (1, 2, 3))
+@pytest.mark.parametrize("vocab_size", (15, 20, 30))
+@pytest.mark.parametrize("num_tokens", (2, 3, 5, 10, 20))
+@pytest.mark.parametrize("num_dim", (4, 6, 8, 10))
+def test_full_language_model(
+    batch: int, vocab_size: int, num_tokens: int, num_dim: int
+) -> None:
+    """Verify the full language model is wired up correctly."""
+    input = Tensor([i % vocab_size for i in range(num_tokens)])
+    input = input.repeat((batch, 1))
+    model = layers.CalculatorLanguageModel(vocab_size, num_dim)
+    output = model.forward(input)
+    assert output.shape == (batch, 1, vocab_size)
 
 
 def test_error_on_odd_embedding_size_for_position_encoding() -> None:

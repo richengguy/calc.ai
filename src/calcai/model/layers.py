@@ -1,30 +1,31 @@
 import math
+from collections import OrderedDict
 
 import torch
 import torch.nn.functional as F
 from torch import Tensor
-from torch.nn import Linear, Module, Sequential, ReLU, LayerNorm
+from torch.nn import LayerNorm, Linear, LogSoftmax, Module, ReLU, Sequential
 from torch.nn.init import kaiming_uniform_
 
 
 class TokenEmbedding(Module):
     """Transforms tokens from a one-hot encoding into some embedding space."""
 
-    def __init__(self, vocab_size: int, num_dim: int = 16) -> None:
+    def __init__(self, vocab_size: int, num_dim: int) -> None:
         """
         Parameters
         ----------
         vocab_size : int
             the total number of tokens, used to control the size of input vector
         num_dim : int
-            the dimensionality of the embedding space; defaults to 16
+            the dimensionality of the embedding space
         """
         super().__init__()
         if vocab_size < 1:
             raise ValueError("There must be at least one token.")
         if num_dim >= vocab_size:
             raise ValueError(
-                "The embedding dimension cannot be larger than the number of tokens."
+                "The embedding dimension cannot be larger than the vocabulary size."
             )
 
         self._vocab_size = vocab_size
@@ -286,3 +287,80 @@ class TransformerLayer(Module):
         )
 
         return fcn_normalized
+
+
+class CalculatorLanguageModel(Module):
+    """The full Calculator Language Model (CLM).
+
+    It's a simplified decoder-only transformer architecture that will predict
+    the next token from the set of provided tokens.
+    """
+
+    def __init__(
+        self,
+        vocab_size: int,
+        num_dim: int,
+        *,
+        num_layers: int = 4,
+        d_k: int | None = None,
+        d_v: int | None = None,
+        d_ff: int | None = None,
+    ) -> None:
+        """
+        Parameters
+        ----------
+        vocab_size : int
+            the number of tokens in the vocabulary that the tokenizer recognizes
+        num_dim : int
+            the desired dimensionality of the token embedding space; this should
+            be smaller than the vocabulary size
+        num_layers : int
+            the number of transformer layers; defaults to '4'
+        d_k : int, optional
+            the number of columns (dimensions) for the "key" and "query"
+            projection matrices in the attention heads; uses `num_dim` if not
+            provided
+        d_v : int, optional
+            the number of columns (dimensions) for the "value" projection
+            matrix in the attention heads; uses `num_dim` if not provided
+        d_ff : int, optional
+            the size of the hidden layer in the fully-connected network that
+            follows the attention heads; uses `4 * num-dim` if not provided
+        """
+        super().__init__()
+
+        layers: list[tuple[str, Module]] = []
+
+        layers.append(("embedding", TokenEmbedding(vocab_size, num_dim)))
+        layers.append(("position-encoding", PositionEncoding(num_dim)))
+
+        for i in range(num_layers):
+            layers.append(
+                (
+                    f"transformer{i}",
+                    TransformerLayer(num_dim, d_k=d_k, d_v=d_v, d_ff=d_ff),
+                )
+            )
+
+        layers.append(("decoding", Linear(num_dim, vocab_size)))
+
+        self._layers = Sequential(OrderedDict(layers))
+
+    def forward(self, x: Tensor) -> Tensor:
+        """Compute the likelihood of the next token.
+
+        Parameters
+        ----------
+        x : Tensor
+            input tensor shaped `(B, N_tokens)`; this is a list of token indices
+
+        Returns
+        -------
+        Tensor
+            a tensor of *logits* shaped `(B, 1, vocab_size)`; to get
+            probabities take the `exp()` of this tensor
+        """
+        output: Tensor = self._layers(x)
+        last_row = output[:, -1, :].unsqueeze(1)
+        logits = F.log_softmax(last_row, 2)
+        return logits
