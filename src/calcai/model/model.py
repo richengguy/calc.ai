@@ -8,6 +8,7 @@ class CalculatorLanguageModel:
     The Calculator Language Model (CLM) will accept a string, something like
     `1 + 2`, and, in theory, generate `3`.
     """
+
     def __init__(self, *, embedding_dimensions: int = 16) -> None:
         """
         Parameters
@@ -16,4 +17,6 @@ class CalculatorLanguageModel:
             size of the token embedding space; defaults to 16
         """
         self._tokenizer = Tokenizer()
-        self._model = SimpleDecoderTransformer(self._tokenizer.num_tokens, embedding_dimensions)
+        self._model = SimpleDecoderTransformer(
+            self._tokenizer.num_tokens, embedding_dimensions
+        )
