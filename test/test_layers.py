@@ -98,7 +98,7 @@ def test_full_language_model(
     """Verify the full language model is wired up correctly."""
     input = Tensor([i % vocab_size for i in range(num_tokens)])
     input = input.repeat((batch, 1))
-    model = layers.CalculatorLanguageModel(vocab_size, num_dim)
+    model = layers.SimpleDecoderTransformer(vocab_size, num_dim)
     output = model.forward(input)
     assert output.shape == (batch, 1, vocab_size)
 

@@ -289,11 +289,13 @@ class TransformerLayer(Module):
         return fcn_normalized
 
 
-class CalculatorLanguageModel(Module):
-    """The full Calculator Language Model (CLM).
+class SimpleDecoderTransformer(Module):
+    """A decoder-only transformer model.
 
     It's a simplified decoder-only transformer architecture that will predict
-    the next token from the set of provided tokens.
+    the next token from the set of provided tokens.  While the model outputs
+    logits instead of probabilities, the highest valued element corresponds to
+    the most likely token.
     """
 
     def __init__(
