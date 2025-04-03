@@ -1,6 +1,9 @@
 from .layers import SimpleDecoderTransformer
 from .tokenizer import ControlToken, Tokenizer
 
+from torch import Tensor
+from pathlib import Path
+
 
 class CalculatorLanguageModel:
     """A simple transformer for computing arithmetic expressions.
@@ -20,3 +23,23 @@ class CalculatorLanguageModel:
         self._model = SimpleDecoderTransformer(
             self._tokenizer.num_tokens, embedding_dimensions
         )
+
+    def save(self, path: Path) -> None:
+        """Save the model.
+
+        Parameters
+        ----------
+        path : Path
+            location where to save the model
+        """
+
+    @staticmethod
+    def load(self, path: Path) -> "CalculatorLanguageModel":
+        """Load a model.
+
+        Parameters
+        ----------
+        path : Path
+            location where the model is saved
+        """
+        raise NotImplementedError()
