@@ -1,15 +1,61 @@
-import torch
-from torch import Tensor
-from torch.nn import CrossEntropyLoss
-from torch.optim import Adam
-
+from dataclasses import dataclass
 from random import Random
 from typing import Callable
+
+import torch
+from torch import Tensor
+from torch.nn.functional import cross_entropy
+from torch.optim import Adam
 
 from ..model import CalculatorLanguageModel, create_query
 from .data import SampleData
 
-TrainingCallback = Callable[[float, str, str, int], None]
+
+@dataclass(frozen=True)
+class TrainingIteration:
+    """Information about a training iteration.
+
+    This class is the argument to a training iteration callback.
+    """
+
+    epoch: int
+    """Epoch number."""
+    iteration: int
+    """Iteration number."""
+    expected: str
+    """The sample the model was being trained on."""
+    actual: str
+    """What the model actually generated"""
+    loss: float
+    """The training loss, averaged over the number of generated tokens."""
+
+
+TrainingCallback = Callable[[TrainingIteration], None]
+
+
+def _compute_sample_loss(
+    sample: SampleData, model: CalculatorLanguageModel
+) -> tuple[Tensor, list[int], list[int]]:
+    expected_str = create_query(sample.script, answer=sample.result)
+    query_str = create_query(sample.script)
+
+    expected_tokens = list(model.tokenizer.to_tokens(expected_str))
+    actual_tokens = list(model.tokenizer.to_tokens(query_str))
+
+    num_tokens = len(expected_tokens) - len(actual_tokens)
+
+    sample_loss = torch.zeros((1,))
+
+    logit, token = model.inference_step(actual_tokens, init=True)
+    for expected in expected_tokens[len(actual_tokens) :]:
+        token_loss = cross_entropy(logit, Tensor([expected]))
+        sample_loss += token_loss
+
+        actual_tokens.append(token)
+        logit, token = model.inference_step(actual_tokens)
+
+    sample_loss /= num_tokens
+    return sample_loss, expected_tokens, actual_tokens
 
 
 class ModelTrainer:
@@ -70,7 +116,12 @@ class ModelTrainer:
         self._testing_data = shuffled_data[:num_test]
         self._training_data = shuffled_data[num_test:]
 
-    def train(self, model: CalculatorLanguageModel, *, callback: TrainingCallback | None = None) -> tuple[list[float], list[float]]:
+    def train(
+        self,
+        model: CalculatorLanguageModel,
+        *,
+        callback: TrainingCallback | None = None,
+    ) -> tuple[list[float], list[float]]:
         """Train a language model.
 
         Parameters
@@ -96,29 +147,37 @@ class ModelTrainer:
             torch.seed()
 
         optimizer = Adam(model.pytorch_model.parameters())
-        cross_entropy_loss = CrossEntropyLoss()
 
         for n in range(self._epochs):
             self._rng.shuffle(self._training_data)
+
+            # Run through all of the training samples and update the model
+            # weights.  If a callback is provided then it is called after the
+            # sample is processed.
+            model.pytorch_model.train()
             for i, sample in enumerate(self._training_data):
-                answer = list(model.tokenizer.to_tokens(create_query(sample.script, answer=sample.result)))
-                query = list(model.tokenizer.to_tokens(create_query(sample.script)))
+                loss, expected, actual = _compute_sample_loss(sample, model)
 
-                iter_losses: list[float] = []
+                loss.backward()
+                optimizer.step()
+                optimizer.zero_grad()
 
-                logit, token = model.training_step(query, init=True)
-                for expected in answer[len(query):]:
-                    # Calculate the cross-entropy loss
-                    loss: Tensor = cross_entropy_loss(logit, Tensor([expected]))
-                    loss.backward()
-                    iter_losses.append(loss.item())
+                if callback is not None:
+                    expected_str = "".join(model.tokenizer.from_tokens(expected))
+                    actual_str = "".join(model.tokenizer.from_tokens(actual))
+                    callback(
+                        TrainingIteration(n, i, expected_str, actual_str, loss.item())
+                    )
 
-                    # Update the optimizer
-                    optimizer.step()
-                    optimizer.zero_grad()
+            # Now run through the test samples.  This is the same calculation as
+            # used for the backprogation, but without any gradient updates.
+            with torch.no_grad():
+                model.pytorch_model.eval()
+                epoch_loss = torch.zeros((1,))
+                for sample in self._testing_data:
+                    loss, _, _ = _compute_sample_loss(sample, model)
+                    epoch_loss += loss
 
-                    # Update the query and then send it back into the language model.
-                    query.append(token)
-                    logit, token = model.training_step(query)
+                test_loss.append(epoch_loss.item())
 
         return training_loss, test_loss

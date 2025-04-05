@@ -98,8 +98,10 @@ class CalculatorLanguageModel:
                 if token == ControlToken.RESULT_STOP:
                     break
 
-    def training_step(self, input: list[int], *, init: bool = False) -> tuple[Tensor, int]:
-        """Perform a single training iteration.
+    def inference_step(
+        self, input: list[int], *, init: bool = False
+    ) -> tuple[Tensor, int]:
+        """Perform a single inference step.
 
         Parameters
         ----------
@@ -128,9 +130,6 @@ class CalculatorLanguageModel:
 
         if len(self._context) > self._max_context:
             raise RuntimeError("Exceeded the maximum allowed context size.")
-
-        if not self._model.training:
-            self._model.train()
 
         tokens = Tensor(self._context)
         logit: Tensor = self._model(tokens[torch.newaxis, :])
