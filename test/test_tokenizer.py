@@ -1,5 +1,6 @@
 import pytest
 
+from calcai.model import create_query
 from calcai.model.tokenizer import ControlToken, Tokenizer
 
 
@@ -45,3 +46,8 @@ def test_tokenizer_error_handling(input: str, bad_token: str) -> None:
     t = Tokenizer()
     with pytest.raises(RuntimeError, match=bad_token):
         list(t.to_tokens(input))
+
+
+def test_create_query() -> None:
+    assert create_query("1 + 2") == "{expr=}1 + 2{=expr}{result=}"
+    assert create_query("1 + 2", answer=3) == "{expr=}1 + 2{=expr}{result=}3{=result}"

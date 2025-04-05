@@ -8,6 +8,28 @@ from .layers import SimpleDecoderTransformer
 from .tokenizer import ControlToken, Tokenizer
 
 
+def create_query(expr: str, *, answer: int | None = None) -> str:
+    """Construct a query string.
+
+    Parameters
+    ----------
+    expr : str
+        an arithmetic expression
+    answer : int, optional
+        if provided, also include the final answer
+
+    Returns
+    -------
+    str
+        full query string
+    """
+    query = f"{ControlToken.EXPR_START}{expr}{ControlToken.EXPR_STOP}"
+    if answer is None:
+        return f"{query}{ControlToken.RESULT_START}"
+    else:
+        return f"{query}{ControlToken.RESULT_START}{answer}{ControlToken.RESULT_STOP}"
+
+
 class CalculatorLanguageModel:
     """A simple transformer for computing arithmetic expressions.
 

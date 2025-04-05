@@ -1,1 +1,1 @@
-from .model import CalculatorLanguageModel
+from .model import CalculatorLanguageModel, create_query
