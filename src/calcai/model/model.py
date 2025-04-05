@@ -3,6 +3,7 @@ from typing import Iterator
 
 import torch
 from torch import Tensor
+from torch.nn import Module
 
 from .layers import SimpleDecoderTransformer
 from .tokenizer import ControlToken, Tokenizer
@@ -48,9 +49,9 @@ class CalculatorLanguageModel:
         max_context : int
             maximum number of tokens the model can work with; defaults to 256
         """
-        self._tokenizer = Tokenizer()
+        self.tokenizer = Tokenizer()
         self._model = SimpleDecoderTransformer(
-            self._tokenizer.num_tokens, embedding_dimensions
+            self.tokenizer.num_tokens, embedding_dimensions
         )
         self._max_context = max_context
         self._context: list[int] = []
@@ -59,6 +60,11 @@ class CalculatorLanguageModel:
     def max_context_size(self) -> int:
         """Maximum context window size."""
         return self._max_context
+
+    @property
+    def pytorch_model(self) -> Module:
+        """The underlying PyTorch model."""
+        return self._model
 
     def predict(self, query: str) -> Iterator[str]:
         """Predict tokens, given some input.
@@ -75,7 +81,7 @@ class CalculatorLanguageModel:
             terminal token or the context window is exhausted
         """
         context = torch.zeros((1, self._max_context))
-        for i, token in enumerate(self._tokenizer.to_tokens(query)):
+        for i, token in enumerate(self.tokenizer.to_tokens(query)):
             context[0, i] = token
 
         start_ind = i
@@ -85,14 +91,14 @@ class CalculatorLanguageModel:
                 logits: Tensor = self._model(context[0, 0:i])
 
                 # Use the highest probability token as the result.
-                token = int(logits[0, 0, :].argmax().item())
-                yield self._tokenizer.reverse_map[token]
+                token = int(logits[0, :].argmax().item())
+                yield self.tokenizer.reverse_map[token]
 
                 # Stop processing if we see a "result end" token.
                 if token == ControlToken.RESULT_STOP:
                     break
 
-    def training_step(self, input: str, *, init: bool = False) -> Tensor:
+    def training_step(self, input: list[int], *, init: bool = False) -> tuple[Tensor, int]:
         """Perform a single training iteration.
 
         Parameters
@@ -105,8 +111,10 @@ class CalculatorLanguageModel:
 
         Returns
         -------
-        Tensor
-            the model's next predicted token
+        logit : Tensor
+            the logit for model's next predicted token
+        index : int
+            the index of the largest logit (highest probability token)
 
         Raises
         ------
@@ -114,9 +122,9 @@ class CalculatorLanguageModel:
             if the maximum allowable context window size is exceeded
         """
         if init:
-            self._context = list(self._tokenizer.to_tokens(input))
-        else:
-            self._context.extend(self._tokenizer.to_tokens(input))
+            self._context = list()
+
+        self._context.extend(input)
 
         if len(self._context) > self._max_context:
             raise RuntimeError("Exceeded the maximum allowed context size.")
@@ -125,7 +133,9 @@ class CalculatorLanguageModel:
             self._model.train()
 
         tokens = Tensor(self._context)
-        return self._model(tokens[torch.newaxis, :])
+        logit: Tensor = self._model(tokens[torch.newaxis, :])
+        index = int(logit[0, :].argmax().item())
+        return logit, index
 
     def reset(self) -> None:
         """Resets the model's internal state."""

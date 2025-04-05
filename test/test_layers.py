@@ -100,7 +100,8 @@ def test_full_language_model(
     input = input.repeat((batch, 1))
     model = layers.SimpleDecoderTransformer(vocab_size, num_dim)
     output = model.forward(input)
-    assert output.shape == (batch, 1, vocab_size)
+    assert output.shape == (batch, vocab_size)
+    torch.testing.assert_close(output.exp().sum(dim=1), torch.ones((batch,)))
 
 
 def test_error_on_odd_embedding_size_for_position_encoding() -> None:

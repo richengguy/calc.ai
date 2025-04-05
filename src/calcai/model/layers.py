@@ -359,10 +359,10 @@ class SimpleDecoderTransformer(Module):
         Returns
         -------
         Tensor
-            a tensor of *logits* shaped `(B, 1, vocab_size)`; to get
+            a tensor of *logits* shaped `(B, vocab_size)`; to get
             probabities take the `exp()` of this tensor
         """
         output: Tensor = self._layers(x)
-        last_row = output[:, -1, :].unsqueeze(1)
-        logits = F.log_softmax(last_row, 2)
+        last_row = output[:, -1, :]
+        logits = F.log_softmax(last_row, 1)
         return logits
