@@ -1,0 +1,1000 @@
+{"seed":0,"script":"8 - 16","result":-8}
+{"seed":1,"script":"25 + 24","result":49}
+{"seed":2,"script":"1","result":1}
+{"seed":3,"script":"17 - 4","result":13}
+{"seed":4,"script":"3 - 23","result":-20}
+{"seed":5,"script":"-23","result":-23}
+{"seed":6,"script":"8 * 1","result":8}
+{"seed":7,"script":"4 - 12","result":-8}
+{"seed":8,"script":"12 - 4","result":8}
+{"seed":9,"script":"11 * 8","result":88}
+{"seed":10,"script":"13 / 15","result":0}
+{"seed":11,"script":"17 * 24","result":408}
+{"seed":12,"script":"21 * 16","result":336}
+{"seed":13,"script":"21 - 21","result":0}
+{"seed":14,"script":"22 + 24","result":46}
+{"seed":15,"script":"0","result":0}
+{"seed":16,"script":"15 - 9","result":6}
+{"seed":17,"script":"25 * 9","result":225}
+{"seed":18,"script":"21 + 14","result":35}
+{"seed":19,"script":"-25","result":-25}
+{"seed":20,"script":"21","result":21}
+{"seed":21,"script":"22 + 13","result":35}
+{"seed":22,"script":"4","result":4}
+{"seed":23,"script":"9","result":9}
+{"seed":24,"script":"-18","result":-18}
+{"seed":25,"script":"0 - 6","result":-6}
+{"seed":26,"script":"6 + 13","result":19}
+{"seed":27,"script":"-22","result":-22}
+{"seed":28,"script":"4 + 17","result":21}
+{"seed":29,"script":"11 / 19","result":0}
+{"seed":30,"script":"9 / 19","result":0}
+{"seed":31,"script":"3 + 24","result":27}
+{"seed":32,"script":"6 + 4","result":10}
+{"seed":33,"script":"20 / 7","result":2}
+{"seed":34,"script":"18 / 0","result":null}
+{"seed":35,"script":"24 / 4","result":6}
+{"seed":36,"script":"0 - 25","result":-25}
+{"seed":37,"script":"-2","result":-2}
+{"seed":38,"script":"-13","result":-13}
+{"seed":39,"script":"12 + 0","result":12}
+{"seed":40,"script":"16 * 1","result":16}
+{"seed":41,"script":"7 - 5","result":2}
+{"seed":42,"script":"-0","result":0}
+{"seed":43,"script":"22 + 24","result":46}
+{"seed":44,"script":"17 - 22","result":-5}
+{"seed":45,"script":"15 - 8","result":7}
+{"seed":46,"script":"18 - 18","result":0}
+{"seed":47,"script":"13 - 17","result":-4}
+{"seed":48,"script":"4 / 17","result":0}
+{"seed":49,"script":"13 + 3","result":16}
+{"seed":50,"script":"8 * 11","result":88}
+{"seed":51,"script":"16 - 17","result":-1}
+{"seed":52,"script":"1","result":1}
+{"seed":53,"script":"-6","result":-6}
+{"seed":54,"script":"4","result":4}
+{"seed":55,"script":"6 + 4","result":10}
+{"seed":56,"script":"17","result":17}
+{"seed":57,"script":"18 + 19","result":37}
+{"seed":58,"script":"-6","result":-6}
+{"seed":59,"script":"20 - 14","result":6}
+{"seed":60,"script":"18 - 4","result":14}
+{"seed":61,"script":"17 * 6","result":102}
+{"seed":62,"script":"5","result":5}
+{"seed":63,"script":"9 * 8","result":72}
+{"seed":64,"script":"20 * 19","result":380}
+{"seed":65,"script":"9 - 16","result":-7}
+{"seed":66,"script":"13 + 7","result":20}
+{"seed":67,"script":"24 + 13","result":37}
+{"seed":68,"script":"23","result":23}
+{"seed":69,"script":"-3","result":-3}
+{"seed":70,"script":"9","result":9}
+{"seed":71,"script":"19 - 25","result":-6}
+{"seed":72,"script":"19 + 23","result":42}
+{"seed":73,"script":"16 - 15","result":1}
+{"seed":74,"script":"3 * 10","result":30}
+{"seed":75,"script":"13 * 14","result":182}
+{"seed":76,"script":"12 - 6","result":6}
+{"seed":77,"script":"7 - 6","result":1}
+{"seed":78,"script":"21 + 23","result":44}
+{"seed":79,"script":"11 + 19","result":30}
+{"seed":80,"script":"17 - 22","result":-5}
+{"seed":81,"script":"14 * 10","result":140}
+{"seed":82,"script":"15 + 16","result":31}
+{"seed":83,"script":"14 * 2","result":28}
+{"seed":84,"script":"-24","result":-24}
+{"seed":85,"script":"19 + 3","result":22}
+{"seed":86,"script":"10 + 23","result":33}
+{"seed":87,"script":"6 + 17","result":23}
+{"seed":88,"script":"6 - 10","result":-4}
+{"seed":89,"script":"19 + 22","result":41}
+{"seed":90,"script":"2 + 15","result":17}
+{"seed":91,"script":"5 + 21","result":26}
+{"seed":92,"script":"18 - 17","result":1}
+{"seed":93,"script":"15","result":15}
+{"seed":94,"script":"3 / 8","result":0}
+{"seed":95,"script":"23 * 17","result":391}
+{"seed":96,"script":"21 - 12","result":9}
+{"seed":97,"script":"25 + 11","result":36}
+{"seed":98,"script":"1 - 11","result":-10}
+{"seed":99,"script":"6 - 19","result":-13}
+{"seed":100,"script":"14 + 24","result":38}
+{"seed":101,"script":"-6","result":-6}
+{"seed":102,"script":"19 + 11","result":30}
+{"seed":103,"script":"14","result":14}
+{"seed":104,"script":"6","result":6}
+{"seed":105,"script":"25 - 3","result":22}
+{"seed":106,"script":"-15","result":-15}
+{"seed":107,"script":"18 - 24","result":-6}
+{"seed":108,"script":"2 + 21","result":23}
+{"seed":109,"script":"14 - 14","result":0}
+{"seed":110,"script":"12","result":12}
+{"seed":111,"script":"10 - 15","result":-5}
+{"seed":112,"script":"21 * 18","result":378}
+{"seed":113,"script":"25 + 23","result":48}
+{"seed":114,"script":"3 - 10","result":-7}
+{"seed":115,"script":"6","result":6}
+{"seed":116,"script":"-23","result":-23}
+{"seed":117,"script":"5 - 6","result":-1}
+{"seed":118,"script":"-5","result":-5}
+{"seed":119,"script":"5","result":5}
+{"seed":120,"script":"6 * 20","result":120}
+{"seed":121,"script":"18 + 12","result":30}
+{"seed":122,"script":"19 * 9","result":171}
+{"seed":123,"script":"2 + 24","result":26}
+{"seed":124,"script":"17","result":17}
+{"seed":125,"script":"7","result":7}
+{"seed":126,"script":"18 / 19","result":0}
+{"seed":127,"script":"19 + 18","result":37}
+{"seed":128,"script":"7","result":7}
+{"seed":129,"script":"-25","result":-25}
+{"seed":130,"script":"8 * 25","result":200}
+{"seed":131,"script":"24 - 16","result":8}
+{"seed":132,"script":"13 - 1","result":12}
+{"seed":133,"script":"15 * 10","result":150}
+{"seed":134,"script":"6 * 23","result":138}
+{"seed":135,"script":"-20","result":-20}
+{"seed":136,"script":"16 / 1","result":16}
+{"seed":137,"script":"13 + 10","result":23}
+{"seed":138,"script":"14 + 22","result":36}
+{"seed":139,"script":"22 + 19","result":41}
+{"seed":140,"script":"8 + 0","result":8}
+{"seed":141,"script":"0 * 18","result":0}
+{"seed":142,"script":"-21","result":-21}
+{"seed":143,"script":"1","result":1}
+{"seed":144,"script":"14 * 2","result":28}
+{"seed":145,"script":"0","result":0}
+{"seed":146,"script":"19 + 10","result":29}
+{"seed":147,"script":"-4","result":-4}
+{"seed":148,"script":"20 - 25","result":-5}
+{"seed":149,"script":"8 + 12","result":20}
+{"seed":150,"script":"6","result":6}
+{"seed":151,"script":"-22","result":-22}
+{"seed":152,"script":"12","result":12}
+{"seed":153,"script":"2","result":2}
+{"seed":154,"script":"25 + 12","result":37}
+{"seed":155,"script":"-17","result":-17}
+{"seed":156,"script":"23 * 7","result":161}
+{"seed":157,"script":"-7","result":-7}
+{"seed":158,"script":"-7","result":-7}
+{"seed":159,"script":"21 - 14","result":7}
+{"seed":160,"script":"10 + 12","result":22}
+{"seed":161,"script":"17 * 5","result":85}
+{"seed":162,"script":"20 + 6","result":26}
+{"seed":163,"script":"14 / 18","result":0}
+{"seed":164,"script":"9 + 8","result":17}
+{"seed":165,"script":"22 + 13","result":35}
+{"seed":166,"script":"19 + 13","result":32}
+{"seed":167,"script":"2 - 10","result":-8}
+{"seed":168,"script":"12 * 5","result":60}
+{"seed":169,"script":"19 - 5","result":14}
+{"seed":170,"script":"18","result":18}
+{"seed":171,"script":"13 / 3","result":4}
+{"seed":172,"script":"6 - 9","result":-3}
+{"seed":173,"script":"21 - 24","result":-3}
+{"seed":174,"script":"0 * 15","result":0}
+{"seed":175,"script":"1 * 23","result":23}
+{"seed":176,"script":"24 + 7","result":31}
+{"seed":177,"script":"15","result":15}
+{"seed":178,"script":"17","result":17}
+{"seed":179,"script":"6","result":6}
+{"seed":180,"script":"21 + 0","result":21}
+{"seed":181,"script":"-3","result":-3}
+{"seed":182,"script":"7 * 7","result":49}
+{"seed":183,"script":"23 + 0","result":23}
+{"seed":184,"script":"7 - 22","result":-15}
+{"seed":185,"script":"25","result":25}
+{"seed":186,"script":"13 - 17","result":-4}
+{"seed":187,"script":"15 - 25","result":-10}
+{"seed":188,"script":"0 - 7","result":-7}
+{"seed":189,"script":"23 * 8","result":184}
+{"seed":190,"script":"24 + 10","result":34}
+{"seed":191,"script":"4 * 24","result":96}
+{"seed":192,"script":"9 - 2","result":7}
+{"seed":193,"script":"24 / 5","result":4}
+{"seed":194,"script":"4 + 11","result":15}
+{"seed":195,"script":"-1","result":-1}
+{"seed":196,"script":"-22","result":-22}
+{"seed":197,"script":"4 / 5","result":0}
+{"seed":198,"script":"22 + 15","result":37}
+{"seed":199,"script":"12 - 8","result":4}
+{"seed":200,"script":"6 + 23","result":29}
+{"seed":201,"script":"10 + 13","result":23}
+{"seed":202,"script":"-13","result":-13}
+{"seed":203,"script":"15 + 19","result":34}
+{"seed":204,"script":"2 - 18","result":-16}
+{"seed":205,"script":"23 * 3","result":69}
+{"seed":206,"script":"9 + 23","result":32}
+{"seed":207,"script":"21 * 19","result":399}
+{"seed":208,"script":"24 - 6","result":18}
+{"seed":209,"script":"0 / 5","result":0}
+{"seed":210,"script":"21 - 23","result":-2}
+{"seed":211,"script":"23 / 7","result":3}
+{"seed":212,"script":"1 - 22","result":-21}
+{"seed":213,"script":"7 + 9","result":16}
+{"seed":214,"script":"11 * 13","result":143}
+{"seed":215,"script":"10 + 3","result":13}
+{"seed":216,"script":"-22","result":-22}
+{"seed":217,"script":"7","result":7}
+{"seed":218,"script":"3 - 24","result":-21}
+{"seed":219,"script":"-10","result":-10}
+{"seed":220,"script":"7 - 14","result":-7}
+{"seed":221,"script":"2 - 15","result":-13}
+{"seed":222,"script":"9 - 1","result":8}
+{"seed":223,"script":"14 - 6","result":8}
+{"seed":224,"script":"6 + 14","result":20}
+{"seed":225,"script":"-7","result":-7}
+{"seed":226,"script":"20 * 17","result":340}
+{"seed":227,"script":"21 - 11","result":10}
+{"seed":228,"script":"22","result":22}
+{"seed":229,"script":"7 / 17","result":0}
+{"seed":230,"script":"-9","result":-9}
+{"seed":231,"script":"12","result":12}
+{"seed":232,"script":"7 - 2","result":5}
+{"seed":233,"script":"-20","result":-20}
+{"seed":234,"script":"1 - 18","result":-17}
+{"seed":235,"script":"16 - 24","result":-8}
+{"seed":236,"script":"-15","result":-15}
+{"seed":237,"script":"-5","result":-5}
+{"seed":238,"script":"23 + 20","result":43}
+{"seed":239,"script":"22 + 4","result":26}
+{"seed":240,"script":"10 + 4","result":14}
+{"seed":241,"script":"-24","result":-24}
+{"seed":242,"script":"15 - 16","result":-1}
+{"seed":243,"script":"16","result":16}
+{"seed":244,"script":"25","result":25}
+{"seed":245,"script":"15 + 2","result":17}
+{"seed":246,"script":"16","result":16}
+{"seed":247,"script":"0 * 11","result":0}
+{"seed":248,"script":"-25","result":-25}
+{"seed":249,"script":"19 - 8","result":11}
+{"seed":250,"script":"5 - 17","result":-12}
+{"seed":251,"script":"12 * 23","result":276}
+{"seed":252,"script":"21 + 9","result":30}
+{"seed":253,"script":"12 / 13","result":0}
+{"seed":254,"script":"8 - 13","result":-5}
+{"seed":255,"script":"20 + 20","result":40}
+{"seed":256,"script":"13 * 11","result":143}
+{"seed":257,"script":"3 - 8","result":-5}
+{"seed":258,"script":"-2","result":-2}
+{"seed":259,"script":"17 + 2","result":19}
+{"seed":260,"script":"13 - 18","result":-5}
+{"seed":261,"script":"0 * 5","result":0}
+{"seed":262,"script":"17 - 13","result":4}
+{"seed":263,"script":"13","result":13}
+{"seed":264,"script":"-21","result":-21}
+{"seed":265,"script":"10 * 15","result":150}
+{"seed":266,"script":"17","result":17}
+{"seed":267,"script":"14 + 10","result":24}
+{"seed":268,"script":"10 / 1","result":10}
+{"seed":269,"script":"2 + 24","result":26}
+{"seed":270,"script":"2 - 23","result":-21}
+{"seed":271,"script":"11 * 10","result":110}
+{"seed":272,"script":"11","result":11}
+{"seed":273,"script":"20 + 18","result":38}
+{"seed":274,"script":"11 + 13","result":24}
+{"seed":275,"script":"11 / 17","result":0}
+{"seed":276,"script":"6 - 24","result":-18}
+{"seed":277,"script":"5","result":5}
+{"seed":278,"script":"15","result":15}
+{"seed":279,"script":"25 - 1","result":24}
+{"seed":280,"script":"20 - 23","result":-3}
+{"seed":281,"script":"8 + 3","result":11}
+{"seed":282,"script":"-21","result":-21}
+{"seed":283,"script":"-4","result":-4}
+{"seed":284,"script":"8 + 11","result":19}
+{"seed":285,"script":"-12","result":-12}
+{"seed":286,"script":"10 * 22","result":220}
+{"seed":287,"script":"10 / 8","result":1}
+{"seed":288,"script":"9","result":9}
+{"seed":289,"script":"21 - 5","result":16}
+{"seed":290,"script":"10 / 15","result":0}
+{"seed":291,"script":"-23","result":-23}
+{"seed":292,"script":"10 + 6","result":16}
+{"seed":293,"script":"3 * 7","result":21}
+{"seed":294,"script":"15 + 6","result":21}
+{"seed":295,"script":"22 - 15","result":7}
+{"seed":296,"script":"8 + 11","result":19}
+{"seed":297,"script":"23 * 12","result":276}
+{"seed":298,"script":"20 + 16","result":36}
+{"seed":299,"script":"23 - 6","result":17}
+{"seed":300,"script":"-11","result":-11}
+{"seed":301,"script":"25 - 15","result":10}
+{"seed":302,"script":"17","result":17}
+{"seed":303,"script":"23 + 6","result":29}
+{"seed":304,"script":"13 + 16","result":29}
+{"seed":305,"script":"18 + 12","result":30}
+{"seed":306,"script":"16 * 25","result":400}
+{"seed":307,"script":"-9","result":-9}
+{"seed":308,"script":"12 + 11","result":23}
+{"seed":309,"script":"0 + 4","result":4}
+{"seed":310,"script":"6 / 21","result":0}
+{"seed":311,"script":"2 - 13","result":-11}
+{"seed":312,"script":"-21","result":-21}
+{"seed":313,"script":"21 / 13","result":1}
+{"seed":314,"script":"3 + 5","result":8}
+{"seed":315,"script":"13 - 10","result":3}
+{"seed":316,"script":"0 + 25","result":25}
+{"seed":317,"script":"22 * 24","result":528}
+{"seed":318,"script":"-1","result":-1}
+{"seed":319,"script":"1 + 25","result":26}
+{"seed":320,"script":"20 * 2","result":40}
+{"seed":321,"script":"4 - 11","result":-7}
+{"seed":322,"script":"2 - 7","result":-5}
+{"seed":323,"script":"-23","result":-23}
+{"seed":324,"script":"-22","result":-22}
+{"seed":325,"script":"4 / 18","result":0}
+{"seed":326,"script":"9 + 1","result":10}
+{"seed":327,"script":"23 * 24","result":552}
+{"seed":328,"script":"-24","result":-24}
+{"seed":329,"script":"10 - 7","result":3}
+{"seed":330,"script":"19","result":19}
+{"seed":331,"script":"5 - 7","result":-2}
+{"seed":332,"script":"16 - 24","result":-8}
+{"seed":333,"script":"11 / 6","result":1}
+{"seed":334,"script":"17","result":17}
+{"seed":335,"script":"24 + 14","result":38}
+{"seed":336,"script":"23 + 17","result":40}
+{"seed":337,"script":"16 + 11","result":27}
+{"seed":338,"script":"8 + 14","result":22}
+{"seed":339,"script":"20 + 4","result":24}
+{"seed":340,"script":"3 - 16","result":-13}
+{"seed":341,"script":"-18","result":-18}
+{"seed":342,"script":"18 + 2","result":20}
+{"seed":343,"script":"24 + 5","result":29}
+{"seed":344,"script":"3 - 9","result":-6}
+{"seed":345,"script":"13 + 3","result":16}
+{"seed":346,"script":"19 / 16","result":1}
+{"seed":347,"script":"15 - 23","result":-8}
+{"seed":348,"script":"7 + 14","result":21}
+{"seed":349,"script":"13 - 9","result":4}
+{"seed":350,"script":"21 - 10","result":11}
+{"seed":351,"script":"10 / 23","result":0}
+{"seed":352,"script":"2 + 21","result":23}
+{"seed":353,"script":"12 + 25","result":37}
+{"seed":354,"script":"2 - 21","result":-19}
+{"seed":355,"script":"19 + 12","result":31}
+{"seed":356,"script":"-15","result":-15}
+{"seed":357,"script":"22 + 2","result":24}
+{"seed":358,"script":"12 - 23","result":-11}
+{"seed":359,"script":"16 + 12","result":28}
+{"seed":360,"script":"9","result":9}
+{"seed":361,"script":"4","result":4}
+{"seed":362,"script":"19 * 11","result":209}
+{"seed":363,"script":"9 / 2","result":4}
+{"seed":364,"script":"0 + 0","result":0}
+{"seed":365,"script":"-22","result":-22}
+{"seed":366,"script":"23 + 24","result":47}
+{"seed":367,"script":"16 + 22","result":38}
+{"seed":368,"script":"-1","result":-1}
+{"seed":369,"script":"9","result":9}
+{"seed":370,"script":"24 + 9","result":33}
+{"seed":371,"script":"13 - 13","result":0}
+{"seed":372,"script":"23 + 11","result":34}
+{"seed":373,"script":"21 + 23","result":44}
+{"seed":374,"script":"22 - 16","result":6}
+{"seed":375,"script":"7 - 22","result":-15}
+{"seed":376,"script":"-23","result":-23}
+{"seed":377,"script":"3 - 22","result":-19}
+{"seed":378,"script":"22 + 12","result":34}
+{"seed":379,"script":"17 + 16","result":33}
+{"seed":380,"script":"10","result":10}
+{"seed":381,"script":"18 * 0","result":0}
+{"seed":382,"script":"4 + 10","result":14}
+{"seed":383,"script":"16 * 12","result":192}
+{"seed":384,"script":"-12","result":-12}
+{"seed":385,"script":"15","result":15}
+{"seed":386,"script":"-22","result":-22}
+{"seed":387,"script":"1 * 25","result":25}
+{"seed":388,"script":"11 - 21","result":-10}
+{"seed":389,"script":"-20","result":-20}
+{"seed":390,"script":"2 / 16","result":0}
+{"seed":391,"script":"22 * 20","result":440}
+{"seed":392,"script":"-14","result":-14}
+{"seed":393,"script":"5 - 0","result":5}
+{"seed":394,"script":"7","result":7}
+{"seed":395,"script":"0 - 4","result":-4}
+{"seed":396,"script":"20 + 8","result":28}
+{"seed":397,"script":"12 + 14","result":26}
+{"seed":398,"script":"13","result":13}
+{"seed":399,"script":"22 + 19","result":41}
+{"seed":400,"script":"8 - 25","result":-17}
+{"seed":401,"script":"13 * 8","result":104}
+{"seed":402,"script":"20 + 13","result":33}
+{"seed":403,"script":"10 - 1","result":9}
+{"seed":404,"script":"12 + 0","result":12}
+{"seed":405,"script":"22 + 23","result":45}
+{"seed":406,"script":"13 - 25","result":-12}
+{"seed":407,"script":"-3","result":-3}
+{"seed":408,"script":"17 * 7","result":119}
+{"seed":409,"script":"4 / 17","result":0}
+{"seed":410,"script":"9 + 0","result":9}
+{"seed":411,"script":"10 - 6","result":4}
+{"seed":412,"script":"22 - 25","result":-3}
+{"seed":413,"script":"-14","result":-14}
+{"seed":414,"script":"11 * 19","result":209}
+{"seed":415,"script":"8 - 6","result":2}
+{"seed":416,"script":"0 - 16","result":-16}
+{"seed":417,"script":"25","result":25}
+{"seed":418,"script":"3 - 9","result":-6}
+{"seed":419,"script":"-23","result":-23}
+{"seed":420,"script":"25 + 11","result":36}
+{"seed":421,"script":"-19","result":-19}
+{"seed":422,"script":"0 - 10","result":-10}
+{"seed":423,"script":"17 - 20","result":-3}
+{"seed":424,"script":"25 / 21","result":1}
+{"seed":425,"script":"5 - 11","result":-6}
+{"seed":426,"script":"23 + 23","result":46}
+{"seed":427,"script":"15 + 25","result":40}
+{"seed":428,"script":"1 - 16","result":-15}
+{"seed":429,"script":"-3","result":-3}
+{"seed":430,"script":"4 - 0","result":4}
+{"seed":431,"script":"24","result":24}
+{"seed":432,"script":"-21","result":-21}
+{"seed":433,"script":"15 + 2","result":17}
+{"seed":434,"script":"16 - 6","result":10}
+{"seed":435,"script":"6","result":6}
+{"seed":436,"script":"24 - 12","result":12}
+{"seed":437,"script":"3 / 0","result":null}
+{"seed":438,"script":"18 + 16","result":34}
+{"seed":439,"script":"9 - 13","result":-4}
+{"seed":440,"script":"2 + 25","result":27}
+{"seed":441,"script":"25 + 12","result":37}
+{"seed":442,"script":"14 - 19","result":-5}
+{"seed":443,"script":"20 + 8","result":28}
+{"seed":444,"script":"0 - 9","result":-9}
+{"seed":445,"script":"7 / 2","result":3}
+{"seed":446,"script":"-19","result":-19}
+{"seed":447,"script":"16 - 0","result":16}
+{"seed":448,"script":"3 - 9","result":-6}
+{"seed":449,"script":"6 + 22","result":28}
+{"seed":450,"script":"20 + 4","result":24}
+{"seed":451,"script":"4 + 15","result":19}
+{"seed":452,"script":"21 - 21","result":0}
+{"seed":453,"script":"17 - 15","result":2}
+{"seed":454,"script":"23 - 17","result":6}
+{"seed":455,"script":"23","result":23}
+{"seed":456,"script":"13","result":13}
+{"seed":457,"script":"17","result":17}
+{"seed":458,"script":"16 + 14","result":30}
+{"seed":459,"script":"24","result":24}
+{"seed":460,"script":"24 - 15","result":9}
+{"seed":461,"script":"-24","result":-24}
+{"seed":462,"script":"-2","result":-2}
+{"seed":463,"script":"15 + 17","result":32}
+{"seed":464,"script":"17 - 19","result":-2}
+{"seed":465,"script":"7 + 1","result":8}
+{"seed":466,"script":"3","result":3}
+{"seed":467,"script":"12 - 2","result":10}
+{"seed":468,"script":"12","result":12}
+{"seed":469,"script":"9 - 21","result":-12}
+{"seed":470,"script":"11 + 5","result":16}
+{"seed":471,"script":"2","result":2}
+{"seed":472,"script":"20","result":20}
+{"seed":473,"script":"1 - 0","result":1}
+{"seed":474,"script":"1 + 13","result":14}
+{"seed":475,"script":"2","result":2}
+{"seed":476,"script":"18 * 8","result":144}
+{"seed":477,"script":"-1","result":-1}
+{"seed":478,"script":"4","result":4}
+{"seed":479,"script":"13","result":13}
+{"seed":480,"script":"21 - 9","result":12}
+{"seed":481,"script":"-15","result":-15}
+{"seed":482,"script":"9 * 13","result":117}
+{"seed":483,"script":"25 / 18","result":1}
+{"seed":484,"script":"14 / 10","result":1}
+{"seed":485,"script":"24 + 5","result":29}
+{"seed":486,"script":"15 + 8","result":23}
+{"seed":487,"script":"-10","result":-10}
+{"seed":488,"script":"23 + 23","result":46}
+{"seed":489,"script":"5","result":5}
+{"seed":490,"script":"15","result":15}
+{"seed":491,"script":"12 * 15","result":180}
+{"seed":492,"script":"0","result":0}
+{"seed":493,"script":"21","result":21}
+{"seed":494,"script":"-22","result":-22}
+{"seed":495,"script":"-6","result":-6}
+{"seed":496,"script":"-14","result":-14}
+{"seed":497,"script":"23 - 5","result":18}
+{"seed":498,"script":"19 * 25","result":475}
+{"seed":499,"script":"24 + 15","result":39}
+{"seed":500,"script":"18","result":18}
+{"seed":501,"script":"-20","result":-20}
+{"seed":502,"script":"5 * 20","result":100}
+{"seed":503,"script":"11 + 23","result":34}
+{"seed":504,"script":"18 * 11","result":198}
+{"seed":505,"script":"9 + 8","result":17}
+{"seed":506,"script":"12 * 18","result":216}
+{"seed":507,"script":"19 * 18","result":342}
+{"seed":508,"script":"21 / 13","result":1}
+{"seed":509,"script":"-13","result":-13}
+{"seed":510,"script":"-17","result":-17}
+{"seed":511,"script":"3 + 4","result":7}
+{"seed":512,"script":"14 + 4","result":18}
+{"seed":513,"script":"4 + 19","result":23}
+{"seed":514,"script":"20 - 20","result":0}
+{"seed":515,"script":"9 + 4","result":13}
+{"seed":516,"script":"24 / 18","result":1}
+{"seed":517,"script":"21","result":21}
+{"seed":518,"script":"11","result":11}
+{"seed":519,"script":"-0","result":0}
+{"seed":520,"script":"1","result":1}
+{"seed":521,"script":"9 + 8","result":17}
+{"seed":522,"script":"12 + 24","result":36}
+{"seed":523,"script":"21","result":21}
+{"seed":524,"script":"0 - 18","result":-18}
+{"seed":525,"script":"15","result":15}
+{"seed":526,"script":"6","result":6}
+{"seed":527,"script":"13","result":13}
+{"seed":528,"script":"3 / 15","result":0}
+{"seed":529,"script":"-4","result":-4}
+{"seed":530,"script":"25 + 17","result":42}
+{"seed":531,"script":"21","result":21}
+{"seed":532,"script":"19 + 4","result":23}
+{"seed":533,"script":"22 - 11","result":11}
+{"seed":534,"script":"17 * 6","result":102}
+{"seed":535,"script":"13 + 12","result":25}
+{"seed":536,"script":"-17","result":-17}
+{"seed":537,"script":"-7","result":-7}
+{"seed":538,"script":"1 - 25","result":-24}
+{"seed":539,"script":"24 - 17","result":7}
+{"seed":540,"script":"-21","result":-21}
+{"seed":541,"script":"14 - 12","result":2}
+{"seed":542,"script":"5 * 13","result":65}
+{"seed":543,"script":"4","result":4}
+{"seed":544,"script":"-8","result":-8}
+{"seed":545,"script":"23 - 21","result":2}
+{"seed":546,"script":"12 + 12","result":24}
+{"seed":547,"script":"22 + 8","result":30}
+{"seed":548,"script":"25","result":25}
+{"seed":549,"script":"6","result":6}
+{"seed":550,"script":"22 * 11","result":242}
+{"seed":551,"script":"21 * 7","result":147}
+{"seed":552,"script":"2 + 21","result":23}
+{"seed":553,"script":"14 * 4","result":56}
+{"seed":554,"script":"5 * 11","result":55}
+{"seed":555,"script":"5 + 4","result":9}
+{"seed":556,"script":"-6","result":-6}
+{"seed":557,"script":"3 + 21","result":24}
+{"seed":558,"script":"8","result":8}
+{"seed":559,"script":"13 + 25","result":38}
+{"seed":560,"script":"23 + 14","result":37}
+{"seed":561,"script":"-6","result":-6}
+{"seed":562,"script":"-22","result":-22}
+{"seed":563,"script":"25 * 9","result":225}
+{"seed":564,"script":"6","result":6}
+{"seed":565,"script":"25","result":25}
+{"seed":566,"script":"25 * 9","result":225}
+{"seed":567,"script":"15 + 2","result":17}
+{"seed":568,"script":"17 + 25","result":42}
+{"seed":569,"script":"-17","result":-17}
+{"seed":570,"script":"0 + 10","result":10}
+{"seed":571,"script":"3 + 19","result":22}
+{"seed":572,"script":"12","result":12}
+{"seed":573,"script":"-20","result":-20}
+{"seed":574,"script":"17 - 3","result":14}
+{"seed":575,"script":"21 - 25","result":-4}
+{"seed":576,"script":"-15","result":-15}
+{"seed":577,"script":"22 - 2","result":20}
+{"seed":578,"script":"18 + 23","result":41}
+{"seed":579,"script":"12 - 15","result":-3}
+{"seed":580,"script":"9 * 2","result":18}
+{"seed":581,"script":"-5","result":-5}
+{"seed":582,"script":"3 + 7","result":10}
+{"seed":583,"script":"3 / 9","result":0}
+{"seed":584,"script":"-8","result":-8}
+{"seed":585,"script":"23 + 6","result":29}
+{"seed":586,"script":"19 + 11","result":30}
+{"seed":587,"script":"-1","result":-1}
+{"seed":588,"script":"-12","result":-12}
+{"seed":589,"script":"20 + 7","result":27}
+{"seed":590,"script":"1 + 17","result":18}
+{"seed":591,"script":"16 / 3","result":5}
+{"seed":592,"script":"16 + 5","result":21}
+{"seed":593,"script":"11","result":11}
+{"seed":594,"script":"21 + 19","result":40}
+{"seed":595,"script":"11","result":11}
+{"seed":596,"script":"5 - 24","result":-19}
+{"seed":597,"script":"4 + 8","result":12}
+{"seed":598,"script":"23 + 14","result":37}
+{"seed":599,"script":"-10","result":-10}
+{"seed":600,"script":"11","result":11}
+{"seed":601,"script":"18 + 17","result":35}
+{"seed":602,"script":"10 - 16","result":-6}
+{"seed":603,"script":"18 + 10","result":28}
+{"seed":604,"script":"12 + 24","result":36}
+{"seed":605,"script":"18 + 13","result":31}
+{"seed":606,"script":"-1","result":-1}
+{"seed":607,"script":"-24","result":-24}
+{"seed":608,"script":"6 + 22","result":28}
+{"seed":609,"script":"-9","result":-9}
+{"seed":610,"script":"9 * 9","result":81}
+{"seed":611,"script":"11 / 20","result":0}
+{"seed":612,"script":"24 - 17","result":7}
+{"seed":613,"script":"25 - 3","result":22}
+{"seed":614,"script":"19 - 21","result":-2}
+{"seed":615,"script":"2 - 21","result":-19}
+{"seed":616,"script":"14 + 16","result":30}
+{"seed":617,"script":"-14","result":-14}
+{"seed":618,"script":"5 * 14","result":70}
+{"seed":619,"script":"0 * 23","result":0}
+{"seed":620,"script":"16 - 15","result":1}
+{"seed":621,"script":"19 - 16","result":3}
+{"seed":622,"script":"24 - 15","result":9}
+{"seed":623,"script":"5 + 24","result":29}
+{"seed":624,"script":"1 + 7","result":8}
+{"seed":625,"script":"8","result":8}
+{"seed":626,"script":"3 - 7","result":-4}
+{"seed":627,"script":"23","result":23}
+{"seed":628,"script":"17 + 23","result":40}
+{"seed":629,"script":"15 + 18","result":33}
+{"seed":630,"script":"4","result":4}
+{"seed":631,"script":"6 - 5","result":1}
+{"seed":632,"script":"17 - 1","result":16}
+{"seed":633,"script":"1 + 11","result":12}
+{"seed":634,"script":"20 + 23","result":43}
+{"seed":635,"script":"24 - 24","result":0}
+{"seed":636,"script":"25 + 0","result":25}
+{"seed":637,"script":"8 * 4","result":32}
+{"seed":638,"script":"-15","result":-15}
+{"seed":639,"script":"-19","result":-19}
+{"seed":640,"script":"14 + 5","result":19}
+{"seed":641,"script":"0 - 18","result":-18}
+{"seed":642,"script":"-8","result":-8}
+{"seed":643,"script":"12 / 24","result":0}
+{"seed":644,"script":"13 * 3","result":39}
+{"seed":645,"script":"4 + 13","result":17}
+{"seed":646,"script":"18 / 25","result":0}
+{"seed":647,"script":"17","result":17}
+{"seed":648,"script":"-18","result":-18}
+{"seed":649,"script":"7 - 11","result":-4}
+{"seed":650,"script":"21 - 5","result":16}
+{"seed":651,"script":"18 + 4","result":22}
+{"seed":652,"script":"18 + 16","result":34}
+{"seed":653,"script":"18 * 5","result":90}
+{"seed":654,"script":"-12","result":-12}
+{"seed":655,"script":"0 + 0","result":0}
+{"seed":656,"script":"-21","result":-21}
+{"seed":657,"script":"-25","result":-25}
+{"seed":658,"script":"2 + 20","result":22}
+{"seed":659,"script":"-24","result":-24}
+{"seed":660,"script":"20 + 24","result":44}
+{"seed":661,"script":"13","result":13}
+{"seed":662,"script":"-0","result":0}
+{"seed":663,"script":"-14","result":-14}
+{"seed":664,"script":"16","result":16}
+{"seed":665,"script":"7 * 16","result":112}
+{"seed":666,"script":"12 * 13","result":156}
+{"seed":667,"script":"13 + 21","result":34}
+{"seed":668,"script":"0 * 13","result":0}
+{"seed":669,"script":"16 - 15","result":1}
+{"seed":670,"script":"23 / 6","result":3}
+{"seed":671,"script":"12 + 22","result":34}
+{"seed":672,"script":"6 + 20","result":26}
+{"seed":673,"script":"14 / 12","result":1}
+{"seed":674,"script":"2 - 4","result":-2}
+{"seed":675,"script":"11 + 12","result":23}
+{"seed":676,"script":"21 + 19","result":40}
+{"seed":677,"script":"-20","result":-20}
+{"seed":678,"script":"10 + 0","result":10}
+{"seed":679,"script":"19","result":19}
+{"seed":680,"script":"-18","result":-18}
+{"seed":681,"script":"10 - 3","result":7}
+{"seed":682,"script":"6 / 18","result":0}
+{"seed":683,"script":"1 - 8","result":-7}
+{"seed":684,"script":"19 - 13","result":6}
+{"seed":685,"script":"2 - 7","result":-5}
+{"seed":686,"script":"16","result":16}
+{"seed":687,"script":"4 - 19","result":-15}
+{"seed":688,"script":"8","result":8}
+{"seed":689,"script":"-10","result":-10}
+{"seed":690,"script":"14 - 5","result":9}
+{"seed":691,"script":"-4","result":-4}
+{"seed":692,"script":"-4","result":-4}
+{"seed":693,"script":"18 * 21","result":378}
+{"seed":694,"script":"-8","result":-8}
+{"seed":695,"script":"23 - 7","result":16}
+{"seed":696,"script":"7 + 25","result":32}
+{"seed":697,"script":"1 + 8","result":9}
+{"seed":698,"script":"15","result":15}
+{"seed":699,"script":"25 - 20","result":5}
+{"seed":700,"script":"6 + 14","result":20}
+{"seed":701,"script":"3 * 25","result":75}
+{"seed":702,"script":"24 + 8","result":32}
+{"seed":703,"script":"4 + 15","result":19}
+{"seed":704,"script":"23 - 18","result":5}
+{"seed":705,"script":"9 + 21","result":30}
+{"seed":706,"script":"-8","result":-8}
+{"seed":707,"script":"20 + 10","result":30}
+{"seed":708,"script":"23 + 20","result":43}
+{"seed":709,"script":"8 / 1","result":8}
+{"seed":710,"script":"17 - 14","result":3}
+{"seed":711,"script":"-12","result":-12}
+{"seed":712,"script":"15 - 15","result":0}
+{"seed":713,"script":"9 - 11","result":-2}
+{"seed":714,"script":"10 + 3","result":13}
+{"seed":715,"script":"4 * 25","result":100}
+{"seed":716,"script":"23 + 25","result":48}
+{"seed":717,"script":"4 - 24","result":-20}
+{"seed":718,"script":"20 - 7","result":13}
+{"seed":719,"script":"22 - 3","result":19}
+{"seed":720,"script":"23 + 6","result":29}
+{"seed":721,"script":"13 + 5","result":18}
+{"seed":722,"script":"-4","result":-4}
+{"seed":723,"script":"6 / 8","result":0}
+{"seed":724,"script":"1 - 22","result":-21}
+{"seed":725,"script":"1 + 0","result":1}
+{"seed":726,"script":"11 - 25","result":-14}
+{"seed":727,"script":"16","result":16}
+{"seed":728,"script":"14","result":14}
+{"seed":729,"script":"-10","result":-10}
+{"seed":730,"script":"19 - 9","result":10}
+{"seed":731,"script":"-22","result":-22}
+{"seed":732,"script":"-12","result":-12}
+{"seed":733,"script":"20 - 14","result":6}
+{"seed":734,"script":"-25","result":-25}
+{"seed":735,"script":"4 * 0","result":0}
+{"seed":736,"script":"2 - 1","result":1}
+{"seed":737,"script":"6 + 0","result":6}
+{"seed":738,"script":"23 + 5","result":28}
+{"seed":739,"script":"22 + 11","result":33}
+{"seed":740,"script":"1 / 9","result":0}
+{"seed":741,"script":"16 - 23","result":-7}
+{"seed":742,"script":"9 - 4","result":5}
+{"seed":743,"script":"-9","result":-9}
+{"seed":744,"script":"17 - 10","result":7}
+{"seed":745,"script":"21 - 17","result":4}
+{"seed":746,"script":"5 * 12","result":60}
+{"seed":747,"script":"20 - 3","result":17}
+{"seed":748,"script":"10 + 9","result":19}
+{"seed":749,"script":"-14","result":-14}
+{"seed":750,"script":"4 - 7","result":-3}
+{"seed":751,"script":"10 * 13","result":130}
+{"seed":752,"script":"23 * 1","result":23}
+{"seed":753,"script":"10 + 21","result":31}
+{"seed":754,"script":"15 + 4","result":19}
+{"seed":755,"script":"9 - 2","result":7}
+{"seed":756,"script":"8 * 19","result":152}
+{"seed":757,"script":"5 - 14","result":-9}
+{"seed":758,"script":"25 - 16","result":9}
+{"seed":759,"script":"17 + 2","result":19}
+{"seed":760,"script":"10 + 3","result":13}
+{"seed":761,"script":"24 - 21","result":3}
+{"seed":762,"script":"11","result":11}
+{"seed":763,"script":"-15","result":-15}
+{"seed":764,"script":"21","result":21}
+{"seed":765,"script":"7 + 13","result":20}
+{"seed":766,"script":"25 - 7","result":18}
+{"seed":767,"script":"-3","result":-3}
+{"seed":768,"script":"14 + 9","result":23}
+{"seed":769,"script":"19 + 20","result":39}
+{"seed":770,"script":"24 - 14","result":10}
+{"seed":771,"script":"4","result":4}
+{"seed":772,"script":"17 + 10","result":27}
+{"seed":773,"script":"21 + 11","result":32}
+{"seed":774,"script":"3 - 18","result":-15}
+{"seed":775,"script":"0 * 5","result":0}
+{"seed":776,"script":"19 * 23","result":437}
+{"seed":777,"script":"14 - 11","result":3}
+{"seed":778,"script":"4 + 24","result":28}
+{"seed":779,"script":"25 / 5","result":5}
+{"seed":780,"script":"25 + 10","result":35}
+{"seed":781,"script":"12 - 4","result":8}
+{"seed":782,"script":"-8","result":-8}
+{"seed":783,"script":"6 / 6","result":1}
+{"seed":784,"script":"19 * 1","result":19}
+{"seed":785,"script":"5 * 12","result":60}
+{"seed":786,"script":"8 + 20","result":28}
+{"seed":787,"script":"20 - 15","result":5}
+{"seed":788,"script":"-25","result":-25}
+{"seed":789,"script":"20 * 1","result":20}
+{"seed":790,"script":"-23","result":-23}
+{"seed":791,"script":"-19","result":-19}
+{"seed":792,"script":"16 / 24","result":0}
+{"seed":793,"script":"0 + 22","result":22}
+{"seed":794,"script":"16 - 2","result":14}
+{"seed":795,"script":"14 - 15","result":-1}
+{"seed":796,"script":"15 / 17","result":0}
+{"seed":797,"script":"12","result":12}
+{"seed":798,"script":"13 - 1","result":12}
+{"seed":799,"script":"0 - 21","result":-21}
+{"seed":800,"script":"-18","result":-18}
+{"seed":801,"script":"11 + 3","result":14}
+{"seed":802,"script":"17 / 11","result":1}
+{"seed":803,"script":"15 + 16","result":31}
+{"seed":804,"script":"14 * 2","result":28}
+{"seed":805,"script":"2 * 22","result":44}
+{"seed":806,"script":"0","result":0}
+{"seed":807,"script":"3 - 24","result":-21}
+{"seed":808,"script":"20 - 9","result":11}
+{"seed":809,"script":"12 + 5","result":17}
+{"seed":810,"script":"-18","result":-18}
+{"seed":811,"script":"16 + 16","result":32}
+{"seed":812,"script":"19 + 22","result":41}
+{"seed":813,"script":"19 + 23","result":42}
+{"seed":814,"script":"-4","result":-4}
+{"seed":815,"script":"9","result":9}
+{"seed":816,"script":"3 + 13","result":16}
+{"seed":817,"script":"10 + 11","result":21}
+{"seed":818,"script":"10 * 25","result":250}
+{"seed":819,"script":"5 - 4","result":1}
+{"seed":820,"script":"16 - 15","result":1}
+{"seed":821,"script":"15 / 9","result":1}
+{"seed":822,"script":"12","result":12}
+{"seed":823,"script":"7 - 5","result":2}
+{"seed":824,"script":"-24","result":-24}
+{"seed":825,"script":"23 - 9","result":14}
+{"seed":826,"script":"20 / 8","result":2}
+{"seed":827,"script":"8 - 15","result":-7}
+{"seed":828,"script":"23 + 2","result":25}
+{"seed":829,"script":"15 + 6","result":21}
+{"seed":830,"script":"24 + 7","result":31}
+{"seed":831,"script":"12 + 20","result":32}
+{"seed":832,"script":"-17","result":-17}
+{"seed":833,"script":"9 / 11","result":0}
+{"seed":834,"script":"6 - 7","result":-1}
+{"seed":835,"script":"-22","result":-22}
+{"seed":836,"script":"17 - 22","result":-5}
+{"seed":837,"script":"14 / 3","result":4}
+{"seed":838,"script":"10 * 18","result":180}
+{"seed":839,"script":"-3","result":-3}
+{"seed":840,"script":"13 + 14","result":27}
+{"seed":841,"script":"22 / 19","result":1}
+{"seed":842,"script":"18 * 2","result":36}
+{"seed":843,"script":"-16","result":-16}
+{"seed":844,"script":"-23","result":-23}
+{"seed":845,"script":"20 + 2","result":22}
+{"seed":846,"script":"15 + 5","result":20}
+{"seed":847,"script":"12 - 5","result":7}
+{"seed":848,"script":"0","result":0}
+{"seed":849,"script":"1 + 21","result":22}
+{"seed":850,"script":"14 * 2","result":28}
+{"seed":851,"script":"-22","result":-22}
+{"seed":852,"script":"-13","result":-13}
+{"seed":853,"script":"9 - 23","result":-14}
+{"seed":854,"script":"11","result":11}
+{"seed":855,"script":"8 - 5","result":3}
+{"seed":856,"script":"7 - 24","result":-17}
+{"seed":857,"script":"21","result":21}
+{"seed":858,"script":"2 / 11","result":0}
+{"seed":859,"script":"7 / 3","result":2}
+{"seed":860,"script":"21 + 2","result":23}
+{"seed":861,"script":"21 * 1","result":21}
+{"seed":862,"script":"6 / 20","result":0}
+{"seed":863,"script":"-8","result":-8}
+{"seed":864,"script":"15 - 0","result":15}
+{"seed":865,"script":"17 - 0","result":17}
+{"seed":866,"script":"6","result":6}
+{"seed":867,"script":"-11","result":-11}
+{"seed":868,"script":"10 - 17","result":-7}
+{"seed":869,"script":"12 - 7","result":5}
+{"seed":870,"script":"14 - 1","result":13}
+{"seed":871,"script":"3 - 14","result":-11}
+{"seed":872,"script":"15 / 4","result":3}
+{"seed":873,"script":"18 + 23","result":41}
+{"seed":874,"script":"11 * 11","result":121}
+{"seed":875,"script":"23 * 25","result":575}
+{"seed":876,"script":"-23","result":-23}
+{"seed":877,"script":"13 - 5","result":8}
+{"seed":878,"script":"24 / 10","result":2}
+{"seed":879,"script":"17 + 11","result":28}
+{"seed":880,"script":"2","result":2}
+{"seed":881,"script":"-5","result":-5}
+{"seed":882,"script":"22","result":22}
+{"seed":883,"script":"5 / 10","result":0}
+{"seed":884,"script":"5 * 19","result":95}
+{"seed":885,"script":"1 - 25","result":-24}
+{"seed":886,"script":"17 + 13","result":30}
+{"seed":887,"script":"15 * 6","result":90}
+{"seed":888,"script":"18 + 14","result":32}
+{"seed":889,"script":"-25","result":-25}
+{"seed":890,"script":"9 + 9","result":18}
+{"seed":891,"script":"12","result":12}
+{"seed":892,"script":"9 - 21","result":-12}
+{"seed":893,"script":"8 * 6","result":48}
+{"seed":894,"script":"9 * 24","result":216}
+{"seed":895,"script":"-0","result":0}
+{"seed":896,"script":"3 + 5","result":8}
+{"seed":897,"script":"1 + 24","result":25}
+{"seed":898,"script":"2 - 10","result":-8}
+{"seed":899,"script":"18 + 22","result":40}
+{"seed":900,"script":"7","result":7}
+{"seed":901,"script":"9 * 3","result":27}
+{"seed":902,"script":"20","result":20}
+{"seed":903,"script":"20 + 2","result":22}
+{"seed":904,"script":"-19","result":-19}
+{"seed":905,"script":"-11","result":-11}
+{"seed":906,"script":"18 + 25","result":43}
+{"seed":907,"script":"-1","result":-1}
+{"seed":908,"script":"-12","result":-12}
+{"seed":909,"script":"12 + 20","result":32}
+{"seed":910,"script":"-14","result":-14}
+{"seed":911,"script":"22 * 12","result":264}
+{"seed":912,"script":"9 / 6","result":1}
+{"seed":913,"script":"15 + 23","result":38}
+{"seed":914,"script":"25 + 25","result":50}
+{"seed":915,"script":"25 + 10","result":35}
+{"seed":916,"script":"-21","result":-21}
+{"seed":917,"script":"2 * 1","result":2}
+{"seed":918,"script":"-22","result":-22}
+{"seed":919,"script":"-23","result":-23}
+{"seed":920,"script":"-13","result":-13}
+{"seed":921,"script":"11","result":11}
+{"seed":922,"script":"15 + 6","result":21}
+{"seed":923,"script":"11 + 17","result":28}
+{"seed":924,"script":"10 / 14","result":0}
+{"seed":925,"script":"2","result":2}
+{"seed":926,"script":"-4","result":-4}
+{"seed":927,"script":"-4","result":-4}
+{"seed":928,"script":"17 - 4","result":13}
+{"seed":929,"script":"2 + 25","result":27}
+{"seed":930,"script":"25","result":25}
+{"seed":931,"script":"17 - 18","result":-1}
+{"seed":932,"script":"3 * 21","result":63}
+{"seed":933,"script":"5 / 17","result":0}
+{"seed":934,"script":"0 * 0","result":0}
+{"seed":935,"script":"-12","result":-12}
+{"seed":936,"script":"13 + 5","result":18}
+{"seed":937,"script":"20 / 2","result":10}
+{"seed":938,"script":"11 * 21","result":231}
+{"seed":939,"script":"4","result":4}
+{"seed":940,"script":"8 - 0","result":8}
+{"seed":941,"script":"17 - 12","result":5}
+{"seed":942,"script":"6","result":6}
+{"seed":943,"script":"17 / 22","result":0}
+{"seed":944,"script":"16 + 17","result":33}
+{"seed":945,"script":"22 * 20","result":440}
+{"seed":946,"script":"20 + 24","result":44}
+{"seed":947,"script":"8 + 11","result":19}
+{"seed":948,"script":"24 * 0","result":0}
+{"seed":949,"script":"11 - 20","result":-9}
+{"seed":950,"script":"22 - 25","result":-3}
+{"seed":951,"script":"8 + 9","result":17}
+{"seed":952,"script":"1 + 14","result":15}
+{"seed":953,"script":"12 + 22","result":34}
+{"seed":954,"script":"1 + 23","result":24}
+{"seed":955,"script":"-14","result":-14}
+{"seed":956,"script":"-4","result":-4}
+{"seed":957,"script":"24 * 6","result":144}
+{"seed":958,"script":"19 - 15","result":4}
+{"seed":959,"script":"3 * 20","result":60}
+{"seed":960,"script":"5 - 1","result":4}
+{"seed":961,"script":"-16","result":-16}
+{"seed":962,"script":"20 - 20","result":0}
+{"seed":963,"script":"25","result":25}
+{"seed":964,"script":"17 * 17","result":289}
+{"seed":965,"script":"10 - 14","result":-4}
+{"seed":966,"script":"21 + 18","result":39}
+{"seed":967,"script":"3","result":3}
+{"seed":968,"script":"18 - 20","result":-2}
+{"seed":969,"script":"21 - 17","result":4}
+{"seed":970,"script":"-3","result":-3}
+{"seed":971,"script":"22 - 8","result":14}
+{"seed":972,"script":"-17","result":-17}
+{"seed":973,"script":"1 + 13","result":14}
+{"seed":974,"script":"10","result":10}
+{"seed":975,"script":"22 * 1","result":22}
+{"seed":976,"script":"22 + 1","result":23}
+{"seed":977,"script":"-1","result":-1}
+{"seed":978,"script":"4","result":4}
+{"seed":979,"script":"25 * 6","result":150}
+{"seed":980,"script":"5 * 25","result":125}
+{"seed":981,"script":"1","result":1}
+{"seed":982,"script":"11 * 2","result":22}
+{"seed":983,"script":"-24","result":-24}
+{"seed":984,"script":"-15","result":-15}
+{"seed":985,"script":"6 - 11","result":-5}
+{"seed":986,"script":"2 + 11","result":13}
+{"seed":987,"script":"16 / 24","result":0}
+{"seed":988,"script":"19","result":19}
+{"seed":989,"script":"22 - 8","result":14}
+{"seed":990,"script":"8 + 25","result":33}
+{"seed":991,"script":"20 + 5","result":25}
+{"seed":992,"script":"11","result":11}
+{"seed":993,"script":"2 + 4","result":6}
+{"seed":994,"script":"24","result":24}
+{"seed":995,"script":"9 + 24","result":33}
+{"seed":996,"script":"14","result":14}
+{"seed":997,"script":"9 * 8","result":72}
+{"seed":998,"script":"19 + 17","result":36}
+{"seed":999,"script":"18 + 18","result":36}

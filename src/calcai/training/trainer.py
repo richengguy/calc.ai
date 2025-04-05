@@ -43,11 +43,12 @@ def _compute_sample_loss(
     actual_tokens = list(model.tokenizer.to_tokens(query_str))
 
     num_tokens = len(expected_tokens) - len(actual_tokens)
+    start_expected = len(actual_tokens)
 
     sample_loss = torch.zeros((1,))
 
     logit, token = model.inference_step(actual_tokens, init=True)
-    for expected in expected_tokens[len(actual_tokens) :]:
+    for expected in expected_tokens[start_expected:]:
         token_loss = cross_entropy(logit, Tensor([expected]))
         sample_loss += token_loss
 

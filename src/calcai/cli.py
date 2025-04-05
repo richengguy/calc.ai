@@ -20,6 +20,13 @@ def main() -> None:
     help="Number of training samples to generate.",
 )
 @click.option(
+    "-d",
+    "--depth",
+    metavar="N",
+    default=3,
+    help="Depth, or complexity, of the generated expressions."
+)
+@click.option(
     "-n",
     "--max",
     "max_value",
@@ -35,7 +42,7 @@ def main() -> None:
     help="Specify a possible variable name.  Can be repeated.",
 )
 @click.argument("output", type=click.Path(path_type=Path))
-def generate_data(samples: int, max_value: int, vars: list[str], output: Path) -> None:
+def generate_data(samples: int, depth: int, max_value: int, vars: list[str], output: Path) -> None:
     """Generate training data for the language model.
 
     The training data is saved into OUTPUT as a JSONL file, where each line is a
@@ -43,7 +50,7 @@ def generate_data(samples: int, max_value: int, vars: list[str], output: Path) -
     """
     with SampleWriter(output) as writer:
         generator = ExpressionGenerator(max_value)
-        builder = ScriptBuilder(generator)
+        builder = ScriptBuilder(generator, expr_depth=depth)
         builder.set_variables(vars)
         for script in builder.generate_scripts(samples):
             writer.write(script)
