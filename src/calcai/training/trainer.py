@@ -7,10 +7,7 @@ from torch import Tensor
 from torch.nn.functional import cross_entropy
 from torch.optim import Adam
 
-from ..model import (
-    CalculatorLanguageModel,
-    Query
-)
+from ..model import CalculatorLanguageModel, Query
 from .data import SampleData
 
 
@@ -174,6 +171,7 @@ class ModelTrainer:
         """
         training_loss: list[float] = []
         test_loss: list[float] = []
+        test_accuracy: list[tuple[float, float]] = []
 
         if seed := self._seed:
             torch.manual_seed(seed)
@@ -200,6 +198,9 @@ class ModelTrainer:
                     expected_str = "".join(model.tokenizer.from_tokens(expected))
                     actual_str = "".join(model.tokenizer.from_tokens(actual))
                     last_epoch_loss = None if len(test_loss) == 0 else test_loss[-1]
+                    last_epoch_accuracy = (
+                        None if len(test_accuracy) == 0 else test_accuracy[-1]
+                    )
                     callback(
                         TrainingIteration(
                             n,
@@ -208,7 +209,7 @@ class ModelTrainer:
                             actual_str,
                             loss.item(),
                             last_epoch_loss,
-                            None,
+                            last_epoch_accuracy,
                         )
                     )
 
@@ -216,11 +217,26 @@ class ModelTrainer:
             # used for the backprogation, but without any gradient updates.
             with torch.no_grad():
                 model.pytorch_model.eval()
+
+                num_samples = len(self._testing_data)
+                num_correct = 0
+                num_invalid = 0
+
                 epoch_loss = torch.zeros((1,))
                 for sample in self._testing_data:
-                    loss, _, _ = _compute_sample_loss(sample, model)
+                    loss, _, output = _compute_sample_loss(sample, model)
                     epoch_loss += loss
 
+                    try:
+                        answer = Query.parse(output, model.tokenizer)
+                        if answer.result == sample.result:
+                            num_correct += 1
+                    except ValueError:
+                        num_invalid += 1
+
                 test_loss.append(epoch_loss.item() / len(self._testing_data))
+                test_accuracy.append(
+                    (num_correct / num_samples, num_invalid / num_samples)
+                )
 
         return training_loss, test_loss

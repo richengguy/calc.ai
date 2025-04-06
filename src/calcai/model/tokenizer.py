@@ -187,6 +187,7 @@ class Query:
     formatted string.  The Query object is also able to parse the input/output
     responses.
     """
+
     def __init__(self, expr: str, *, result: int | None = None) -> None:
         """
         Parameters
@@ -225,12 +226,14 @@ class Query:
 
         if self._show_result:
             result_str = ControlToken.NULL if self.result is None else str(self.result)
-            parts.append(f"{ControlToken.RESULT_START}{result_str}{ControlToken.RESULT_STOP}")
+            parts.append(
+                f"{ControlToken.RESULT_START}{result_str}{ControlToken.RESULT_STOP}"
+            )
 
         return "".join(parts)
 
     @staticmethod
-    def parse(query: str, tokenizer: Tokenizer) -> "Query":
+    def parse(query: str | list[int], tokenizer: Tokenizer) -> "Query":
         """Parse a string and convert it into a Query object.
 
         The query parsing uses a tokenize for the inital string preprocessing.
@@ -242,8 +245,8 @@ class Query:
 
         Parameters
         ----------
-        query : str
-            input query sring
+        query : str or list[int]
+            input query string or a list of token IDs
         tokenizer : Tokenizer
             tokenizer instance
 
@@ -257,8 +260,12 @@ class Query:
         ValueError
             if the query string could not be parsed
         """
+        if isinstance(query, str):
+            token_stream = tokenizer.to_tokens(query)
+        else:
+            token_stream = iter(query)
+
         # Make sure that we're in the start of an expression statement.
-        token_stream = tokenizer.to_tokens(query)
         if next(token_stream) != tokenizer.control_id(ControlToken.EXPR_START):
             raise ValueError(f"Query must start with a {ControlToken.EXPR_START}.")
 
@@ -286,7 +293,9 @@ class Query:
         # indicate the start of a result statement.
         try:
             if next(token_stream) != tokenizer.control_id(ControlToken.RESULT_START):
-                raise ValueError(f"Result must start with a {ControlToken.RESULT_START}.")
+                raise ValueError(
+                    f"Result must start with a {ControlToken.RESULT_START}."
+                )
         except StopIteration:
             return Query("".join(tokenizer.from_tokens(expr_tokens)))
 

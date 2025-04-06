@@ -28,11 +28,19 @@ def _update_training_display(progress: Progress, iter: TrainingIteration) -> Tab
     model.add_row(f"Loss     » {iter.loss}")
 
     epoch_loss = "N/A" if iter.test_loss is None else iter.test_loss
+    epoch_accuracy = (
+        "N/A" if iter.test_accuracy is None else f"{iter.test_accuracy[0] * 100}%"
+    )
+    epoch_invalid = (
+        "N/A" if iter.test_accuracy is None else f"{iter.test_accuracy[1] * 100}%"
+    )
 
     overall = Table.grid()
     overall.add_row(progress)
     overall.add_row("")
     overall.add_row(f"Test Loss :arrow_forward: {epoch_loss}")
+    overall.add_row(f" Accuracy :arrow_forward: {epoch_accuracy}")
+    overall.add_row(f"  Invalid :arrow_forward: {epoch_invalid}")
 
     table = Table.grid(expand=True)
     table.add_column(width=40, min_width=40, max_width=40)

@@ -1,6 +1,6 @@
 import pytest
 
-from calcai.model.tokenizer import ControlToken, Tokenizer, Query
+from calcai.model.tokenizer import ControlToken, Query, Tokenizer
 
 
 @pytest.mark.parametrize("token", list(ControlToken))
@@ -52,10 +52,12 @@ def test_tokenizer_error_handling(input: str, bad_token: str) -> None:
     [
         ("1 + 2", None, "{expr=}1 + 2{=expr}", False),
         ("1 + 2", 3, "{expr=}1 + 2{=expr}{result=}3{=result}", True),
-        ("3 / 0", None, "{expr=}3 / 0{=expr}{result=}{null}{=result}", True)
-    ]
+        ("3 / 0", None, "{expr=}3 / 0{=expr}{result=}{null}{=result}", True),
+    ],
 )
-def test_create_query(expr: str, result: int | None, expected: str, show_result: bool) -> None:
+def test_create_query(
+    expr: str, result: int | None, expected: str, show_result: bool
+) -> None:
     query = Query(expr, result=result)
     query.show_result(show_result)
     assert str(query) == expected
@@ -66,8 +68,8 @@ def test_create_query(expr: str, result: int | None, expected: str, show_result:
     [
         ("{expr=}1 + 2{=expr}", "1 + 2", None),
         ("{expr=}1 + 2{=expr}{result=}3{=result}", "1 + 2", 3),
-        ("{expr=}3 / 0{=expr}{result=}{null}{=result}", "3 / 0", None)
-    ]
+        ("{expr=}3 / 0{=expr}{result=}{null}{=result}", "3 / 0", None),
+    ],
 )
 def test_parse_valid_queries(query: str, expr: str, result: int | None) -> None:
     tokenizer = Tokenizer()
@@ -85,7 +87,7 @@ def test_parse_valid_queries(query: str, expr: str, result: int | None) -> None:
         "{expr=}1 + 2{=expr}{result=}3",
         "{expr=}1 + 2{=expr}{result=}abc{=result}",
         "{expr=}1 + 2{=expr}{expr=}{result=}3{=result}",
-    ]
+    ],
 )
 def test_parse_invalid_queries(query: str) -> None:
     tokenizer = Tokenizer()
