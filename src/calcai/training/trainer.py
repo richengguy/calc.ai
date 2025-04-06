@@ -9,9 +9,8 @@ from torch.optim import Adam
 
 from ..model import (
     CalculatorLanguageModel,
-    ControlToken,
-    create_query,
     create_output_string,
+    create_query,
 )
 from .data import SampleData
 
@@ -33,6 +32,8 @@ class TrainingIteration:
     """What the model actually generated"""
     loss: float
     """The training loss, averaged over the number of generated tokens."""
+    test_loss: float | None
+    """The test loss, calculated for the *last* epoch."""
 
 
 TrainingCallback = Callable[[TrainingIteration], None]
@@ -46,7 +47,6 @@ def _compute_sample_loss(
 
     expected_tokens = list(model.tokenizer.to_tokens(expected_str))
     actual_tokens = list(model.tokenizer.to_tokens(query_str))
-    stop_token = model.tokenizer.forward_map[ControlToken.RESULT_STOP]
 
     start_expected = len(actual_tokens)
 
@@ -55,13 +55,16 @@ def _compute_sample_loss(
 
     logit, token = model.inference_step(actual_tokens, init=True)
     for expected in expected_tokens[start_expected:]:
+        # Compute the token loss and add it to the total sample loss.  It will
+        # be averages across all samples.
         token_loss = cross_entropy(logit, torch.tensor([expected]))
         sample_loss += token_loss
+
+        # Keep track of what the model actual produces.
         actual_tokens.append(token)
 
-        if token == stop_token:
-            break
-
+        # Generate the next token and see how close it got to the expected
+        # result.
         logit, token = model.inference_step(actual_tokens)
         num_generated += 1
 
@@ -127,6 +130,11 @@ class ModelTrainer:
         self._testing_data = shuffled_data[:num_test]
         self._training_data = shuffled_data[num_test:]
 
+    @property
+    def training_samples(self) -> int:
+        """The number of samples used for training, out of the total training set."""
+        return len(self._training_data)
+
     def train(
         self,
         model: CalculatorLanguageModel,
@@ -176,8 +184,11 @@ class ModelTrainer:
                 if callback is not None:
                     expected_str = "".join(model.tokenizer.from_tokens(expected))
                     actual_str = "".join(model.tokenizer.from_tokens(actual))
+                    last_epoch_loss = None if len(test_loss) == 0 else test_loss[-1]
                     callback(
-                        TrainingIteration(n, i, expected_str, actual_str, loss.item())
+                        TrainingIteration(
+                            n, i, expected_str, actual_str, loss.item(), last_epoch_loss
+                        )
                     )
 
             # Now run through the test samples.  This is the same calculation as
@@ -189,6 +200,6 @@ class ModelTrainer:
                     loss, _, _ = _compute_sample_loss(sample, model)
                     epoch_loss += loss
 
-                test_loss.append(epoch_loss.item())
+                test_loss.append(epoch_loss.item() / len(self._testing_data))
 
         return training_loss, test_loss

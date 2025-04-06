@@ -1,6 +1,6 @@
 import pytest
 
-from calcai.model import create_query, create_output_string
+from calcai.model import create_output_string, create_query
 from calcai.model.tokenizer import ControlToken, Tokenizer
 
 

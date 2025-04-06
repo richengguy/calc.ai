@@ -1,8 +1,14 @@
 from pathlib import Path
 
 import click
+import torch
+from rich import box
+from rich.live import Live
+from rich.panel import Panel
+from rich.progress import Progress
+from rich.table import Table
 
-from ._console import print
+from ._console import console, clear_screen, print
 from .model import CalculatorLanguageModel
 from .training import (
     ExpressionGenerator,
@@ -14,14 +20,33 @@ from .training import (
 )
 
 
-def _training_callback(iter: TrainingIteration) -> None:
-    if iter.iteration != 0 and (iter.iteration % 50) != 0:
-        return
+def _update_training_display(progress: Progress, iter: TrainingIteration) -> Table:
+    model = Table(expand=True, show_header=False, box=box.MINIMAL)
+    model.add_row(f"Expected » {iter.expected}")
+    model.add_row(f"Actual   » {iter.actual}")
+    model.add_section()
+    model.add_row(f"Loss     » {iter.loss}")
 
-    print(f"Epoch {iter.epoch} - Iteration {iter.iteration}")
-    print(f"Loss = {iter.loss}", indent=2, bullet="")
-    print(f"Expected = {iter.expected}", indent=2, bullet="")
-    print(f"Actual   = {iter.actual}", indent=2, bullet="")
+    epoch_loss = "N/A" if iter.test_loss is None else iter.test_loss
+
+    overall = Table.grid()
+    overall.add_row(progress)
+    overall.add_row("")
+    overall.add_row(f"Test Loss :arrow_forward: {epoch_loss}")
+
+    table = Table.grid(expand=True)
+    table.add_column(width=40, min_width=40, max_width=40)
+    table.add_column(justify="left", width=80)
+    table.add_row(
+        Panel(overall, title="Training Progress", width=40, padding=(1, 0)),
+        Panel(
+            model,
+            box=box.SQUARE,
+            title=f"Epoch {iter.epoch} :: Iteration {iter.iteration}",
+        ),
+    )
+
+    return table
 
 
 @click.group()
@@ -94,13 +119,20 @@ def generate_data(
     help="The number of training epochs.",
 )
 @click.option(
+    "-t",
+    "--threads",
+    metavar="N",
+    type=int,
+    help="The number of threads to use.  Use's PyTorch's default if not provided.",
+)
+@click.option(
     "-s",
     "--seed",
     metavar="S",
     type=int,
     help="The seed used for initializing all RNGs during training.",
 )
-def train_model(data: Path, epochs: int, seed: int | None) -> None:
+def train_model(data: Path, epochs: int, threads: int | None, seed: int | None) -> None:
     """Train a language model with some training data.
 
     The training data is provided in a json lines file at DATA.  A small portion
@@ -110,11 +142,39 @@ def train_model(data: Path, epochs: int, seed: int | None) -> None:
     model = CalculatorLanguageModel()
     trainer = ModelTrainer(samples, epochs=epochs, seed=seed)
 
+    clear_screen()
+
     print("Starting model training.")
     if seed is not None:
         print(f"Seed {seed}", indent=2)
 
-    trainer.train(model, callback=_training_callback)
+    threads = torch.get_num_threads() if threads is None else threads
+    torch.set_num_threads(threads)
+    print(f"Threads: {threads}", indent=2)
+
+    progress = Progress(console=console)
+    task_total = progress.add_task("Overall", total=epochs * trainer.training_samples)
+
+    with Live(console=console) as live:
+
+        def progress_callback(iter: TrainingIteration) -> None:
+            if iter.iteration == 0:
+                if iter.epoch > 0:
+                    task_epoch = progress.task_ids[-1]
+                    progress.remove_task(task_epoch)
+                task_epoch = progress.add_task(
+                    f"Epoch {iter.epoch}", total=trainer.training_samples
+                )
+            else:
+                task_epoch = progress.task_ids[-1]
+
+            progress.update(task_total, advance=1)
+            progress.update(task_epoch, advance=1)
+
+            if iter.iteration == 0 or (iter.iteration % 100) == 0:
+                live.update(_update_training_display(progress, iter))
+
+        trainer.train(model, callback=progress_callback)
 
 
 @main.command()
