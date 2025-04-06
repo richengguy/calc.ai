@@ -1,7 +1,6 @@
 import pytest
 
-from calcai.model import create_output_string, create_query
-from calcai.model.tokenizer import ControlToken, Tokenizer
+from calcai.model.tokenizer import ControlToken, Tokenizer, Query
 
 
 @pytest.mark.parametrize("token", list(ControlToken))
@@ -44,14 +43,51 @@ def test_tokenizer_roundtrip(input: str) -> None:
 def test_tokenizer_error_handling(input: str, bad_token: str) -> None:
     """Can correctly report bad token syntax."""
     t = Tokenizer()
-    with pytest.raises(RuntimeError, match=bad_token):
+    with pytest.raises(ValueError, match=bad_token):
         list(t.to_tokens(input))
 
 
-def test_create_query() -> None:
-    assert create_query("1 + 2") == "{expr=}1 + 2{=expr}{result=}"
-    assert create_output_string("1 + 2", 3) == "{expr=}1 + 2{=expr}{result=}3{=result}"
-    assert (
-        create_output_string("3 / 0", None)
-        == "{expr=}3 / 0{=expr}{result=}{null}{=result}"
-    )
+@pytest.mark.parametrize(
+    "expr,result,expected,show_result",
+    [
+        ("1 + 2", None, "{expr=}1 + 2{=expr}", False),
+        ("1 + 2", 3, "{expr=}1 + 2{=expr}{result=}3{=result}", True),
+        ("3 / 0", None, "{expr=}3 / 0{=expr}{result=}{null}{=result}", True)
+    ]
+)
+def test_create_query(expr: str, result: int | None, expected: str, show_result: bool) -> None:
+    query = Query(expr, result=result)
+    query.show_result(show_result)
+    assert str(query) == expected
+
+
+@pytest.mark.parametrize(
+    "query,expr,result",
+    [
+        ("{expr=}1 + 2{=expr}", "1 + 2", None),
+        ("{expr=}1 + 2{=expr}{result=}3{=result}", "1 + 2", 3),
+        ("{expr=}3 / 0{=expr}{result=}{null}{=result}", "3 / 0", None)
+    ]
+)
+def test_parse_valid_queries(query: str, expr: str, result: int | None) -> None:
+    tokenizer = Tokenizer()
+    parsed = Query.parse(query, tokenizer)
+    assert parsed.expr == expr
+    assert parsed.result == result
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "{expr=}1 + 2",
+        "1 + 2",
+        "{expr=}1 + 2{=expr}3{=result}",
+        "{expr=}1 + 2{=expr}{result=}3",
+        "{expr=}1 + 2{=expr}{result=}abc{=result}",
+        "{expr=}1 + 2{=expr}{expr=}{result=}3{=result}",
+    ]
+)
+def test_parse_invalid_queries(query: str) -> None:
+    tokenizer = Tokenizer()
+    with pytest.raises(ValueError):
+        Query.parse(query, tokenizer)

@@ -9,8 +9,7 @@ from torch.optim import Adam
 
 from ..model import (
     CalculatorLanguageModel,
-    create_output_string,
-    create_query,
+    Query
 )
 from .data import SampleData
 
@@ -53,8 +52,13 @@ TrainingCallback = Callable[[TrainingIteration], None]
 def _compute_sample_loss(
     sample: SampleData, model: CalculatorLanguageModel
 ) -> tuple[Tensor, list[int], list[int]]:
-    expected_str = create_output_string(sample.script, sample.result)
-    query_str = create_query(sample.script)
+    query = Query(sample.script, result=sample.result)
+
+    query.show_result(True)
+    expected_str = str(query)
+
+    query.show_result(False)
+    query_str = str(query)
 
     expected_tokens = list(model.tokenizer.to_tokens(expected_str))
     actual_tokens = list(model.tokenizer.to_tokens(query_str))
@@ -198,7 +202,13 @@ class ModelTrainer:
                     last_epoch_loss = None if len(test_loss) == 0 else test_loss[-1]
                     callback(
                         TrainingIteration(
-                            n, i, expected_str, actual_str, loss.item(), last_epoch_loss, None
+                            n,
+                            i,
+                            expected_str,
+                            actual_str,
+                            loss.item(),
+                            last_epoch_loss,
+                            None,
                         )
                     )
 
