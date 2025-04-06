@@ -26,6 +26,17 @@ class ControlToken(StrEnum):
     EXPR_STOP = "{=expr}"
     """Denotes the end of a arithmetic expression script."""
 
+    SOLUTION_START = "{solution=}"
+    """Denotes the start of a solution block.
+
+    A solution lists out out how to solve the expression inside of an expression
+    block.  There may be multiple parts to the solution, all separated by a
+    newline.
+    """
+
+    SOLUTION_STOP = "{=solution}"
+    """Denotes the end of a solution block."""
+
     RESULT_START = "{result=}"
     """Denotes the start of a result block.
 
