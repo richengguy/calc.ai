@@ -101,23 +101,26 @@ class CalculatorLanguageModel:
             the set of tokens produced by the model; this will go up to a
             terminal token or the context window is exhausted
         """
-        context = torch.zeros((1, self._max_context))
+        context = torch.zeros((self._max_context,))
         for i, token in enumerate(self.tokenizer.to_tokens(query)):
-            context[0, i] = token
+            context[i] = token
 
         start_ind = i
+        stop_token = self.tokenizer.forward_map[ControlToken.RESULT_STOP]
         self._model.eval()
         with torch.no_grad():
-            for i in range(start_ind, self._max_context):
-                logits: Tensor = self._model(context[0, 0:i])
+            for i in range(start_ind, self._max_context - 1):
+                logits: Tensor = self._model(context[torch.newaxis, 0:i])
 
                 # Use the highest probability token as the result.
                 token = int(logits[0, :].argmax().item())
                 yield self.tokenizer.reverse_map[token]
 
                 # Stop processing if we see a "result end" token.
-                if token == ControlToken.RESULT_STOP:
+                if token == stop_token:
                     break
+
+                context[i + 1] = token
 
     def inference_step(
         self, input: list[int], *, init: bool = False
