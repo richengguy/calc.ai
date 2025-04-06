@@ -54,7 +54,7 @@ jobs:
 
       - name: Run mypy on source and test directories
         run: |
-          uv sync --only-dev
+          uv sync --extra cpu
           uv run ./scripts/run-mypy src
           uv run ./scripts/run-mypy test
 

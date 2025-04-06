@@ -7,6 +7,13 @@ from typing import Iterator, Sequence
 class ControlToken(StrEnum):
     """Control tokens used to control lanuage model actions."""
 
+    NULL = "{null}"
+    """Used when a result cannot be computed.
+
+    This will happen with expressions such as '5 / 0', where the result is a
+    "division by zero" error.
+    """
+
     EXPR_START = "{expr=}"
     """Denotes the start of a arithmetic expression script.
 
@@ -21,8 +28,8 @@ class ControlToken(StrEnum):
     RESULT_START = "{result=}"
     """Denotes the start of a result block.
 
-    The contents of the block should only be number tokens, since this
-    represents the result of a computation.
+    The contents of the block should only be number tokens, and possibly a single
+    '-' token, since this represents the result of a computation.
     """
 
     RESULT_STOP = "{=result}"
@@ -65,6 +72,38 @@ class Tokenizer:
         """The number of tokens that the tokenizer recognizes."""
         return len(self._fwd_map)
 
+    @property
+    def start_token(self) -> int:
+        """The ID of the result "start" token."""
+        return self._fwd_map[ControlToken.RESULT_START]
+
+    @property
+    def stop_token(self) -> int:
+        """The ID of the result "stop" token."""
+        return self._fwd_map[ControlToken.RESULT_STOP]
+
+    def control_id(self, token: ControlToken) -> int:
+        """Get the ID for a control token."""
+        return self._fwd_map[token]
+
+    def control_token_from_id(self, id: int) -> ControlToken | None:
+        """Converts a token ID into a control token.
+
+        Parameters
+        ----------
+        id : int
+            token ID
+
+        Returns
+        -------
+        ControlToken or `None`
+            the control token or `None` if it is something else
+        """
+        str_rep = self._rev_map[id]
+        if str_rep in ControlToken:
+            return ControlToken(str_rep)
+        return None
+
     def to_tokens(self, input: str) -> Iterator[int]:
         """Convert a string into a token sequence.
 
@@ -83,7 +122,7 @@ class Tokenizer:
             try:
                 yield self._fwd_map[token]
             except KeyError as e:
-                raise RuntimeError(f"Unknown string sequence '{token}'.") from e
+                raise ValueError(f"Unknown string sequence '{token}'.") from e
 
     def from_tokens(self, tokens: Sequence[int]) -> Iterator[str]:
         """Convert the tokens back into a character sequence.
@@ -102,7 +141,7 @@ class Tokenizer:
             try:
                 yield self._rev_map[token_id]
             except KeyError as e:
-                raise RuntimeError(f"Unknown token ID '{token_id}'.") from e
+                raise ValueError(f"Unknown token ID '{token_id}'.") from e
 
     def _get_next_token(self, chars: Iterator[str]) -> Iterator[str]:
         ctrl_token = False
@@ -137,4 +176,146 @@ class Tokenizer:
             pass
 
         if ctrl_token:
-            raise RuntimeError(f"Unclosed control token '{token}'.")
+            raise ValueError(f"Unclosed control token '{token}'.")
+
+
+class Query:
+    """Represents the data being sent into and produced by the language model.
+
+    The query is a specially-formatted string that is sent into the language
+    model for processing.  The model will then respond with a similarly
+    formatted string.  The Query object is also able to parse the input/output
+    responses.
+    """
+
+    def __init__(self, expr: str, *, result: int | None = None) -> None:
+        """
+        Parameters
+        ----------
+        expr : str
+            input expression
+        result : int, optional
+            if set, the query will also contain result output tags
+        """
+
+        self.expr = expr
+        """The expression portion of the model query."""
+
+        self.result = result
+        """The solution to a given expression."""
+
+        self._show_result = result is not None
+
+    def show_result(self, show: bool) -> None:
+        """Enable/disable showing the contents of the result tags.
+
+        The default behaviour is to only show a result tag if one was provided
+        when the query was created.  This can be overridden to, for instance,
+        create training data.
+
+        Parameters
+        ----------
+        show : bool
+            enable/disable result output
+        """
+        self._show_result = show
+
+    def __str__(self) -> str:
+        parts: list[str] = []
+        parts.append(f"{ControlToken.EXPR_START}{self.expr}{ControlToken.EXPR_STOP}")
+
+        if self._show_result:
+            result_str = ControlToken.NULL if self.result is None else str(self.result)
+            parts.append(
+                f"{ControlToken.RESULT_START}{result_str}{ControlToken.RESULT_STOP}"
+            )
+
+        return "".join(parts)
+
+    @staticmethod
+    def parse(query: str | list[int], tokenizer: Tokenizer) -> "Query":
+        """Parse a string and convert it into a Query object.
+
+        The query parsing uses a tokenize for the inital string preprocessing.
+        The parser then looks for the following pattern:
+
+        ```
+        {expr=}some expression{=expr}{result=}result{=result}
+        ```
+
+        Parameters
+        ----------
+        query : str or list[int]
+            input query string or a list of token IDs
+        tokenizer : Tokenizer
+            tokenizer instance
+
+        Returns
+        -------
+        Query
+            the parsed Query object
+
+        Raises
+        ------
+        ValueError
+            if the query string could not be parsed
+        """
+        if isinstance(query, str):
+            token_stream = tokenizer.to_tokens(query)
+        else:
+            token_stream = iter(query)
+
+        # Make sure that we're in the start of an expression statement.
+        if next(token_stream) != tokenizer.control_id(ControlToken.EXPR_START):
+            raise ValueError(f"Query must start with a {ControlToken.EXPR_START}.")
+
+        # Collect all of the tokens in the expression statement.  Any control
+        # tokens inside of this section means something is wrong with the query.
+        hit_expr_stop = False
+        expr_tokens: list[int] = []
+        for token in token_stream:
+            if ctrl_token := tokenizer.control_token_from_id(token):
+                if ctrl_token == ControlToken.EXPR_STOP:
+                    hit_expr_stop = True
+                    break
+                else:
+                    raise ValueError(f"Unexpected {ctrl_token} control token.")
+
+            expr_tokens.append(token)
+
+        if not hit_expr_stop:
+            raise ValueError(f"Did not encounter a closing {ControlToken.EXPR_STOP}.")
+
+        expr = "".join(tokenizer.from_tokens(expr_tokens))
+
+        # Check to see if there's anything more to process.  If not, create a
+        # query.  If there is more to process then it must be the token used to
+        # indicate the start of a result statement.
+        try:
+            if next(token_stream) != tokenizer.control_id(ControlToken.RESULT_START):
+                raise ValueError(
+                    f"Result must start with a {ControlToken.RESULT_START}."
+                )
+        except StopIteration:
+            return Query("".join(tokenizer.from_tokens(expr_tokens)))
+
+        # Now collect the contents of the result statement.
+        hit_result_stop = False
+        result_tokens: list[int] = []
+        for token in token_stream:
+            if ctrl_token := tokenizer.control_token_from_id(token):
+                if ctrl_token == ControlToken.RESULT_STOP:
+                    hit_result_stop = True
+                    break
+                elif ctrl_token != ControlToken.NULL:
+                    raise ValueError(f"Unexpected {ctrl_token} control token.")
+
+            result_tokens.append(token)
+
+        if not hit_result_stop:
+            raise ValueError(f"Did not encounter a closing {ControlToken.RESULT_STOP}.")
+
+        result_str = "".join(tokenizer.from_tokens(result_tokens))
+        result = None if result_str == ControlToken.NULL else int(result_str)
+
+        return Query(expr, result=result)

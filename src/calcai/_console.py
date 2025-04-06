@@ -3,6 +3,11 @@ from rich.console import Console
 console = Console()
 
 
+def clear_screen() -> None:
+    """Clear the screen."""
+    console.clear()
+
+
 def print(msg: str, *, bullet: str = ":arrow_forward:", indent: int = 0) -> None:
     """Print a message to the console.
 

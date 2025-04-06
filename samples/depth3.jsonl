@@ -1,0 +1,1000 @@
+{"seed":0,"script":"12 * 25 - (11) - -16","result":305}
+{"seed":1,"script":"(14 * 15 - -25) + 12 * 13 + -24","result":367}
+{"seed":2,"script":"1","result":1}
+{"seed":3,"script":"19 - 15 / -2 - -15","result":42}
+{"seed":4,"script":"4 - 2 + 12 + 17 - 25","result":6}
+{"seed":5,"script":"-((23))","result":-23}
+{"seed":6,"script":"21 + 18 - 24 * 23 * (25 - 6) - -13","result":-10436}
+{"seed":7,"script":"-2 + (18 + 1) - 6","result":11}
+{"seed":8,"script":"4 - 4 + 7 + (12 * 20)","result":247}
+{"seed":9,"script":"21 + 0 - 14 - 19 * 19 / 22 + 12 + 5","result":8}
+{"seed":10,"script":"6 / 14 * (-5) / 2 * 7 + 23","result":23}
+{"seed":11,"script":"14 / 18 * 6 * 20 * 19 + (9 + 4)","result":13}
+{"seed":12,"script":"-(0 + 11) * -14 * -19","result":-2926}
+{"seed":13,"script":"-((7 + 21)) - 23 - 5 + 17 + 6","result":-33}
+{"seed":14,"script":"-8 + -(2 - 21)","result":11}
+{"seed":15,"script":"0","result":0}
+{"seed":16,"script":"14 - 0 * 21 - 22 - -0 - 10 - 21","result":-39}
+{"seed":17,"script":"(9) * -17 + -3","result":-156}
+{"seed":18,"script":"-(6 - 15) + -(9 + 14)","result":-14}
+{"seed":19,"script":"-((12 * 11 * 9))","result":-1188}
+{"seed":20,"script":"21","result":21}
+{"seed":21,"script":"-(6 * 25) + 5 * 7 * 25","result":725}
+{"seed":22,"script":"4","result":4}
+{"seed":23,"script":"9","result":9}
+{"seed":24,"script":"-((6 + 21 + 2))","result":-29}
+{"seed":25,"script":"0 - (-1) - (18 + 13)","result":-30}
+{"seed":26,"script":"-1 + 24 + 15 + -16 + 13 + 7","result":42}
+{"seed":27,"script":"-6","result":-6}
+{"seed":28,"script":"-5 + 20 - 14 + (5 + 4 - -6)","result":16}
+{"seed":29,"script":"(16 - 11) - 0 - 1 / 7 * 25 + 15 - 10","result":10}
+{"seed":30,"script":"20 + 6 - 1 / -2 - 16 * 7","result":-85}
+{"seed":31,"script":"21 - 1 + 3 + 17 + (23 + 1) - -4","result":68}
+{"seed":32,"script":"7 - 15 - 1 + 3 + 1 - 16 - -15","result":-6}
+{"seed":33,"script":"-((20 - 17)) / 5","result":-1}
+{"seed":34,"script":"-((12)) / 13 - 10","result":-11}
+{"seed":35,"script":"(18 - 16 + 24) / (-((24)))","result":-2}
+{"seed":36,"script":"25 - 25","result":0}
+{"seed":37,"script":"-(-23 + (20 * 11))","result":-197}
+{"seed":38,"script":"-(-2 * 14 - 11)","result":39}
+{"seed":39,"script":"12 + 23 - 20 / 25 + 5 - 0 - 2 - 11","result":27}
+{"seed":40,"script":"(20 - 21 + 24 + 11) * (23 / 4) - 6 + 19","result":183}
+{"seed":41,"script":"12 + 18 - 9 - 23 - 24 / 24 / 7","result":-2}
+{"seed":42,"script":"-(7 - 4 + -21)","result":18}
+{"seed":43,"script":"-(14 + 11) + -((15 * 19))","result":-310}
+{"seed":44,"script":"(7 + 9) / 3 + 18 - 16 + 22 + 22","result":51}
+{"seed":45,"script":"10 + 0 * 0 + 3 - 9 + 23 - -19","result":46}
+{"seed":46,"script":"-((16 - 4)) - -1","result":-11}
+{"seed":47,"script":"10 * 8 * 12 * 19 - 0 - 3 + 25 + 15","result":18277}
+{"seed":48,"script":"-9 + (22 * 24) / 25 + 21 * 20 + 7","result":439}
+{"seed":49,"script":"24 + 17 - 1 * 21 + -4 + 1 * 20","result":36}
+{"seed":50,"script":"-7 - -24 * 2","result":41}
+{"seed":51,"script":"7 + 17 * 12 - 17 - 23","result":171}
+{"seed":52,"script":"1","result":1}
+{"seed":53,"script":"-((-22 * 23 * 14))","result":7084}
+{"seed":54,"script":"4","result":4}
+{"seed":55,"script":"4 + 9","result":13}
+{"seed":56,"script":"17","result":17}
+{"seed":57,"script":"-(16 + 10) + 9","result":-17}
+{"seed":58,"script":"-(-6 + 14 + 12)","result":-20}
+{"seed":59,"script":"14 - (-21) + -15","result":20}
+{"seed":60,"script":"25 - 15 / 10 * 1 - (-(12 + 1))","result":37}
+{"seed":61,"script":"(10 - 25) / -15 * 14 + 10 - 10","result":14}
+{"seed":62,"script":"5","result":5}
+{"seed":63,"script":"15 - -12 * (2 + 20 + 23 - 19)","result":327}
+{"seed":64,"script":"-(21 - 0) * 25 - 20 + (24 + 20)","result":-501}
+{"seed":65,"script":"(16 * 14) - 10 / 20 - 17 - 14 * 20 - 15","result":-88}
+{"seed":66,"script":"14 - 9 * 25 - 17 + (16 + 4) + 22","result":-186}
+{"seed":67,"script":"(13) + -15 - -6","result":4}
+{"seed":68,"script":"23","result":23}
+{"seed":69,"script":"-(19 + 11 + 25 - 25)","result":-30}
+{"seed":70,"script":"9","result":9}
+{"seed":71,"script":"-(4 + 24) - 8","result":-36}
+{"seed":72,"script":"-11 + -(22 - 21)","result":-12}
+{"seed":73,"script":"14 / 9 * -15 - 14 * 3 - 13 + 24","result":-46}
+{"seed":74,"script":"9 + 5 + (11) * (8 * 14) + 8 + 16","result":1270}
+{"seed":75,"script":"24 + 16 * -21 * 21","result":-7032}
+{"seed":76,"script":"6 - 1","result":5}
+{"seed":77,"script":"(15 + 17) - 7 - -16 + 8 + 0","result":49}
+{"seed":78,"script":"23 + (20)","result":43}
+{"seed":79,"script":"7 + 23 - -4 + 3 + 23 + 9 * 5","result":105}
+{"seed":80,"script":"-13 / 17 - 12 - 12 / 7 - 1","result":-15}
+{"seed":81,"script":"12 / 15 * (14 + 21) * (-9)","result":0}
+{"seed":82,"script":"25 * 5 * (-5) + (3 * 6 + 4 - 3)","result":-606}
+{"seed":83,"script":"(1 - 20 + 5 - 9) * 13 + 9 + 17","result":-273}
+{"seed":84,"script":"-1","result":-1}
+{"seed":85,"script":"-(6 + 7) + (18) * 12 - 17","result":186}
+{"seed":86,"script":"(2 + 22 - 20 * 9) + ((13 + 14) + 24 + 24)","result":-81}
+{"seed":87,"script":"(8 / 24) + 17 - 22 + -3 - 0","result":-8}
+{"seed":88,"script":"20 + 24 + 22 - 14 - 4 + 3 - 22","result":29}
+{"seed":89,"script":"-4 + 13 + 10 - 9","result":10}
+{"seed":90,"script":"-18 + 11 - 25 + (8 - 11) * 23 + 4","result":-97}
+{"seed":91,"script":"-5 + 14 - 25 + ((19 - 11) * (25 - 6))","result":136}
+{"seed":92,"script":"18 / 8 / (21) - (5 * 2 + 20 / 10)","result":-12}
+{"seed":93,"script":"15","result":15}
+{"seed":94,"script":"13 - 0 + -11 / 13","result":12}
+{"seed":95,"script":"17 * (0)","result":0}
+{"seed":96,"script":"12 - 3","result":9}
+{"seed":97,"script":"((17 / 24) - 23 + 8) + 14 + 15 - -10","result":24}
+{"seed":98,"script":"(15 + 9 - -21) - (12) / 25 + 22","result":67}
+{"seed":99,"script":"7 + 4 + (12 - 16) - -(19 / 15)","result":8}
+{"seed":100,"script":"(-23) * 16 - 25 + 23 + 14 + 21 - 20","result":-355}
+{"seed":101,"script":"-(11 + 21 * 16)","result":-347}
+{"seed":102,"script":"-(22 + 21) + -(19 - 13)","result":-49}
+{"seed":103,"script":"14","result":14}
+{"seed":104,"script":"6","result":6}
+{"seed":105,"script":"(9) - 9 / 5 * (4 + 3)","result":2}
+{"seed":106,"script":"-0","result":0}
+{"seed":107,"script":"-21 - (13) * 24","result":-333}
+{"seed":108,"script":"(6 - 2 - 5 - 6) + -(3 - 6)","result":-4}
+{"seed":109,"script":"3 / 7 * 9 * 18 - 2","result":-2}
+{"seed":110,"script":"12","result":12}
+{"seed":111,"script":"15 - 25 - 5 + -22","result":-37}
+{"seed":112,"script":"-24 * -(16 - 14)","result":48}
+{"seed":113,"script":"(-(17 + 11)) + (19 - 9) - 9 * 9","result":-99}
+{"seed":114,"script":"-7 + -1 - 21 + 18 * 2","result":7}
+{"seed":115,"script":"6","result":6}
+{"seed":116,"script":"-(-23 + 15 + 7)","result":1}
+{"seed":117,"script":"5 - 17 + 3 - 22 - 11 / 14 / (11 + 13)","result":-31}
+{"seed":118,"script":"-(11 + 9 + (0 - 19))","result":-1}
+{"seed":119,"script":"5","result":5}
+{"seed":120,"script":"20 + -21 * 2","result":-22}
+{"seed":121,"script":"-(5 - 19) + (5 - 20 + 21 * 23)","result":482}
+{"seed":122,"script":"-(2 - 23) * 21 - 23 - 5","result":413}
+{"seed":123,"script":"3 - 1 + 17 - 10 + 4 + 10 - 22 / 7","result":20}
+{"seed":124,"script":"17","result":17}
+{"seed":125,"script":"7","result":7}
+{"seed":126,"script":"20 * 5 / 15 * 7 / 20 + 15 + 21 + 9","result":47}
+{"seed":127,"script":"-(3 / 0) + 13 + 21 - 21","result":null}
+{"seed":128,"script":"7","result":7}
+{"seed":129,"script":"-(((20) - 7 - 3))","result":-10}
+{"seed":130,"script":"(-0) - 18 - 10 * 16 - 21 - -17","result":-182}
+{"seed":131,"script":"(12 - 24 + 11) - 22 / 22 + 22","result":20}
+{"seed":132,"script":"1 - 24 - 25 - (8 + 14 + 5)","result":-75}
+{"seed":133,"script":"(17 - 22) * -22 * (9 + 21 + 9)","result":4290}
+{"seed":134,"script":"23 + (24 + 15) * 15 - 7 + -14","result":587}
+{"seed":135,"script":"-((9 + 0) * -4)","result":36}
+{"seed":136,"script":"24 * 6 / 4 * 5 / -(1 + 22)","result":-8}
+{"seed":137,"script":"7 - 0 * 12 + 16","result":23}
+{"seed":138,"script":"-6 * 8 * 7 + (23 + 22) + (2 + 22)","result":-267}
+{"seed":139,"script":"-(21 / 9) + (10 * 24 / 18 - 24)","result":-13}
+{"seed":140,"script":"1 / 21 - -0 + 12 * (1 - 5)","result":-48}
+{"seed":141,"script":"(22 + 14) + 8 + 20 * -10 / 8 - 16","result":3}
+{"seed":142,"script":"-(11 * 11 * (3 - 9))","result":726}
+{"seed":143,"script":"1","result":1}
+{"seed":144,"script":"23 * 12 + 2 * -(7 * 14)","result":80}
+{"seed":145,"script":"0","result":0}
+{"seed":146,"script":"-((18 + 9)) + 11","result":-16}
+{"seed":147,"script":"-(14 + -5)","result":-9}
+{"seed":148,"script":"-1 - (8 - 3 - 20 + 2)","result":12}
+{"seed":149,"script":"1 + 0 - (12 / 1) + (4 + 2) + 5 - 1","result":-1}
+{"seed":150,"script":"6","result":6}
+{"seed":151,"script":"-((20))","result":-20}
+{"seed":152,"script":"12","result":12}
+{"seed":153,"script":"2","result":2}
+{"seed":154,"script":"12 + 16 + 0 * (12 - 13)","result":28}
+{"seed":155,"script":"-((24) / 17)","result":-1}
+{"seed":156,"script":"(7 - 5 - (10 * 4)) * 14 + 1 + 12 / 24","result":-531}
+{"seed":157,"script":"-(11 + 11 - 4 - 2)","result":-16}
+{"seed":158,"script":"-3","result":-3}
+{"seed":159,"script":"-(6 - 19) - (1 * 8) + -7","result":-2}
+{"seed":160,"script":"18 + 11 - -16 + 6 * (8 * 3)","result":189}
+{"seed":161,"script":"20 - 18 / 24 * 22 * -(23 * 1)","result":20}
+{"seed":162,"script":"6 + 24 - 19 * 9","result":-141}
+{"seed":163,"script":"-15 * (6 - 11) / (-22 + 4 + 1)","result":-5}
+{"seed":164,"script":"14 - 12 * 3 + 18 - 6 + 9 + 10","result":9}
+{"seed":165,"script":"13 + 5 - 13 + (-10)","result":-5}
+{"seed":166,"script":"-(10 * 1) + 11 / 9 * -6","result":-16}
+{"seed":167,"script":"24 * 23 + -23 - 19 * (22 - 3)","result":168}
+{"seed":168,"script":"6 - 6 - (24 * 15) * -((-3))","result":-1080}
+{"seed":169,"script":"-(3 / 16) - ((18 - 6) - (-4))","result":-16}
+{"seed":170,"script":"18","result":18}
+{"seed":171,"script":"3 / 14","result":0}
+{"seed":172,"script":"(14) - 6 / 18 - (3 - 13 * 16 + 4)","result":215}
+{"seed":173,"script":"-((-16)) - -((23 - 22))","result":17}
+{"seed":174,"script":"7 - 7 + 23 + 10 * 21 * 21 / 10","result":464}
+{"seed":175,"script":"25 / 22 + 8 * 19 * ((1 * 8) * (-17))","result":-20671}
+{"seed":176,"script":"(12 + 20 - 20 - 18) + 0 + 9 * -11","result":-105}
+{"seed":177,"script":"15","result":15}
+{"seed":178,"script":"17","result":17}
+{"seed":179,"script":"6","result":6}
+{"seed":180,"script":"-(16 + 14) + 3 + 0 - -4","result":-23}
+{"seed":181,"script":"-(10 - 6 + (14 - 23))","result":5}
+{"seed":182,"script":"11 - 2 * (-14 - -8)","result":23}
+{"seed":183,"script":"(7 - 2 + 2 * 0) + -2","result":3}
+{"seed":184,"script":"22 - 10 - 25 - 23","result":-36}
+{"seed":185,"script":"25","result":25}
+{"seed":186,"script":"14 / 3 - 3 * 0 - 3 - 14 + 14 - 12","result":-11}
+{"seed":187,"script":"-18 * (15 / 23) - -(5 * 18)","result":90}
+{"seed":188,"script":"7 - 8 - 11 + 3 - 3","result":-12}
+{"seed":189,"script":"(12 / 23 + 0 + 21) * 9 + 9 + 22 + 3","result":223}
+{"seed":190,"script":"(2 * 4 + 22 + 25) + (-17 / 23 + 11)","result":65}
+{"seed":191,"script":"20 - 22 + 19 * 3 * 12","result":682}
+{"seed":192,"script":"13 * 10 - 8 - -(24 - 4)","result":142}
+{"seed":193,"script":"(17) / 0 - 14 - 17","result":null}
+{"seed":194,"script":"8 - 23 + (17) + 4 - 20 * 5 + 21","result":-73}
+{"seed":195,"script":"-(21 + 6 + 20 - 9)","result":-38}
+{"seed":196,"script":"-((20 * 10 + (-4)))","result":-196}
+{"seed":197,"script":"6 + 18 + 18 + 15 / 18 * (-5)","result":42}
+{"seed":198,"script":"-(23 + 15) + 6 / 13 * 12 + 24","result":-14}
+{"seed":199,"script":"22 - 9 - 22 + 16 - 18 - 10 - (16 - 18)","result":-19}
+{"seed":200,"script":"-4 + -25 + 14 + 22 - 0 + 14","result":21}
+{"seed":201,"script":"9 + 10 - (-15) + -(15 - 17)","result":36}
+{"seed":202,"script":"-(21 + 12 - 13)","result":-20}
+{"seed":203,"script":"(-(24 - 19)) + 8","result":3}
+{"seed":204,"script":"-4 + 10 - 3 - -(13 + 2)","result":18}
+{"seed":205,"script":"-(15 / 14) * (16 - 6 + 23)","result":-33}
+{"seed":206,"script":"-4 - 7 + 16 - 4 + -6","result":-5}
+{"seed":207,"script":"-((5 - 0)) * -(22 - 15)","result":35}
+{"seed":208,"script":"((18 - 19) + (21 - 23)) - 20","result":-23}
+{"seed":209,"script":"9 + 21 + 5 / 7 + 13 + 6 - 9","result":40}
+{"seed":210,"script":"-(5 - 22) - 1 - 20 + 17 + 21","result":34}
+{"seed":211,"script":"((-20) + 19) / (-4) - 13 - 19","result":-32}
+{"seed":212,"script":"22 - -(4 - 4)","result":22}
+{"seed":213,"script":"13 + 17 - 9 * 5 + 6 * 19 - 17 - 14","result":68}
+{"seed":214,"script":"17 - 24 - 7 * 13 * 7 + 2 + -8","result":-650}
+{"seed":215,"script":"3 + (-17 - 21 - 0)","result":-35}
+{"seed":216,"script":"-(18 - 0 * 22 - 17)","result":-1}
+{"seed":217,"script":"7","result":7}
+{"seed":218,"script":"11 + 1 - 16 - (10 + 18 - 20 - 18)","result":6}
+{"seed":219,"script":"-(22 + 23 - 9 + 13)","result":-49}
+{"seed":220,"script":"12 - 13 - 22 * 10 - 12 - 18 - 6","result":-257}
+{"seed":221,"script":"24 - 7 + (20 / 22) - -(8 + 20)","result":45}
+{"seed":222,"script":"7 + 14 - (2 * 24) - 2 + 21","result":-8}
+{"seed":223,"script":"17 - 20 * 21 * 3 - (-24 / -10)","result":-1245}
+{"seed":224,"script":"17 + 7 + 21 + 16 + 8 + 3 / 4","result":69}
+{"seed":225,"script":"-(-19 - -6)","result":13}
+{"seed":226,"script":"(-1 / 10 + 12) * 22 * 17 / (-16)","result":-258}
+{"seed":227,"script":"(-(7 + 23)) - 3 + 8 - 7 + 2","result":-30}
+{"seed":228,"script":"22","result":22}
+{"seed":229,"script":"25 / 8 - (-17) / 16 - 0 * (5)","result":5}
+{"seed":230,"script":"-(21 - 21 / 13)","result":-20}
+{"seed":231,"script":"12","result":12}
+{"seed":232,"script":"8 + 8 - 5 - 3 * 10 - 11 - 20","result":-50}
+{"seed":233,"script":"-((6 * 2) * (22 - 22))","result":0}
+{"seed":234,"script":"(16) - -((8 - 11))","result":13}
+{"seed":235,"script":"2 + 2 * 5 + 1 - (5 * 10) + (25 - 23)","result":-35}
+{"seed":236,"script":"-(-2 * 4 - 24)","result":32}
+{"seed":237,"script":"-7","result":-7}
+{"seed":238,"script":"-(4 + 25) + (18 / 18 + 5 + 9)","result":-14}
+{"seed":239,"script":"(1 + 11 + 23 - 9) + (17 + 0) - 2 / 3","result":43}
+{"seed":240,"script":"10 + (25) + 11 - 3","result":43}
+{"seed":241,"script":"-((-22 - 19 + 20))","result":21}
+{"seed":242,"script":"19 * 22 * 24 - 17 + 6 + 23 + 12","result":10056}
+{"seed":243,"script":"16","result":16}
+{"seed":244,"script":"25","result":25}
+{"seed":245,"script":"25 * 23 * 20 + 6 + 8 * 15","result":11626}
+{"seed":246,"script":"16","result":16}
+{"seed":247,"script":"(19) + 13 - 0 * 20 - 6 + -22","result":4}
+{"seed":248,"script":"-((-(18 - 22)))","result":-4}
+{"seed":249,"script":"(-20 - -20) - (24 + 13) * 25 * 2","result":-1850}
+{"seed":250,"script":"17 - -(5 / 11)","result":17}
+{"seed":251,"script":"14 / 7 - 15 - 2 * 12 - 16 - 19","result":-72}
+{"seed":252,"script":"-(25 / 6) + 8 * 0 - (-24)","result":20}
+{"seed":253,"script":"(-7) - 14 + 2 / 23 * 17 + -10","result":-31}
+{"seed":254,"script":"-6 - 16 + 22 - 23","result":-23}
+{"seed":255,"script":"-((11 + 19)) + (8 / 12 * 18)","result":-30}
+{"seed":256,"script":"1 - 14 * (16 - 5) * 10 - 10 - -17","result":-1532}
+{"seed":257,"script":"16 / 6 + 0 + 23 - -7 * 19 - 15","result":143}
+{"seed":258,"script":"-(13 + 21 + 7)","result":-41}
+{"seed":259,"script":"15 * 20 / (11 + 24) + 8 + 25 + 5 + 3","result":49}
+{"seed":260,"script":"18 - -(1 - 19)","result":0}
+{"seed":261,"script":"5 * 17","result":85}
+{"seed":262,"script":"11 * 10 / (-18) - 25","result":-32}
+{"seed":263,"script":"13","result":13}
+{"seed":264,"script":"-(10 * 7 / (10))","result":-7}
+{"seed":265,"script":"10 * 6 - -6 * -24 - 10 / 5","result":-86}
+{"seed":266,"script":"17","result":17}
+{"seed":267,"script":"3 - 0 * 1 / 20 + 18 - 16 / 4","result":17}
+{"seed":268,"script":"(-25) - 8 / 7 / (-(4 - 6))","result":-25}
+{"seed":269,"script":"(-6) + -2 - (11 + 12)","result":-31}
+{"seed":270,"script":"-9 + 20 + 4 - (8 / 21) + (-8)","result":7}
+{"seed":271,"script":"-11 - 21 / 15 * ((13 + 20) + (25 + 11))","result":-80}
+{"seed":272,"script":"11","result":11}
+{"seed":273,"script":"-(23 - 19) + -(2 + 16)","result":-22}
+{"seed":274,"script":"6 + 0 - -6 + -(10 - 12)","result":14}
+{"seed":275,"script":"5 - 10 - (4) / -(14 - 18)","result":-6}
+{"seed":276,"script":"(10) + 0 - 24 - (10 - 11) - 5 - 22","result":-40}
+{"seed":277,"script":"5","result":5}
+{"seed":278,"script":"15","result":15}
+{"seed":279,"script":"(5 + 10 + 18 + 4) - 3 - -12","result":46}
+{"seed":280,"script":"-20 - 14","result":-34}
+{"seed":281,"script":"16 * 25 - 1 - 25 + 5 - 2 / 19 - 23","result":356}
+{"seed":282,"script":"-15","result":-15}
+{"seed":283,"script":"-(8 / 14 + 20)","result":-20}
+{"seed":284,"script":"14 + 9 - (5 * 2) + (19 + 24) - 21 - 10","result":25}
+{"seed":285,"script":"-(-2 - 12 - 14)","result":28}
+{"seed":286,"script":"22 + 13 - 4 - 17 * -((12 - 3))","result":184}
+{"seed":287,"script":"5 + 13 - -16 / 10 + 9 - 12 + 23","result":40}
+{"seed":288,"script":"9","result":9}
+{"seed":289,"script":"-(0 + 25) - -0 + 3 - 15","result":-37}
+{"seed":290,"script":"0 * 4 - 18 - 15 / 22 + 20 + 24","result":26}
+{"seed":291,"script":"-2","result":-2}
+{"seed":292,"script":"(18 + 9) + (13)","result":40}
+{"seed":293,"script":"13 * 3 + 19 * 24 * (3)","result":1407}
+{"seed":294,"script":"23 + 2 * 19 * 18 + (-9 - 7 - 11)","result":680}
+{"seed":295,"script":"-(18 - 21) - 8 * 25 - 1","result":-198}
+{"seed":296,"script":"11 + 18 + 13 * (5 - 23)","result":-205}
+{"seed":297,"script":"(1) * -((0 + 5))","result":-5}
+{"seed":298,"script":"-(5 + 10) + -(14 * 19)","result":-281}
+{"seed":299,"script":"-(16 + 24) - (22 - 19 - -16)","result":-59}
+{"seed":300,"script":"-(11 + 16 - (18 * 5))","result":63}
+{"seed":301,"script":"(7 * 21 * -3) - 7","result":-448}
+{"seed":302,"script":"17","result":17}
+{"seed":303,"script":"6 + 19 / 8 + 12 / 5","result":10}
+{"seed":304,"script":"(7 * 25) * -9 + (1) - 8 + 21","result":-1561}
+{"seed":305,"script":"-9 / 22 * 24 + (9 * 22 + 5 + 1)","result":180}
+{"seed":306,"script":"24 + 19 * 23 + 25 * -24 - 19 / 19","result":-140}
+{"seed":307,"script":"-(-16 - 8 * 0)","result":16}
+{"seed":308,"script":"11 + 5 * 13 - 23 - 13","result":40}
+{"seed":309,"script":"7 + 6 + 23 - 24 + ((-8) + 17 - 7)","result":14}
+{"seed":310,"script":"9 - 18 + 16 / (23 * 6 - 9 + 4)","result":-9}
+{"seed":311,"script":"4 * 8 + 17 / 13 - 9 - 3 - (-23)","result":44}
+{"seed":312,"script":"-(7 + 6 + 14 * 3)","result":-55}
+{"seed":313,"script":"13 / 4 + 1 * 0 - 4","result":-1}
+{"seed":314,"script":"20 + 9 + 6 - 12 + 20 * 20 / 3 + 7","result":163}
+{"seed":315,"script":"18 + 20 - 4 + 23 - -3 - 2 * 16","result":28}
+{"seed":316,"script":"0 + ((24 - 0) + 2 * 15)","result":54}
+{"seed":317,"script":"-(6 - 7) * -14 / -10","result":1}
+{"seed":318,"script":"-(13 - 5 + -21)","result":13}
+{"seed":319,"script":"25 + -((12))","result":13}
+{"seed":320,"script":"-(10 * 3) * 16 + 22 - (19 - 7)","result":-470}
+{"seed":321,"script":"14 / 10 + 7 - 14","result":-6}
+{"seed":322,"script":"18 - 4 + 20 - 17 - -(7 / 20)","result":17}
+{"seed":323,"script":"-(17 - 21 + (10 * 10))","result":-96}
+{"seed":324,"script":"-15","result":-15}
+{"seed":325,"script":"23 + 21 + 11 + 7 / -19 - 19 + 0","result":35}
+{"seed":326,"script":"(20 - 3) - -10 + 11 + 2 * 24 - 3","result":83}
+{"seed":327,"script":"-((25 + 15)) * -(5 + 3)","result":320}
+{"seed":328,"script":"-(((-23) * (11 + 24)))","result":805}
+{"seed":329,"script":"6 - 25 - 0 + 25 - 15","result":-9}
+{"seed":330,"script":"19","result":19}
+{"seed":331,"script":"(-20) + 19 * 21 - -23 - 21 - 13","result":368}
+{"seed":332,"script":"-22 / -5 - -7 + 2 + 5","result":18}
+{"seed":333,"script":"2 - 17 - 10 / 25 - 10 - 7 / 13","result":-25}
+{"seed":334,"script":"17","result":17}
+{"seed":335,"script":"((-23) / (13 + 20)) + 15 - 10 * -18","result":194}
+{"seed":336,"script":"(4) + (14 + 23) / 17 + 10","result":16}
+{"seed":337,"script":"(16 + 11 - 14 - 0) + (-7) - 25 - 0","result":-19}
+{"seed":338,"script":"22 * 19 - 9 + 22 + -10 * -6","result":491}
+{"seed":339,"script":"20 + 20 + 23 + 18","result":81}
+{"seed":340,"script":"25 / 17 + 8 + 5 - -17 - 4 - 17","result":10}
+{"seed":341,"script":"-(1 + 1 / (2 - 8))","result":0}
+{"seed":342,"script":"-(15 + 24) + -9 + 1","result":-47}
+{"seed":343,"script":"(14) + 10 / 8 - 9","result":6}
+{"seed":344,"script":"(21) + (13 - 21) - -(13 - 13)","result":13}
+{"seed":345,"script":"3 + -20 + 9 + 12","result":4}
+{"seed":346,"script":"-3 / 17 - 17 / 4 * 18","result":-73}
+{"seed":347,"script":"(23 * 7) * (13 - 1) - 25 + 0 + (7 - 17)","result":1897}
+{"seed":348,"script":"(6 + 13) - 0 + 10","result":29}
+{"seed":349,"script":"(19 / 9) * 16 - 0 - 4 + 15 * 9 - 7","result":156}
+{"seed":350,"script":"-24 - (15)","result":-39}
+{"seed":351,"script":"23 - 9 - -12 / 7 * 8 - (-25)","result":55}
+{"seed":352,"script":"4 + -6 + 9 - 22 * (5 + 5)","result":-213}
+{"seed":353,"script":"-19 - 17 * 3 + (11 / 24 * -6)","result":-70}
+{"seed":354,"script":"24 + 25 + -0 - 20 + -13","result":16}
+{"seed":355,"script":"-(1 - 4) + 3 / 4 / 12","result":3}
+{"seed":356,"script":"-(13 - 19 * 17 * 13)","result":4186}
+{"seed":357,"script":"2 + 4 - 17 + (-11)","result":-22}
+{"seed":358,"script":"6 - 0 - 4 + 21 - -(14 - 11)","result":26}
+{"seed":359,"script":"-18 * 13 - 25 + 25 + 3 + (25 + 20)","result":-186}
+{"seed":360,"script":"9","result":9}
+{"seed":361,"script":"4","result":4}
+{"seed":362,"script":"-(7 - 16) * -16","result":-144}
+{"seed":363,"script":"21 + 13 - 13 + 4 / (1 - (14 - 4))","result":20}
+{"seed":364,"script":"0 + 16 - 20 + -22","result":-26}
+{"seed":365,"script":"-24","result":-24}
+{"seed":366,"script":"-(16 + 12) + -(5 - 22)","result":-11}
+{"seed":367,"script":"0 / 11 + 0","result":0}
+{"seed":368,"script":"-(3 + 19 * 19)","result":-364}
+{"seed":369,"script":"9","result":9}
+{"seed":370,"script":"(-(2 - 9)) + -(23 + 24)","result":-40}
+{"seed":371,"script":"-3 - 10 - (24)","result":-37}
+{"seed":372,"script":"23 + 6 + 22 - (16 * 23)","result":-317}
+{"seed":373,"script":"(19 + 19 + 12 - 13) + (14)","result":51}
+{"seed":374,"script":"-((23 + 23)) - 17","result":-63}
+{"seed":375,"script":"24 * 8 - 10 + 5 - -((21 - 22))","result":186}
+{"seed":376,"script":"-(16 + 3 * 5 * 18)","result":-286}
+{"seed":377,"script":"2 + (7 + 10) - -10 * 1 / 16","result":20}
+{"seed":378,"script":"-(23 + 14) + 4 + 7 * (-24)","result":-201}
+{"seed":379,"script":"(-10) / (10) + ((3) * 17 - 3)","result":47}
+{"seed":380,"script":"10","result":10}
+{"seed":381,"script":"0 * 20 + 6 + (-19)","result":-13}
+{"seed":382,"script":"24 - 1 + 24 - 15 + ((22 - 1) / -6)","result":28}
+{"seed":383,"script":"15 + 3 / (9) * -2","result":15}
+{"seed":384,"script":"-((20) - 14 - 7)","result":1}
+{"seed":385,"script":"15","result":15}
+{"seed":386,"script":"-(16 - 0 / (8 - 22))","result":-16}
+{"seed":387,"script":"(8 + 16) + (23 + 7) * 13 - 9 + 7 + 23","result":435}
+{"seed":388,"script":"(2 + 14) - 11 - 7 - (-2) * 4 + 25","result":31}
+{"seed":389,"script":"-(7 - 7 / 25 * 12)","result":-7}
+{"seed":390,"script":"17 * 19 + 0 * 6 / (-(1 - 8))","result":323}
+{"seed":391,"script":"20 * 5 - 1","result":99}
+{"seed":392,"script":"-(-23 * 6)","result":138}
+{"seed":393,"script":"24 + 13 + 4 * 1 - (1 + 7) - 17 * 6","result":-69}
+{"seed":394,"script":"7","result":7}
+{"seed":395,"script":"21 + 19 + 3 - 11 - 13","result":19}
+{"seed":396,"script":"-(4 / 11) + 16 - 8 - -2","result":10}
+{"seed":397,"script":"(8 + 18) - (12 - 12) + 21 - 16 + 16","result":47}
+{"seed":398,"script":"13","result":13}
+{"seed":399,"script":"-(7 + 3) + 1 + 1 + 11 - 17","result":-14}
+{"seed":400,"script":"(24 / 24) - 24 * 13 - 9 / 21 * 13","result":-311}
+{"seed":401,"script":"(10 - 5) * 21 - 14 * 21 + -24","result":-213}
+{"seed":402,"script":"-(17 - 14) + 21 - 20 - (24 + 15)","result":-41}
+{"seed":403,"script":"(25) - -15 - 17 / 12 + (12)","result":51}
+{"seed":404,"script":"2 + 21 - -10 + 0 + (-15)","result":18}
+{"seed":405,"script":"23 + 22 + 19 * 17 / 3","result":152}
+{"seed":406,"script":"9 - 20 - 1 + 2 - (3 - 13) + 19","result":19}
+{"seed":407,"script":"-((11 / 19) + (-16))","result":16}
+{"seed":408,"script":"7 * -(16 + 8)","result":-168}
+{"seed":409,"script":"20 + 25 + 22 / 12 + 6 + 4 - 17","result":39}
+{"seed":410,"script":"0 + -(9 + 21)","result":-30}
+{"seed":411,"script":"-7 - 15 - 0 + 23 - 21","result":-20}
+{"seed":412,"script":"-(6 + 3) - 14 / 15 - 19 + 22","result":-6}
+{"seed":413,"script":"-(22 + 23 * 21 - 17)","result":-488}
+{"seed":414,"script":"23 - 19 * 8 + 25 - 22 / 22","result":-105}
+{"seed":415,"script":"17 - 24 - 17 + 1 - 5","result":-28}
+{"seed":416,"script":"-21 + 18 - 22 - 22 - 20 * 19","result":-427}
+{"seed":417,"script":"25","result":25}
+{"seed":418,"script":"21 + 16 + 25 - 1 - 11 - 18 + 20 - 9","result":43}
+{"seed":419,"script":"-(22 - 16 + 0 + 21)","result":-27}
+{"seed":420,"script":"(21 + 21 - -0) + 20 * 0 * (-17)","result":42}
+{"seed":421,"script":"-((10 * 16 * (19 * 7)))","result":-21280}
+{"seed":422,"script":"19 + 6 + 9 - (4 - 1 * 16 * 25)","result":430}
+{"seed":423,"script":"(22) / 16 / 13 - 19 / 14 - -22","result":21}
+{"seed":424,"script":"(-(22 + 20)) / 5 - 0 - (-6)","result":-3}
+{"seed":425,"script":"23 + 17 + -17 - (-11) - 17 - 17","result":0}
+{"seed":426,"script":"-(6 - 3) + -17 - 10","result":-30}
+{"seed":427,"script":"(21 - 22 + (22 * 15)) + 14","result":343}
+{"seed":428,"script":"19 * 8 + 17 - 2 * 19 + 19","result":150}
+{"seed":429,"script":"-(0 + 7 + 5 * 0)","result":-7}
+{"seed":430,"script":"6 + 14 + 9 - 6 - 18 + 12","result":17}
+{"seed":431,"script":"24","result":24}
+{"seed":432,"script":"-((22 - 5) + 16 - 20)","result":-13}
+{"seed":433,"script":"19 + 11 * (25) + -(18 * 6)","result":186}
+{"seed":434,"script":"9 - 0 * 23 + 13 - 1 - 25 - (3 - 22)","result":15}
+{"seed":435,"script":"6","result":6}
+{"seed":436,"script":"((20 - 3) - 18 - 3) - (-(1 * 1))","result":-3}
+{"seed":437,"script":"0 + 18 + 14 / -((21 / 21))","result":4}
+{"seed":438,"script":"(18 - 13) / 0 + 4 + 1 - 8 - (15 + 5)","result":null}
+{"seed":439,"script":"13 - 24 - 13 - 15 - -(22 - 9)","result":-26}
+{"seed":440,"script":"9 - 7 + 1 + 10 + 19 / 12 / -7","result":12}
+{"seed":441,"script":"(-(6 * 14)) + (19)","result":-65}
+{"seed":442,"script":"13 * 13 * 4 * 25 - (-10 / 7 - 10)","result":16912}
+{"seed":443,"script":"-(9 - 3) + 22 + 18 - -17","result":51}
+{"seed":444,"script":"9 * 23 + 14 * 17 - 18 + 6 - -22","result":455}
+{"seed":445,"script":"8 - 12 - -9 / 24 * 13 + (24 - 15)","result":18}
+{"seed":446,"script":"-(13 + 19 - 12 + 0)","result":-20}
+{"seed":447,"script":"-13 * (12 + 3) - (17 * 24 - (1 + 17))","result":-585}
+{"seed":448,"script":"0 - 25 + -11 - -19 * 16 + 11","result":279}
+{"seed":449,"script":"21 - 19 + -6 + -20 * 19 * 17","result":-6464}
+{"seed":450,"script":"20 + 3 + -1","result":22}
+{"seed":451,"script":"-1 + 24 + 5 - 10 + (6 + 4)","result":28}
+{"seed":452,"script":"-((9 - 2)) - 6","result":-13}
+{"seed":453,"script":"-12 / 16 - 14 / 24 - 22 + 21","result":-2}
+{"seed":454,"script":"(-(8 - 13)) - -8 / (21 + 1)","result":6}
+{"seed":455,"script":"23","result":23}
+{"seed":456,"script":"13","result":13}
+{"seed":457,"script":"17","result":17}
+{"seed":458,"script":"9 + 16 / -15 + 18 * 22 - 14 + 9","result":398}
+{"seed":459,"script":"24","result":24}
+{"seed":460,"script":"((13 + 21) - (14)) - ((5 + 1) - (22 + 24))","result":60}
+{"seed":461,"script":"-((13 / 20 / (13 + 8)))","result":0}
+{"seed":462,"script":"-((5 - 0) + 21 + 18)","result":-44}
+{"seed":463,"script":"2 * (16 - 2) + 21 * 7 + 16 + 12","result":203}
+{"seed":464,"script":"-7 / (10 / 16) - 13","result":null}
+{"seed":465,"script":"(7 + 25) - 22 / 20 + 12","result":43}
+{"seed":466,"script":"3","result":3}
+{"seed":467,"script":"3 + 17 - (3 - 20) - 3 + 7 + 10 - 3","result":48}
+{"seed":468,"script":"12","result":12}
+{"seed":469,"script":"20 - 12 - -3 - ((0 + 6) + (-20))","result":25}
+{"seed":470,"script":"25 + 20 - (3 * 22) + 10 - 1 - -23","result":11}
+{"seed":471,"script":"2","result":2}
+{"seed":472,"script":"20","result":20}
+{"seed":473,"script":"3 - 23 + (4 - 18) - 5 + 10 * 8 * 15","result":1161}
+{"seed":474,"script":"4 + 11 - 11 + 5","result":9}
+{"seed":475,"script":"2","result":2}
+{"seed":476,"script":"-19 * (14) - (23 - 14)","result":-275}
+{"seed":477,"script":"-9","result":-9}
+{"seed":478,"script":"4","result":4}
+{"seed":479,"script":"13","result":13}
+{"seed":480,"script":"(-14 - 21 - 9) - 6","result":-50}
+{"seed":481,"script":"-(4 * 14 * -14)","result":784}
+{"seed":482,"script":"18 - 17 - 23 + 17 * (-13 + -1)","result":-260}
+{"seed":483,"script":"(1 + 16 - 19) / (2 - 3) - 18 - 3","result":-19}
+{"seed":484,"script":"3 + 14 * 3 - 21 / 6 + 12 - 10 * 12","result":-66}
+{"seed":485,"script":"(12 - 15 * 23) + (-(17 - 23))","result":-327}
+{"seed":486,"script":"15 + 9 * 15 * 9 + 14 - 25 + 19 / 9","result":1221}
+{"seed":487,"script":"-(5 - 10 - 17)","result":22}
+{"seed":488,"script":"-((17 * 12)) + 11 - 4 - 25 * 20","result":-697}
+{"seed":489,"script":"5","result":5}
+{"seed":490,"script":"15","result":15}
+{"seed":491,"script":"(-18) - 10 * (14 - 7) + 15 - 2","result":-75}
+{"seed":492,"script":"0","result":0}
+{"seed":493,"script":"21","result":21}
+{"seed":494,"script":"-((20 + 13 * 8))","result":-124}
+{"seed":495,"script":"-(18 / 6 + 11)","result":-14}
+{"seed":496,"script":"-(25 + 10 * -24)","result":215}
+{"seed":497,"script":"5 - 20 - 3 - 2 + 9","result":-11}
+{"seed":498,"script":"-(11 - 12) * 19 * 8 + 21","result":173}
+{"seed":499,"script":"(-8 * 21 / 23) + 21 - 9 - (12)","result":-8}
+{"seed":500,"script":"18","result":18}
+{"seed":501,"script":"-((11 - 5) - -11)","result":-17}
+{"seed":502,"script":"25 - 23 + -5 * 13","result":-63}
+{"seed":503,"script":"9 + 4 - (25 + 13) + -(1 + 23)","result":-49}
+{"seed":504,"script":"(4 + 5) / (-19) * ((21 + 1) / (9 - 16))","result":4}
+{"seed":505,"script":"(-9 - 17 / 20) + 19 - 12 - -20","result":18}
+{"seed":506,"script":"8 - 25 - 16 - 22 * -11 + 4","result":213}
+{"seed":507,"script":"-15 * -(20 * 3)","result":900}
+{"seed":508,"script":"-(3 * 8) / 20 + 16 - 15 - 18","result":-19}
+{"seed":509,"script":"-6","result":-6}
+{"seed":510,"script":"-((25 - 2) / 10 + 20)","result":-22}
+{"seed":511,"script":"23 - 22 + 8 - 18 + (25 / 0 + 2 - 3)","result":null}
+{"seed":512,"script":"13 - 11 * 12 + (23 - 3 - 13 * 3)","result":-138}
+{"seed":513,"script":"-21 + 9 * 10 + 0","result":69}
+{"seed":514,"script":"-(13 + 13) - -(18 * 10)","result":154}
+{"seed":515,"script":"4 + 14 + (0 * 1)","result":18}
+{"seed":516,"script":"(20) / 1 + 8 / 4 + 25","result":47}
+{"seed":517,"script":"21","result":21}
+{"seed":518,"script":"11","result":11}
+{"seed":519,"script":"-(4 - 9 + 17)","result":-12}
+{"seed":520,"script":"1","result":1}
+{"seed":521,"script":"((25) - 11 - 3) + (4 - 1 - 5 - 10)","result":-1}
+{"seed":522,"script":"(-0) - 2 + 17 + ((-23) * 17 + 14)","result":-362}
+{"seed":523,"script":"21","result":21}
+{"seed":524,"script":"10 - 2 + 9 - (21 / 2) - 25 + 7","result":-11}
+{"seed":525,"script":"15","result":15}
+{"seed":526,"script":"6","result":6}
+{"seed":527,"script":"13","result":13}
+{"seed":528,"script":"22 * 18 + 18 + 7 / 19","result":414}
+{"seed":529,"script":"-((23 - 21) + 6 * 13)","result":-80}
+{"seed":530,"script":"(12 / 5 * 20 + 17) + 16","result":73}
+{"seed":531,"script":"21","result":21}
+{"seed":532,"script":"-(15 + 10) + -20","result":-45}
+{"seed":533,"script":"-(13 - 21) - 5 - 12 + 25 + 24","result":40}
+{"seed":534,"script":"4 * 8 / 13 - 0 * 16 + 8 + 4 - 5","result":9}
+{"seed":535,"script":"-18 - -4 + 3 - 24 + (19 * 12)","result":193}
+{"seed":536,"script":"-((12 / 13) / -23)","result":0}
+{"seed":537,"script":"-7","result":-7}
+{"seed":538,"script":"5 - 8 + 3 - 5 - (24)","result":-29}
+{"seed":539,"script":"(22) - 22 + 11 + 25 - 2","result":34}
+{"seed":540,"script":"-(14 - 18 + 8 - 12)","result":8}
+{"seed":541,"script":"5 + 17 * 14 - 24 - 23 + 5 + (19 + 19)","result":239}
+{"seed":542,"script":"14 + 19 + 8 - 6 * (22)","result":-91}
+{"seed":543,"script":"4","result":4}
+{"seed":544,"script":"-(17 - 8 - 22)","result":13}
+{"seed":545,"script":"(-7) - 10 - 22 * -2","result":27}
+{"seed":546,"script":"(4 - 10) - 11 + 17 + 1 + 22 - (18 - 18)","result":23}
+{"seed":547,"script":"-(15 - 6) + 14 / 9 * 14 + 21","result":26}
+{"seed":548,"script":"25","result":25}
+{"seed":549,"script":"6","result":6}
+{"seed":550,"script":"-(3 + 13) * 18","result":-288}
+{"seed":551,"script":"-((7 + 11)) * 12","result":-216}
+{"seed":552,"script":"24 * 12 + -22 + 22","result":288}
+{"seed":553,"script":"13 * 12 * 16 * -(14 / 5)","result":-4992}
+{"seed":554,"script":"6 - 12 + (8 + 22) * (5 + 1) - 1 - 6","result":167}
+{"seed":555,"script":"3 / 4 + 6 - 17 + -(14 - 0)","result":-25}
+{"seed":556,"script":"-(-22 + (0 - 12))","result":34}
+{"seed":557,"script":"24 / 19 + (-12) + 21 + 24 * (3 - 24)","result":-494}
+{"seed":558,"script":"8","result":8}
+{"seed":559,"script":"25 + 10","result":35}
+{"seed":560,"script":"(12 + (7 - 2)) + 4 * 15 * (9)","result":557}
+{"seed":561,"script":"-(6 / 6 + 11 - 24)","result":12}
+{"seed":562,"script":"-((12 + 23 + 13 + 14))","result":-62}
+{"seed":563,"script":"(2 + 11 - 14 - 4) * -10","result":50}
+{"seed":564,"script":"6","result":6}
+{"seed":565,"script":"25","result":25}
+{"seed":566,"script":"9 * 4","result":36}
+{"seed":567,"script":"(-9) * 25 * 23 + 10 + 10 + (-5)","result":-5160}
+{"seed":568,"script":"(8) / 23 - 2 + 10 * 24 * (1 + 0)","result":238}
+{"seed":569,"script":"-1","result":-1}
+{"seed":570,"script":"25 + 8 + 18 - 7 + 0 - 12 - (8)","result":24}
+{"seed":571,"script":"(-(21 - 4)) + 5 + 5 / 5","result":-11}
+{"seed":572,"script":"12","result":12}
+{"seed":573,"script":"-((2))","result":-2}
+{"seed":574,"script":"7 + 13 / 12 - -(21 + 22)","result":51}
+{"seed":575,"script":"25 - 13 - 15 + 19 * 21","result":396}
+{"seed":576,"script":"-(10 + 12 * 2 / 6)","result":-14}
+{"seed":577,"script":"-(13 - 3) - (7 - 22 / (-0))","result":null}
+{"seed":578,"script":"(11 - 2) / 5 + 11","result":12}
+{"seed":579,"script":"4 * 20 - 10 - 1 - (-16) + -8","result":77}
+{"seed":580,"script":"(20) - 4 - 13 * 9","result":-101}
+{"seed":581,"script":"-(12 - 23 + 13 + 9)","result":-11}
+{"seed":582,"script":"7 + (5)","result":12}
+{"seed":583,"script":"-18 + -9 / -22 + (15 - 16)","result":-19}
+{"seed":584,"script":"-(9 + 19 - 3 + 7)","result":-32}
+{"seed":585,"script":"-(19 + 11) + (0 - 8) - 20 * 6","result":-158}
+{"seed":586,"script":"11 + (1 + 12) + 23 * 3","result":93}
+{"seed":587,"script":"-20","result":-20}
+{"seed":588,"script":"-12","result":-12}
+{"seed":589,"script":"-(23 - 20) + 7","result":4}
+{"seed":590,"script":"13 * 25 + -11 + 16","result":330}
+{"seed":591,"script":"4 * 2 * 6 + 6 / (-10)","result":47}
+{"seed":592,"script":"5 + 6 + -24","result":-13}
+{"seed":593,"script":"11","result":11}
+{"seed":594,"script":"-(1 + 1) + (-(2 + 16))","result":-20}
+{"seed":595,"script":"11","result":11}
+{"seed":596,"script":"24 - -23 + 7 - 1","result":53}
+{"seed":597,"script":"3 * 17 + 19 - 8 + -12 - 7 * 16","result":-62}
+{"seed":598,"script":"-(23 * 3) + 10 - 0 * (11 * 25)","result":-59}
+{"seed":599,"script":"-(-1 - -4)","result":-3}
+{"seed":600,"script":"11","result":11}
+{"seed":601,"script":"-3 / 12 * 15 + 11 + 14 + -19","result":-9}
+{"seed":602,"script":"-14 - -15 - (1 / 11) - 19","result":-18}
+{"seed":603,"script":"18 * 21 / 1 * 23 + 21 + 20 + 4 * 13","result":8787}
+{"seed":604,"script":"24 + 25","result":49}
+{"seed":605,"script":"15 * 3 / 7 + 15 + -(1 + 15)","result":5}
+{"seed":606,"script":"-(-21 + 14 - 15)","result":22}
+{"seed":607,"script":"-3","result":-3}
+{"seed":608,"script":"(-(19 * 14)) + (0 + 20) / 3 * 11","result":-200}
+{"seed":609,"script":"-(20 + 6 - 5 - 9)","result":-12}
+{"seed":610,"script":"11 - 11 - 21 * -(0 + 7)","result":147}
+{"seed":611,"script":"20 / -17 + 14 + 6","result":18}
+{"seed":612,"script":"(-((25 / 24))) - 25 + 9 - 5","result":-22}
+{"seed":613,"script":"(0 * 3 * 24 / 16) - 3 - 18 - (16 * 0)","result":-21}
+{"seed":614,"script":"-(18 + 3) - 4 + 6 / 18","result":-25}
+{"seed":615,"script":"-4 + (2 - 17) - (5 * 9 - (17 - 9))","result":-56}
+{"seed":616,"script":"(16 + 4) * 9 + 16 + -10 + -21","result":165}
+{"seed":617,"script":"-(2 - 20 * 13 - 14)","result":272}
+{"seed":618,"script":"(5 - 22 * 1 + 5) * (5)","result":-60}
+{"seed":619,"script":"20 + 5 + 0 * 3 + 4 / 13 + 1","result":26}
+{"seed":620,"script":"-25 * -24 - -(9 * 1)","result":609}
+{"seed":621,"script":"-(11 - 12) - (-23 * 21)","result":484}
+{"seed":622,"script":"15 - -(19 + 13)","result":47}
+{"seed":623,"script":"12 + 18 + 3 + 21 + 25 - 22 - 9 + 6","result":54}
+{"seed":624,"script":"18 - 25 + 9 - 16 + -((19 - 15))","result":-18}
+{"seed":625,"script":"8","result":8}
+{"seed":626,"script":"4 + 20 + (12 * 6) - 7 * 19 + 24 - 23","result":-36}
+{"seed":627,"script":"23","result":23}
+{"seed":628,"script":"4 + 4 / 17 + -(15 * 12)","result":-176}
+{"seed":629,"script":"0 * -0 + 19 * 2 * 12 - 23","result":433}
+{"seed":630,"script":"4","result":4}
+{"seed":631,"script":"-19 + 16 - 20 - (-((11 + 24)))","result":12}
+{"seed":632,"script":"1 - (-6 + 14 - 19)","result":12}
+{"seed":633,"script":"1 + 11 + 6 - (24 + 23)","result":-29}
+{"seed":634,"script":"-(14 + 16) + 24 / 4 * (16 - 17)","result":-36}
+{"seed":635,"script":"(-(22 - 2)) - 4","result":-24}
+{"seed":636,"script":"(-16 + 8 - 24) + 8 / 23 - 22 + 0","result":-54}
+{"seed":637,"script":"14 + 12 - -4 * -(24 + 19)","result":-146}
+{"seed":638,"script":"-(23 * 2 - 23)","result":-23}
+{"seed":639,"script":"-(-11 - 16)","result":27}
+{"seed":640,"script":"24 + 6 * (8 + 15) + 12 - 4 - -12","result":182}
+{"seed":641,"script":"24 + 24 + 19 - 22 - (23 - 13) - 18","result":17}
+{"seed":642,"script":"-(18 - 15 - 23)","result":20}
+{"seed":643,"script":"16 * 6 - (11 - 0) / 11 + 14 - (13 * 12)","result":-47}
+{"seed":644,"script":"14 + 18 * 17 * 11 - 16 / 24 * 20","result":3380}
+{"seed":645,"script":"(15 - 24) + 9 - 8 + 8 + 3 - 24","result":-21}
+{"seed":646,"script":"-(16 - 19) / -17 + 22 - 11","result":10}
+{"seed":647,"script":"17","result":17}
+{"seed":648,"script":"-(24 / 7 / 22 + 10)","result":-10}
+{"seed":649,"script":"19 * 2 - -9 - (25) + 19","result":41}
+{"seed":650,"script":"-((21 * 15)) - 17 - 25 + 15 + 11","result":-331}
+{"seed":651,"script":"-3 / -6 + 9 - 24 + 11","result":-4}
+{"seed":652,"script":"23 / 11 / 22 + 6 + 21 * 21 + 9 * 8","result":519}
+{"seed":653,"script":"((24 * 21) + 12) * (17 / 5) * 16 * 3","result":74304}
+{"seed":654,"script":"-(20 - 20 - 19)","result":19}
+{"seed":655,"script":"0 + (25 * 21) + 18","result":543}
+{"seed":656,"script":"-(15 + 2 / 17 * 2)","result":-15}
+{"seed":657,"script":"-((-13 - 15 + 23))","result":5}
+{"seed":658,"script":"21 * 0 + 1 - 5 + 18 - (-0)","result":14}
+{"seed":659,"script":"-(((18 + 8) + 12 - 8))","result":-30}
+{"seed":660,"script":"-(2 - 5) + (-(12 / 0))","result":null}
+{"seed":661,"script":"13","result":13}
+{"seed":662,"script":"-(24 - 8 + (-21))","result":5}
+{"seed":663,"script":"-((10 * 3) * (13 * 19))","result":-7410}
+{"seed":664,"script":"16","result":16}
+{"seed":665,"script":"7 * 15 - 2 - 13 * -(6 + 3)","result":220}
+{"seed":666,"script":"13 * 17 + 17 - (1 - 4)","result":241}
+{"seed":667,"script":"9 - 11 * 15 + 20 + 21 - 16 * 17 * 13","result":-3651}
+{"seed":668,"script":"5 + 17 + 4 + 22 * -(21 * 22)","result":-10138}
+{"seed":669,"script":"-9 * 22 - 25 - -18 + 11 * 11","result":-84}
+{"seed":670,"script":"(8 - 22 - 13) / 21 + 0 + 17 - 12","result":3}
+{"seed":671,"script":"10 * 0 - 3 * 0 + 12 - 20 * 14","result":-268}
+{"seed":672,"script":"17 + 18 - 6 - 0 + ((23 + 25) - 21 * 24)","result":-427}
+{"seed":673,"script":"25 + 11 * 22 - 7 / (16 + 22) + 13 - 6","result":274}
+{"seed":674,"script":"4 + -5 - (12 + 19) - 6","result":-38}
+{"seed":675,"script":"(20 - 25) - 9 * 14 + (-2 + 14 - 12)","result":-131}
+{"seed":676,"script":"(-((13 / 23))) + (11 - 15 - 2 * 0)","result":-4}
+{"seed":677,"script":"-(15 * 19 * (9 - 21))","result":3420}
+{"seed":678,"script":"0 - 5 - 22 * 23 + -4 + 15 / 1","result":-500}
+{"seed":679,"script":"19","result":19}
+{"seed":680,"script":"-(((17 * 11) + 22))","result":-209}
+{"seed":681,"script":"24 - 15 - 10 - 3","result":-4}
+{"seed":682,"script":"21 + 24 + (-13) / 13 - 19 - 5","result":20}
+{"seed":683,"script":"(4 + 3 + 5 / 16) - (14 * 11) + 1","result":-146}
+{"seed":684,"script":"-17 - (-((-6)))","result":-23}
+{"seed":685,"script":"7 - -4 + (-16)","result":-5}
+{"seed":686,"script":"16","result":16}
+{"seed":687,"script":"-24 + 0 * 24 - 16","result":-40}
+{"seed":688,"script":"8","result":8}
+{"seed":689,"script":"-((25 * 25 + -10))","result":-615}
+{"seed":690,"script":"23 + 25 * 4 + 18 - 20","result":121}
+{"seed":691,"script":"-(9 * 10 + -20)","result":-70}
+{"seed":692,"script":"-17","result":-17}
+{"seed":693,"script":"-4 * 0","result":0}
+{"seed":694,"script":"-(((25 - 1) + 22))","result":-46}
+{"seed":695,"script":"-(11 / 17) - 9 - 4 * 0","result":-9}
+{"seed":696,"script":"19 * 15 - 14 - 5 + 10 - 16 * 3 + 2","result":230}
+{"seed":697,"script":"(-10) + 21 * 5 + 17 - 0 + 23 * 0","result":112}
+{"seed":698,"script":"15","result":15}
+{"seed":699,"script":"20 - 0 + 0 + 5 - 22","result":3}
+{"seed":700,"script":"-16 + -10 + (-(18 / 5))","result":-29}
+{"seed":701,"script":"7 / 17 + 15 - 17 * 19 - 3 / 12 + 1","result":-307}
+{"seed":702,"script":"(-14) + 13","result":-1}
+{"seed":703,"script":"7 + 10 - 3 + 7 + -10","result":11}
+{"seed":704,"script":"(5 - 10 - 11 * 5) - 23 + 6 + 22 + 20","result":-35}
+{"seed":705,"script":"9 * 7 - 23 + 23","result":63}
+{"seed":706,"script":"-((-16 - 15 / 3))","result":21}
+{"seed":707,"script":"-(23 - 17) + 16 + 17 * (3)","result":61}
+{"seed":708,"script":"(-(11 - 24)) + 19","result":32}
+{"seed":709,"script":"5 - 3 - 25 * 1 / (11 / 2) + -8","result":-11}
+{"seed":710,"script":"-14 / 1 - 10 - 22 * 0 - (4 * 20)","result":-104}
+{"seed":711,"script":"-(7 * 13 - (8 - 15))","result":-98}
+{"seed":712,"script":"13 + 6 * 9 + 14 - -(6 - 21)","result":66}
+{"seed":713,"script":"12 * 21 - 19 + 14 - 21","result":226}
+{"seed":714,"script":"25 - 23 - 17 + (4 - 21)","result":-32}
+{"seed":715,"script":"(19 + 4) + 25 - 21 * -(18 * 7)","result":2694}
+{"seed":716,"script":"((15) - 14 + 18) + -(14 * 2)","result":-9}
+{"seed":717,"script":"(15 - 7) + 19 + 11 - 22 - 24 + 21 / 0","result":null}
+{"seed":718,"script":"-((12 * 22)) - 15 / 24 - (21 / 20)","result":-265}
+{"seed":719,"script":"-(25 * 19) - 20 - 13 - -20","result":-488}
+{"seed":720,"script":"(1 + 19 * (9 * 9)) + 14 - 7 - 9 - 15","result":1523}
+{"seed":721,"script":"(20 - 13) - -4 + 7","result":18}
+{"seed":722,"script":"-(17 - 13 + 8 - 7)","result":-5}
+{"seed":723,"script":"8 + 8 + (14 / 1) / -15","result":15}
+{"seed":724,"script":"9 + 6 + 10 * 3 - (-(11 - 12))","result":44}
+{"seed":725,"script":"10 / 17 + 21 + 6 + 15 - 0 + 2","result":44}
+{"seed":726,"script":"(12 + 20) - (1 + 20) - 1 + 8 / 15 / 11","result":10}
+{"seed":727,"script":"16","result":16}
+{"seed":728,"script":"14","result":14}
+{"seed":729,"script":"-(21 - 3 - (-11))","result":-29}
+{"seed":730,"script":"-17 - -(9 + 9)","result":1}
+{"seed":731,"script":"-3","result":-3}
+{"seed":732,"script":"-((-(23 - 3)))","result":20}
+{"seed":733,"script":"-(17 + 4) - 23","result":-44}
+{"seed":734,"script":"-((21))","result":-21}
+{"seed":735,"script":"2 / 6 + 25 + 17 * -12 + 4 + 12","result":-163}
+{"seed":736,"script":"3 + 16 - 2 - -(9 - 24)","result":2}
+{"seed":737,"script":"6 + 10 + -24 + (21 + 2) / 7 - 18","result":-23}
+{"seed":738,"script":"-(20 + 9) + 18","result":-11}
+{"seed":739,"script":"-(5 * 21) + 12 + 6 + 23 + 13","result":-51}
+{"seed":740,"script":"(2 - 22) + 24 + 7 / 23 + 11 - -5","result":20}
+{"seed":741,"script":"13 * 2 * 24 - -10 + -15","result":619}
+{"seed":742,"script":"3 - -19 - (13)","result":9}
+{"seed":743,"script":"-(0 - 23 - 10)","result":33}
+{"seed":744,"script":"3 - 0 / 10 - 8 - 4 - 4 - 17 - 10","result":-40}
+{"seed":745,"script":"-(5 - 0) - 13 - 20 - -16","result":-22}
+{"seed":746,"script":"(23 / 16) + (-22) * -24","result":529}
+{"seed":747,"script":"-((16 - 16)) - -21 * 2 + 10","result":52}
+{"seed":748,"script":"9 + (21 * 13 + (-18))","result":264}
+{"seed":749,"script":"-(-13 * 21 - 20)","result":293}
+{"seed":750,"script":"18 - 3 + 3 - -(11 - 8)","result":21}
+{"seed":751,"script":"10 * 17","result":170}
+{"seed":752,"script":"-10 * -23 - 4 - 9","result":217}
+{"seed":753,"script":"(-(17 + 21)) + -(13 + 14)","result":-65}
+{"seed":754,"script":"5 + 3 * -0 + -2 - 14 - 3","result":-14}
+{"seed":755,"script":"11 - 25 - 23 - 0 - (8 - 9) - 9 / 14","result":-36}
+{"seed":756,"script":"(3 - 3) - 18 - 5 * 24","result":-138}
+{"seed":757,"script":"9 + 13 + 5 - 24","result":3}
+{"seed":758,"script":"(-16 / (17 * 13)) - (-21 + 8 - 24)","result":36}
+{"seed":759,"script":"10 / (25 + 3) + 0 * (-11)","result":0}
+{"seed":760,"script":"(20 + 10 + 17 / 15) + 20 / 6 * 17 - 0","result":82}
+{"seed":761,"script":"(10 - 24 - 10 + 6) - 3","result":-21}
+{"seed":762,"script":"11","result":11}
+{"seed":763,"script":"-3","result":-3}
+{"seed":764,"script":"21","result":21}
+{"seed":765,"script":"5 - 3 - 23 * 24 + (-(8 - 5))","result":-553}
+{"seed":766,"script":"(22 - 4 - 25 - 16) - 10","result":-33}
+{"seed":767,"script":"-(22 * 14 + 4 - 11)","result":-301}
+{"seed":768,"script":"15 * 20 + (9 + 3 + 8 + 22)","result":342}
+{"seed":769,"script":"-(17 + 11) + 5 / 22 + 18 + 13","result":3}
+{"seed":770,"script":"14 - (25 * 20 + -23)","result":-463}
+{"seed":771,"script":"4","result":4}
+{"seed":772,"script":"(-6 / 15 + 8) + 21","result":28}
+{"seed":773,"script":"-(22 / 14) + -3","result":-4}
+{"seed":774,"script":"14 / 22 + -7 - (-((-5)))","result":-12}
+{"seed":775,"script":"13 + 25 + 0 * -21 + (-16)","result":22}
+{"seed":776,"script":"-(0 + 18) * -((-17))","result":-306}
+{"seed":777,"script":"8 - 10 * 1 / 14 - 19","result":-11}
+{"seed":778,"script":"21 + 13 + -(0 * 5)","result":34}
+{"seed":779,"script":"((9 + 9) + 8 + 14) / (-(19 - 23))","result":10}
+{"seed":780,"script":"(5) + 13 - 13 * 2 + 2","result":-6}
+{"seed":781,"script":"15 - 3 + 24 - -((18 * 20))","result":396}
+{"seed":782,"script":"-(14 * 10 - 8)","result":-132}
+{"seed":783,"script":"(23 - 6 + 19 + 25) / (20 + 20 + 4 - 15)","result":2}
+{"seed":784,"script":"1 * 20 - 10","result":10}
+{"seed":785,"script":"12 * 22","result":264}
+{"seed":786,"script":"18 - 23 - -3 + -17 - 4 + 18","result":-5}
+{"seed":787,"script":"-(19 + 2) - -25 - -5","result":9}
+{"seed":788,"script":"-0","result":0}
+{"seed":789,"script":"-(12 * 17) * 16 - 6 - -23","result":-3247}
+{"seed":790,"script":"-(((18 * 4) - 1 - 8))","result":-63}
+{"seed":791,"script":"-(13 + 25 + 0 * 10)","result":-38}
+{"seed":792,"script":"(22 * 3) * 25 / 16","result":103}
+{"seed":793,"script":"14 * 25 + 6 + ((25 + 25) - 11)","result":395}
+{"seed":794,"script":"13 - 13 * 0 + 19 - -((-18))","result":14}
+{"seed":795,"script":"9 + 24 * (6 - 19) - 12 + 1 + 17","result":-297}
+{"seed":796,"script":"-13 * 13 / 25 * 1 * -14","result":98}
+{"seed":797,"script":"12","result":12}
+{"seed":798,"script":"8 - 14 * 17 + 24 - 18 + 10 * (8 - 8)","result":-224}
+{"seed":799,"script":"0 + 5 + 1 + 11 - 15 - 21 * 21 / 19","result":-21}
+{"seed":800,"script":"-1","result":-1}
+{"seed":801,"script":"(15 * 19) - (10 + 16) + (20 * 22) + 18 - 9","result":708}
+{"seed":802,"script":"9 - 5 / 21 / (2 - 17) - (22)","result":-13}
+{"seed":803,"script":"7 - 23 * 7 + -17 - 1 + 4","result":-168}
+{"seed":804,"script":"0 * 24 + 5 * (-11) - 16 + 6","result":-65}
+{"seed":805,"script":"(14 - 14 + -18) * (2 - 24 * 14 * 21)","result":126972}
+{"seed":806,"script":"0","result":0}
+{"seed":807,"script":"25 + 9 + 4 + 22 - (19 - 4 + 25 * 11)","result":-230}
+{"seed":808,"script":"-(24 * 7) - ((-5) - 2 + 22)","result":-183}
+{"seed":809,"script":"(14 - 7) - 1 * 8 + 7 + 24 + (10 + 2)","result":42}
+{"seed":810,"script":"-((20 + 8) / 20 + 13)","result":-14}
+{"seed":811,"script":"16 + 1","result":17}
+{"seed":812,"script":"-(20 - 24) + 6","result":10}
+{"seed":813,"script":"-(8 - 5) + 10 / 0 + 22 - 9","result":null}
+{"seed":814,"script":"-((5 + 13 - 14 + 2))","result":-6}
+{"seed":815,"script":"9","result":9}
+{"seed":816,"script":"2 - 1 + (8 + 19) + 6","result":34}
+{"seed":817,"script":"(18 - 18) - 21 - 14 + 4 + 5 + 16 - 11","result":-21}
+{"seed":818,"script":"24 / 2 - 14 / 1 * 5 * 24 / 8 + 7","result":-191}
+{"seed":819,"script":"4 - 22 + (-23) - (23 + 8 - 13 * 15)","result":123}
+{"seed":820,"script":"15 - 7 + (3 + 6)","result":17}
+{"seed":821,"script":"9 / (3)","result":3}
+{"seed":822,"script":"12","result":12}
+{"seed":823,"script":"(24 + 17 + (6 - 11)) - 9 + 19 / -1","result":8}
+{"seed":824,"script":"-((4 - 1 + -24))","result":21}
+{"seed":825,"script":"9 - (-23) / 19 + 6","result":17}
+{"seed":826,"script":"-(4 * 6) / -22","result":1}
+{"seed":827,"script":"-16 - 15 * 25 - 12","result":-403}
+{"seed":828,"script":"-(4 - 22) + -13 - 14 * 1","result":-9}
+{"seed":829,"script":"0 + 9 * -25 + 12 / 18 + 8 * 17","result":-89}
+{"seed":830,"script":"((20 - 23) - 21 + 7) + (21 + 9 - 23)","result":-10}
+{"seed":831,"script":"20 + 4 + 23 - 4","result":43}
+{"seed":832,"script":"-(7 * 12 / -25)","result":4}
+{"seed":833,"script":"3 / 23 - 15 / -(15 - 9)","result":3}
+{"seed":834,"script":"17 / 3 + 24 - -((-15))","result":14}
+{"seed":835,"script":"-24","result":-24}
+{"seed":836,"script":"22 / 0 + 2 - (7 - 0 + -14)","result":null}
+{"seed":837,"script":"(4 - 7) * 25 / -3","result":25}
+{"seed":838,"script":"-9 - 2 * 22 * 8 - 8","result":-369}
+{"seed":839,"script":"-(6 - 7 + -7)","result":8}
+{"seed":840,"script":"14 / 14 - 22 - 3 + 16","result":-8}
+{"seed":841,"script":"-(6 - 16) / 20","result":0}
+{"seed":842,"script":"25 - 19 / 2 + 3 * (-4) + 8 * 14","result":116}
+{"seed":843,"script":"-(-22 * (4 / 14))","result":0}
+{"seed":844,"script":"-((24 - 19 / 8))","result":-22}
+{"seed":845,"script":"-(4 / 18) + 14 + 14 - 11 + 21","result":38}
+{"seed":846,"script":"8 + 5 * 15 + 23 + (11 - 10 + 8 + 1)","result":116}
+{"seed":847,"script":"((9 / 3) + 3) - -((17))","result":23}
+{"seed":848,"script":"0","result":0}
+{"seed":849,"script":"-10 + (1 + 17) + -25 - 13 - 7","result":-37}
+{"seed":850,"script":"14 * 3 * 2 - 24 * 7 - 13 + -9","result":-106}
+{"seed":851,"script":"-(20 - 24 * (5 - 18))","result":-332}
+{"seed":852,"script":"-(11 * 24 * -7)","result":1848}
+{"seed":853,"script":"(24 - 23) - (-3) + -11","result":-7}
+{"seed":854,"script":"11","result":11}
+{"seed":855,"script":"5 - -(3 / 8)","result":5}
+{"seed":856,"script":"24 - (-8) / 13 / 3","result":25}
+{"seed":857,"script":"21","result":21}
+{"seed":858,"script":"21 + 5 + 5 * 15 / 19 - 12 + -21","result":-4}
+{"seed":859,"script":"20 + 19 - 4 + 18 / 8 + 0 * 24 + 10","result":47}
+{"seed":860,"script":"-(11 + 16) + -(18 - 17)","result":-28}
+{"seed":861,"script":"-0 * 14 + 20 + 4 + 19","result":43}
+{"seed":862,"script":"4 * 4 + 20 / (14 - 9 + 17 + 20)","result":16}
+{"seed":863,"script":"-((13 / (-9)))","result":2}
+{"seed":864,"script":"6 - 4 * (4 + 11) - -((18 - 5))","result":-41}
+{"seed":865,"script":"(25 * 0) / 23 - 14 - -11 / 15 + 18","result":5}
+{"seed":866,"script":"6","result":6}
+{"seed":867,"script":"-((16 + 8 - 23 - 8))","result":7}
+{"seed":868,"script":"2 * 6 - 0 * 20 - -(3 + 19)","result":34}
+{"seed":869,"script":"-14 - (5) - 5 + 3 + 20 - 11","result":-12}
+{"seed":870,"script":"19 - 10 * 7 - -14","result":-37}
+{"seed":871,"script":"(-(8 - 22)) - (10 + 21) - 21 * 20","result":-437}
+{"seed":872,"script":"15 - 21 * -24 / -(22 + 15)","result":2}
+{"seed":873,"script":"20 - 11 / 11 - 16 + 8 - 6","result":5}
+{"seed":874,"script":"4 + 12 - 10 + 0 * 12 + 18 * 15 + 20","result":296}
+{"seed":875,"script":"(-19 - 11 * 22) * 3 * 23 * (5 + 24)","result":-522261}
+{"seed":876,"script":"-(2 + 17 * 23 + 18)","result":-411}
+{"seed":877,"script":"((-18) * 11 + 15) - 1","result":-184}
+{"seed":878,"script":"24 / 13 - 5 + 7","result":3}
+{"seed":879,"script":"0 + 6 / 3 + 8 + 18","result":28}
+{"seed":880,"script":"2","result":2}
+{"seed":881,"script":"-(24 * 23 + 17 + 12)","result":-581}
+{"seed":882,"script":"22","result":22}
+{"seed":883,"script":"2 / 11 + -17 / 18 - (9)","result":-10}
+{"seed":884,"script":"22 / 9 + -13 * -1 - 5 + 2","result":12}
+{"seed":885,"script":"1 - (4 - 9 * 21 + 3)","result":183}
+{"seed":886,"script":"9 + 21 / 2 + 19 + (18 + -22)","result":34}
+{"seed":887,"script":"25 + 25 * (-17) * 16 + 22 - 15","result":-6768}
+{"seed":888,"script":"-12 + -(5 / 22)","result":-12}
+{"seed":889,"script":"-((21 + 24 - 7 / 18))","result":-45}
+{"seed":890,"script":"23 - 0 / 13 + 15 - 1 + 24 * 19","result":493}
+{"seed":891,"script":"12","result":12}
+{"seed":892,"script":"-7 - 13 * 6 - 6","result":-91}
+{"seed":893,"script":"(24 - 20) - -21 * (6 * 14) + 3 - 10","result":1761}
+{"seed":894,"script":"-6 - 11 + 19 * (9 + 12) + (18)","result":400}
+{"seed":895,"script":"-(17 - 7 + 23 - 15)","result":-18}
+{"seed":896,"script":"20 - 21 + 25 * 25 + 8","result":632}
+{"seed":897,"script":"8 - 25 + (4 + 20) + (13 + 19) - 13 - 15","result":11}
+{"seed":898,"script":"22 + 1 * 4 - 2 / 9 / 11 / 24","result":26}
+{"seed":899,"script":"2 - 9 / 14 - 18 + 23 - 18 / 0 + 22","result":null}
+{"seed":900,"script":"7","result":7}
+{"seed":901,"script":"-12 - 15 * -10 - (21 * 13)","result":-135}
+{"seed":902,"script":"20","result":20}
+{"seed":903,"script":"-(5 - 17) + 2 - 18 + 8 - 14","result":-10}
+{"seed":904,"script":"-9","result":-9}
+{"seed":905,"script":"-(19 / 0 - 4 + 21)","result":null}
+{"seed":906,"script":"25 + (12 - 10) - 16 * 13","result":-181}
+{"seed":907,"script":"-(9 + 15 + 5 + 6)","result":-35}
+{"seed":908,"script":"-((25 + 20 + 21 - 14))","result":-52}
+{"seed":909,"script":"(24 - 19) - 12 - 21 + 16","result":-12}
+{"seed":910,"script":"-(-19 * -9)","result":-171}
+{"seed":911,"script":"12 * 16 + 24 + 24 - 15","result":225}
+{"seed":912,"script":"(20 / 5 - 0 / 1) / (-16)","result":-1}
+{"seed":913,"script":"(21) * 12 - 12 + (23 - 24) + -13","result":226}
+{"seed":914,"script":"(2 - 20 + 17 * 21) + (19 + 13 - 2 + 1)","result":370}
+{"seed":915,"script":"((16 * 1) * 12 - 15) + -11 + 1 + 19","result":186}
+{"seed":916,"script":"-6","result":-6}
+{"seed":917,"script":"2 * -13 + 19 - 8","result":-15}
+{"seed":918,"script":"-(-13 + 17 + 13)","result":-17}
+{"seed":919,"script":"-((7 / 5 - 7 + 15))","result":-9}
+{"seed":920,"script":"-(5 + 0 - -16)","result":-21}
+{"seed":921,"script":"11","result":11}
+{"seed":922,"script":"15 + 6","result":21}
+{"seed":923,"script":"(22) - 3 - 24 + -14","result":-19}
+{"seed":924,"script":"12 + 20 - 20 - 2 / 10 + 18 + -3","result":27}
+{"seed":925,"script":"2","result":2}
+{"seed":926,"script":"-((19 - 24 + 0))","result":5}
+{"seed":927,"script":"-(6 + 12)","result":-18}
+{"seed":928,"script":"(15) / 9 - 19 - 8 + 17 / (5 + 19)","result":-26}
+{"seed":929,"script":"(2) + 24 + 11 * 1 - 18","result":19}
+{"seed":930,"script":"25","result":25}
+{"seed":931,"script":"(7 * 9) / 16 - 17 - 12 - 22 - 13","result":-61}
+{"seed":932,"script":"16 + -16 * 0 + 5 - 4 + 16","result":33}
+{"seed":933,"script":"21 * 2 + -6 / 21 - 1 + 23 / 13","result":41}
+{"seed":934,"script":"8 + 4 + 17 - 22 * -20 - 3 - 22","result":444}
+{"seed":935,"script":"-(16 - 9 - 13 * 14)","result":175}
+{"seed":936,"script":"5 + 15 + 22 + -25","result":17}
+{"seed":937,"script":"-(17 / 13) / 15 + 6 * -21","result":-127}
+{"seed":938,"script":"-20 - 23 + 25 * 14 - 17 + 24","result":314}
+{"seed":939,"script":"4","result":4}
+{"seed":940,"script":"9 + 22 - -25 - -3","result":59}
+{"seed":941,"script":"(-23) / 24 - 25 - 25","result":-51}
+{"seed":942,"script":"6","result":6}
+{"seed":943,"script":"24 + 5 / 14 / (5 - 12) * 10 + 14","result":38}
+{"seed":944,"script":"17 + (12 - 17) - -1","result":13}
+{"seed":945,"script":"-((7)) * 14 + 18 + 2 * 12","result":-56}
+{"seed":946,"script":"-15 + 2 + 5 - -18","result":10}
+{"seed":947,"script":"3 - 5 - (-10) + (11)","result":19}
+{"seed":948,"script":"(-2 + (20 * 25)) * -8 + 24 + 22","result":-3938}
+{"seed":949,"script":"(8 - 20) - 18 * 10 - 0 + 12 + 12 + 5","result":-163}
+{"seed":950,"script":"-((6 - 14)) - 13 + 9 + 9 + 14","result":27}
+{"seed":951,"script":"((6 + 0) - 3 - 4) + 1 + 9 - -7","result":16}
+{"seed":952,"script":"5 + 1 + (13 * 12) + 0 + 4 + 13 * 8","result":270}
+{"seed":953,"script":"13 - 7 - 19 + 22 + -2 / 10 - 1","result":7}
+{"seed":954,"script":"(-17) + 22 + 9","result":14}
+{"seed":955,"script":"-(-4 * 15 / 10)","result":6}
+{"seed":956,"script":"-((22 * 25) + -19)","result":-531}
+{"seed":957,"script":"6 * 16 - 22 - 20 + 6","result":60}
+{"seed":958,"script":"(15) - 0 - 19 - 24 + 17","result":-11}
+{"seed":959,"script":"7 - 2 + 19 / 25 * 2","result":5}
+{"seed":960,"script":"(24 - 16) + -24 - 17 * 9 - 2 - 22","result":-193}
+{"seed":961,"script":"-(17 + 8 / 11)","result":-17}
+{"seed":962,"script":"-(4 * 12) - 24 + -25","result":-97}
+{"seed":963,"script":"25","result":25}
+{"seed":964,"script":"7 / (16) * 22","result":0}
+{"seed":965,"script":"-23 - 22 - 21 - -14 - -23","result":-29}
+{"seed":966,"script":"-(14 * 12) + -1 - 9 * 5","result":-214}
+{"seed":967,"script":"3","result":3}
+{"seed":968,"script":"20 - (9 - 18) + 0","result":29}
+{"seed":969,"script":"-(24 / 9) - 7 - 17 + 12","result":-14}
+{"seed":970,"script":"-((-((10 + 1))))","result":11}
+{"seed":971,"script":"22 - 5 + 7 - 22","result":2}
+{"seed":972,"script":"-(13 - 8 / -10)","result":-14}
+{"seed":973,"script":"8 - 24 + 8 + 2 * 2 / 20 - 24","result":-32}
+{"seed":974,"script":"10","result":10}
+{"seed":975,"script":"-(21 / 1) * (17 - 18) - 25 + 23","result":19}
+{"seed":976,"script":"-(18 - 15) + (-19 - (20 - 16))","result":-26}
+{"seed":977,"script":"-(10 / 21 + 1)","result":-1}
+{"seed":978,"script":"4","result":4}
+{"seed":979,"script":"(21 - 3 + 25 + 22) * 7 - 15 / (21)","result":455}
+{"seed":980,"script":"5 * (-9 - (1 - 23))","result":65}
+{"seed":981,"script":"1","result":1}
+{"seed":982,"script":"((19) + 20 * 24) * 7 + 21 - 2 + 6","result":3518}
+{"seed":983,"script":"-((18 / 12 - 25 + 17))","result":7}
+{"seed":984,"script":"-(19 + 11 * 16 - 16)","result":-179}
+{"seed":985,"script":"15 + 13 - -9 - 13 - 16 + 22 + 4","result":34}
+{"seed":986,"script":"(25 + 15 - 20 * 23) + 12 + 18 * 22 - 0","result":-12}
+{"seed":987,"script":"-1 / 8 + 1 / (-22 + -10)","result":-2}
+{"seed":988,"script":"19","result":19}
+{"seed":989,"script":"-(21 * 1) - -((9 + 13))","result":1}
+{"seed":990,"script":"8 - 8 - -22 + 4 + 8","result":34}
+{"seed":991,"script":"-(25 - 5) + (-((4 * 11)))","result":-64}
+{"seed":992,"script":"11","result":11}
+{"seed":993,"script":"19 / 18 + 24 - 13 + 25 - 8 - 9","result":20}
+{"seed":994,"script":"24","result":24}
+{"seed":995,"script":"(13 - 9) - 20 + 16 + (-23 - 13 - 20)","result":-56}
+{"seed":996,"script":"14","result":14}
+{"seed":997,"script":"11 + 6 - 22 - 2 * 24","result":-53}
+{"seed":998,"script":"17 + 5","result":22}
+{"seed":999,"script":"(4 * 25 / -20) + (6 + 18 + 1)","result":20}
