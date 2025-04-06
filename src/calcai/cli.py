@@ -3,7 +3,25 @@ from pathlib import Path
 import click
 
 from ._console import print
-from .training import ExpressionGenerator, SampleWriter, ScriptBuilder
+from .model import CalculatorLanguageModel
+from .training import (
+    ExpressionGenerator,
+    ModelTrainer,
+    SampleWriter,
+    ScriptBuilder,
+    TrainingIteration,
+    from_jsonlines,
+)
+
+
+def _training_callback(iter: TrainingIteration) -> None:
+    if iter.iteration != 0 and (iter.iteration % 50) != 0:
+        return
+
+    print(f"Epoch {iter.epoch} - Iteration {iter.iteration}")
+    print(f"Loss = {iter.loss}", indent=2, bullet="")
+    print(f"Expected = {iter.expected}", indent=2, bullet="")
+    print(f"Actual   = {iter.actual}", indent=2, bullet="")
 
 
 @click.group()
@@ -24,10 +42,10 @@ def main() -> None:
     "--depth",
     metavar="N",
     default=3,
-    help="Depth, or complexity, of the generated expressions."
+    help="Depth, or complexity, of the generated expressions.",
 )
 @click.option(
-    "-n",
+    "-m",
     "--max",
     "max_value",
     metavar="N",
@@ -42,7 +60,9 @@ def main() -> None:
     help="Specify a possible variable name.  Can be repeated.",
 )
 @click.argument("output", type=click.Path(path_type=Path))
-def generate_data(samples: int, depth: int, max_value: int, vars: list[str], output: Path) -> None:
+def generate_data(
+    samples: int, depth: int, max_value: int, vars: list[str], output: Path
+) -> None:
     """Generate training data for the language model.
 
     The training data is saved into OUTPUT as a JSONL file, where each line is a
@@ -62,8 +82,39 @@ def generate_data(samples: int, depth: int, max_value: int, vars: list[str], out
 
 
 @main.command()
-def train_model() -> None:
-    """Train a language model using automatically-generated training data."""
+@click.argument(
+    "data", type=click.Path(dir_okay=False, file_okay=True, exists=True, path_type=Path)
+)
+@click.option(
+    "-e",
+    "--epochs",
+    metavar="N",
+    default=10,
+    type=int,
+    help="The number of training epochs.",
+)
+@click.option(
+    "-s",
+    "--seed",
+    metavar="S",
+    type=int,
+    help="The seed used for initializing all RNGs during training.",
+)
+def train_model(data: Path, epochs: int, seed: int | None) -> None:
+    """Train a language model with some training data.
+
+    The training data is provided in a json lines file at DATA.  A small portion
+    will be reserved for validating the model after each epoch.
+    """
+    samples = list(from_jsonlines(data))
+    model = CalculatorLanguageModel()
+    trainer = ModelTrainer(samples, epochs=epochs, seed=seed)
+
+    print("Starting model training.")
+    if seed is not None:
+        print(f"Seed {seed}", indent=2)
+
+    trainer.train(model, callback=_training_callback)
 
 
 @main.command()

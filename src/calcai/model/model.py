@@ -9,13 +9,13 @@ from .layers import SimpleDecoderTransformer
 from .tokenizer import ControlToken, Tokenizer
 
 
-def create_query(expr: str, *, answer: int | None = None) -> str:
-    """Construct a query string.
+def create_query(expr: str) -> str:
+    """Construct a query string that is sent into the CLM.
 
     Parameters
     ----------
     expr : str
-        an arithmetic expression
+        an arithmetic expression script
     answer : int, optional
         if provided, also include the final answer
 
@@ -25,10 +25,31 @@ def create_query(expr: str, *, answer: int | None = None) -> str:
         full query string
     """
     query = f"{ControlToken.EXPR_START}{expr}{ControlToken.EXPR_STOP}"
-    if answer is None:
-        return f"{query}{ControlToken.RESULT_START}"
-    else:
-        return f"{query}{ControlToken.RESULT_START}{answer}{ControlToken.RESULT_STOP}"
+    return f"{query}{ControlToken.RESULT_START}"
+
+
+def create_output_string(expr: str, answer: int | None) -> str:
+    """Construct a complete output string.
+
+    This is the complete string that the CLM should produce when it computes an
+    answer.
+
+    Parameters
+    ----------
+    expr : str
+        an arithmetic expression
+    answer : int or `None`
+        the expected result; if the script cannot be computed, e.g., in the
+        "divide by zero" case, then this should be `None`
+
+    Returns
+    -------
+    str
+        the output string
+    """
+    output = create_query(expr)
+    answer_str = ControlToken.NULL if answer is None else answer
+    return f"{output}{answer_str}{ControlToken.RESULT_STOP}"
 
 
 class CalculatorLanguageModel:

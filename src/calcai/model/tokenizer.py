@@ -7,6 +7,13 @@ from typing import Iterator, Sequence
 class ControlToken(StrEnum):
     """Control tokens used to control lanuage model actions."""
 
+    NULL = "{null}"
+    """Used when a result cannot be computed.
+
+    This will happen with expressions such as '5 / 0', where the result is a
+    "division by zero" error.
+    """
+
     EXPR_START = "{expr=}"
     """Denotes the start of a arithmetic expression script.
 

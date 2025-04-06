@@ -7,7 +7,12 @@ from torch import Tensor
 from torch.nn.functional import cross_entropy
 from torch.optim import Adam
 
-from ..model import CalculatorLanguageModel, create_query
+from ..model import (
+    CalculatorLanguageModel,
+    ControlToken,
+    create_query,
+    create_output_string,
+)
 from .data import SampleData
 
 
@@ -36,26 +41,31 @@ TrainingCallback = Callable[[TrainingIteration], None]
 def _compute_sample_loss(
     sample: SampleData, model: CalculatorLanguageModel
 ) -> tuple[Tensor, list[int], list[int]]:
-    expected_str = create_query(sample.script, answer=sample.result)
+    expected_str = create_output_string(sample.script, sample.result)
     query_str = create_query(sample.script)
 
     expected_tokens = list(model.tokenizer.to_tokens(expected_str))
     actual_tokens = list(model.tokenizer.to_tokens(query_str))
+    stop_token = model.tokenizer.forward_map[ControlToken.RESULT_STOP]
 
-    num_tokens = len(expected_tokens) - len(actual_tokens)
     start_expected = len(actual_tokens)
 
     sample_loss = torch.zeros((1,))
+    num_generated = 1
 
     logit, token = model.inference_step(actual_tokens, init=True)
     for expected in expected_tokens[start_expected:]:
-        token_loss = cross_entropy(logit, Tensor([expected]))
+        token_loss = cross_entropy(logit, torch.tensor([expected]))
         sample_loss += token_loss
-
         actual_tokens.append(token)
-        logit, token = model.inference_step(actual_tokens)
 
-    sample_loss /= num_tokens
+        if token == stop_token:
+            break
+
+        logit, token = model.inference_step(actual_tokens)
+        num_generated += 1
+
+    sample_loss /= num_generated
     return sample_loss, expected_tokens, actual_tokens
 
 
