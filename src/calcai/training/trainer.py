@@ -34,6 +34,17 @@ class TrainingIteration:
     """The training loss, averaged over the number of generated tokens."""
     test_loss: float | None
     """The test loss, calculated for the *last* epoch."""
+    test_accuracy: tuple[float, float] | None
+    """The test accuracy, calculated for the *last* epoch.
+
+    This tuple contains two related values.  First is the accuracy, or ratio of
+    test samples where the inference result exactly match the calculated result.
+
+    Second is the ratio of "invalid" results.  This is the subset of failures
+    where the model generated a syntactically incorrect results.  These are
+    cases where the response wasn't well-formed (missing a "stop" token) or the
+    result cannot be parsed as an integer.
+    """
 
 
 TrainingCallback = Callable[[TrainingIteration], None]
@@ -187,7 +198,7 @@ class ModelTrainer:
                     last_epoch_loss = None if len(test_loss) == 0 else test_loss[-1]
                     callback(
                         TrainingIteration(
-                            n, i, expected_str, actual_str, loss.item(), last_epoch_loss
+                            n, i, expected_str, actual_str, loss.item(), last_epoch_loss, None
                         )
                     )
 

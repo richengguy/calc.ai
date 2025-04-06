@@ -72,6 +72,16 @@ class Tokenizer:
         """The number of tokens that the tokenizer recognizes."""
         return len(self._fwd_map)
 
+    @property
+    def start_token(self) -> int:
+        """The ID of the result "start" token."""
+        return self._fwd_map[ControlToken.RESULT_START]
+
+    @property
+    def stop_token(self) -> int:
+        """The ID of the result "stop" token."""
+        return self._fwd_map[ControlToken.RESULT_STOP]
+
     def to_tokens(self, input: str) -> Iterator[int]:
         """Convert a string into a token sequence.
 
@@ -145,3 +155,46 @@ class Tokenizer:
 
         if ctrl_token:
             raise RuntimeError(f"Unclosed control token '{token}'.")
+
+
+def create_query(expr: str) -> str:
+    """Construct a query string that is sent into the CLM.
+
+    Parameters
+    ----------
+    expr : str
+        an arithmetic expression script
+    answer : int, optional
+        if provided, also include the final answer
+
+    Returns
+    -------
+    str
+        full query string
+    """
+    query = f"{ControlToken.EXPR_START}{expr}{ControlToken.EXPR_STOP}"
+    return f"{query}{ControlToken.RESULT_START}"
+
+
+def create_output_string(expr: str, answer: int | None) -> str:
+    """Construct a complete output string.
+
+    This is the complete string that the CLM should produce when it computes an
+    answer.
+
+    Parameters
+    ----------
+    expr : str
+        an arithmetic expression
+    answer : int or `None`
+        the expected result; if the script cannot be computed, e.g., in the
+        "divide by zero" case, then this should be `None`
+
+    Returns
+    -------
+    str
+        the output string
+    """
+    output = create_query(expr)
+    answer_str = ControlToken.NULL if answer is None else answer
+    return f"{output}{answer_str}{ControlToken.RESULT_STOP}"

@@ -6,50 +6,7 @@ from torch import Tensor
 from torch.nn import Module
 
 from .layers import SimpleDecoderTransformer
-from .tokenizer import ControlToken, Tokenizer
-
-
-def create_query(expr: str) -> str:
-    """Construct a query string that is sent into the CLM.
-
-    Parameters
-    ----------
-    expr : str
-        an arithmetic expression script
-    answer : int, optional
-        if provided, also include the final answer
-
-    Returns
-    -------
-    str
-        full query string
-    """
-    query = f"{ControlToken.EXPR_START}{expr}{ControlToken.EXPR_STOP}"
-    return f"{query}{ControlToken.RESULT_START}"
-
-
-def create_output_string(expr: str, answer: int | None) -> str:
-    """Construct a complete output string.
-
-    This is the complete string that the CLM should produce when it computes an
-    answer.
-
-    Parameters
-    ----------
-    expr : str
-        an arithmetic expression
-    answer : int or `None`
-        the expected result; if the script cannot be computed, e.g., in the
-        "divide by zero" case, then this should be `None`
-
-    Returns
-    -------
-    str
-        the output string
-    """
-    output = create_query(expr)
-    answer_str = ControlToken.NULL if answer is None else answer
-    return f"{output}{answer_str}{ControlToken.RESULT_STOP}"
+from .tokenizer import Tokenizer
 
 
 class CalculatorLanguageModel:
@@ -106,7 +63,7 @@ class CalculatorLanguageModel:
             context[i] = token
 
         start_ind = i
-        stop_token = self.tokenizer.forward_map[ControlToken.RESULT_STOP]
+        stop_token = self.tokenizer.stop_token
         self._model.eval()
         with torch.no_grad():
             for i in range(start_ind, self._max_context - 1):
