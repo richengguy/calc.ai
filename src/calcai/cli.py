@@ -184,6 +184,9 @@ def train_model(data: Path, epochs: int, threads: int | None, seed: int | None) 
 
         trainer.train(model, callback=progress_callback)
 
+    # TODO: Have this save to a better location!
+    model.save(Path("model.pt"))
+
 
 @main.command()
 def repl() -> None:

@@ -130,13 +130,37 @@ class CalculatorLanguageModel:
             location where to save the model
         """
 
+        torch.save(
+            {
+                "_tokenizer": self.tokenizer.version_hash(),
+                "_max_context": self._max_context,
+                "_model": self._model.state_dict(),
+            },
+            path,
+        )
+
     @staticmethod
-    def load(self, path: Path) -> "CalculatorLanguageModel":
+    def load(path: Path) -> "CalculatorLanguageModel":
         """Load a model.
 
         Parameters
         ----------
         path : Path
             location where the model is saved
+
+        Returns
+        -------
+        CalculatorLanguageModel
+            deserialized model
         """
-        raise NotImplementedError()
+        expected_hash = Tokenizer().version_hash()
+        serialized = torch.load(path, weights_only=True)
+        if expected_hash != serialized["_tokenizer"]:
+            raise RuntimeError(
+                f"Expected tokenizer hash ({expected_hash}) does not match "
+                f"serialized hash ({serialized['_tokenizer']})"
+            )
+
+        model = CalculatorLanguageModel(max_context=serialized["_max_context"])
+        model.pytorch_model.load_state_dict(serialized["_model"], strict=False)
+        return model
