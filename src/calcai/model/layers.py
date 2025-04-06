@@ -220,6 +220,7 @@ class TransformerLayer(Module):
         self,
         num_dim: int,
         *,
+        attention_heads: int = 2,
         d_k: int | None = None,
         d_v: int | None = None,
         d_ff: int | None = None,
@@ -229,6 +230,8 @@ class TransformerLayer(Module):
         ----------
         num_dim : int
             the dimensionality of the token embedding space
+        attention_heads : int
+            the number of parallel attention heads; default is '2'
         d_k : int, optional
             the number of columns (dimensions) for the "key" and "query"
             projection matrices in the attention head; uses `num_dim` if not
@@ -251,7 +254,10 @@ class TransformerLayer(Module):
         if d_ff < 1:
             raise ValueError("The value of d_ff must be greater than zero.")
 
-        self._attention = MaskedAttentionHead(num_dim, d_k, d_v)
+        self._attention = list(
+            MaskedAttentionHead(num_dim, d_k, d_v) for _ in range(attention_heads)
+        )
+        self._merge = Linear(attention_heads * num_dim, num_dim)
         self._post_attention_layer_norm = LayerNorm(num_dim)
         # fmt: off
         self._fully_connected = Sequential(
@@ -275,8 +281,9 @@ class TransformerLayer(Module):
         Tensor
             the transformer output, same shape as the input
         """
-        attention: Tensor
-        attention, _ = self._attention(x)
+        attention_heads = list(head(x)[0] for head in self._attention)
+        concat = torch.concat(attention_heads, dim=2)
+        attention = self._merge(concat)
 
         # Do all of the post-attention processing.  This includes the residual
         # connections (the additions).

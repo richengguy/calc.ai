@@ -8,7 +8,7 @@ from rich.panel import Panel
 from rich.progress import Progress
 from rich.table import Table
 
-from ._console import console, clear_screen, print
+from ._console import clear_screen, console, print
 from .model import CalculatorLanguageModel
 from .training import (
     ExpressionGenerator,
