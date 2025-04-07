@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from pathlib import Path
 
 import click
@@ -57,9 +58,23 @@ def _update_training_display(progress: Progress, iter: TrainingIteration) -> Tab
     return table
 
 
+@dataclass(frozen=True)
+class CliContext:
+    models: Path
+
+
 @click.group()
-def main() -> None:
+@click.pass_context
+@click.option(
+    "--models",
+    type=click.Path(dir_okay=True, path_type=Path),
+    default=Path("./models"),
+    help="Directory where models are stored.",
+)
+def main(ctx: click.Context, models: Path) -> None:
     """Transformer-based Calculator"""
+    models.mkdir(parents=True, exist_ok=True)
+    ctx.obj = CliContext(models)
 
 
 @main.command()
@@ -140,7 +155,10 @@ def generate_data(
     type=int,
     help="The seed used for initializing all RNGs during training.",
 )
-def train_model(data: Path, epochs: int, threads: int | None, seed: int | None) -> None:
+@click.pass_obj
+def train_model(
+    ctx: CliContext, data: Path, epochs: int, threads: int | None, seed: int | None
+) -> None:
     """Train a language model with some training data.
 
     The training data is provided in a json lines file at DATA.  A small portion
@@ -150,6 +168,9 @@ def train_model(data: Path, epochs: int, threads: int | None, seed: int | None) 
     model = CalculatorLanguageModel()
     trainer = ModelTrainer(samples, epochs=epochs, seed=seed)
 
+    num_files = len(list(ctx.models.glob("*.pt")))
+    model_name = f"model-{num_files + 1:03}.pt"
+
     clear_screen()
 
     print("Starting model training.")
@@ -158,7 +179,9 @@ def train_model(data: Path, epochs: int, threads: int | None, seed: int | None) 
 
     threads = torch.get_num_threads() if threads is None else threads
     torch.set_num_threads(threads)
+    print(f"Storage: {ctx.models.resolve()}", indent=2)
     print(f"Threads: {threads}", indent=2)
+    print(f"Model  : {model_name}", indent=2)
 
     progress = Progress(console=console)
     task_total = progress.add_task("Overall", total=epochs * trainer.training_samples)
@@ -184,10 +207,28 @@ def train_model(data: Path, epochs: int, threads: int | None, seed: int | None) 
 
         trainer.train(model, callback=progress_callback)
 
+    # Save the trained model
+    model.save(ctx.models / model_name)
+
 
 @main.command()
 def repl() -> None:
     """Run the interactive command interface."""
+
+
+@main.command()
+@click.pass_obj
+@click.confirmation_option(prompt="Remove any trained models?")
+def clean(ctx: CliContext) -> None:
+    """Remove any existing models in the models storage directory."""
+    model_files = ctx.models.glob("*.pt")
+
+    num_files = 0
+    for model in model_files:
+        model.unlink()
+        num_files += 1
+
+    print(f"Removed {num_files} from {ctx.models.resolve()}.")
 
 
 if __name__ == "__main__":

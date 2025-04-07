@@ -1,6 +1,7 @@
 import string
 from collections.abc import Mapping
 from enum import StrEnum
+from hashlib import blake2b
 from typing import Iterator, Sequence
 
 
@@ -142,6 +143,23 @@ class Tokenizer:
                 yield self._rev_map[token_id]
             except KeyError as e:
                 raise ValueError(f"Unknown token ID '{token_id}'.") from e
+
+    def version_hash(self) -> str:
+        """A hash used for versioning the tokenizer.
+
+        The hash is generated from the set of characters the tokenizer can
+        process.  This is used to when serializing a model to ensure that the
+        current tokenizer can support the loaded model.
+
+        Returns
+        -------
+        str
+            a string hash
+        """
+        hash = blake2b()
+        for ch in self._fwd_map:
+            hash.update(ch.encode())
+        return hash.hexdigest()
 
     def _get_next_token(self, chars: Iterator[str]) -> Iterator[str]:
         ctrl_token = False
