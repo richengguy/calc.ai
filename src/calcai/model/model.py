@@ -35,6 +35,15 @@ class CalculatorLanguageModel:
         self._context: list[int] = []
 
     @property
+    def current_context_size(self) -> int:
+        """Current context window size.
+
+        This corresponds to how much data the model will process the next time
+        it performs an inference.
+        """
+        return len(self._context)
+
+    @property
     def max_context_size(self) -> int:
         """Maximum context window size."""
         return self._max_context
