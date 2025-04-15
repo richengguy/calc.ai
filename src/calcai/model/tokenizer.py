@@ -155,6 +155,36 @@ class Tokenizer:
             except KeyError as e:
                 raise ValueError(f"Unknown token ID '{token_id}'.") from e
 
+    def str_to_tokens(self, input: str) -> list[int]:
+        """Converts a string into a token list.
+
+        Parameters
+        ----------
+        input : str
+            input string
+
+        Returns
+        ------
+        list of int
+            token sequence
+        """
+        return list(self.to_tokens(input))
+
+    def tokens_to_str(self, tokens: Sequence[int]) -> str:
+        """Convert tokens into a string.
+
+        Parameters
+        ----------
+        tokens : int sequence
+            a list or other sequence of token IDs
+
+        Returns
+        -------
+        str
+            the string representation
+        """
+        return "".join(self.from_tokens(tokens))
+
     def version_hash(self) -> str:
         """A hash used for versioning the tokenizer.
 

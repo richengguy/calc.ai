@@ -10,6 +10,8 @@ from torch.optim import Adam
 from ..model import CalculatorLanguageModel, Query
 from .data import SampleData
 
+TrainingCallback = Callable[["TrainingIteration"], None]
+
 
 @dataclass(frozen=True)
 class TrainingIteration:
@@ -41,9 +43,6 @@ class TrainingIteration:
     cases where the response wasn't well-formed (missing a "stop" token) or the
     result cannot be parsed as an integer.
     """
-
-
-TrainingCallback = Callable[[TrainingIteration], None]
 
 
 def _compute_sample_loss(
@@ -79,7 +78,8 @@ def _compute_sample_loss(
         # If we can still address an expected token, then we can compare the
         # model's output from the expected output.  If not, then it means the
         # model is still generating characters and we should apply a blanket
-        # penalty.
+        # penalty.  The choice of '10' is from the fact that this corresponds to
+        # a very low likelihood, e.g., exp(-10) << 1
         i = start_ind + num_generated
         if i < len(expected_tokens):
             total_loss += cross_entropy(logit, torch.tensor([expected_tokens[i]]))
@@ -124,15 +124,39 @@ def _compute_training_loss(
     )
 
     total_loss = torch.zeros((1,))
-    num_generated = 1
+    num_generated = 0
 
     for i in range(start_ind + 1, len(expected_tokens)):
-        logit, predicted = model.inference_step(expected_tokens[:i], init=True)
+        logit, _ = model.inference_step(expected_tokens[:i], init=True)
         total_loss += cross_entropy(logit, torch.tensor([expected_tokens[i]]))
-        logit, predicted = model.inference_step([predicted])
         num_generated += 1
 
     return total_loss / num_generated
+
+
+def _create_callback_struct(
+    sample: SampleData,
+    model: CalculatorLanguageModel,
+    epoch: int,
+    iteration: int,
+    test_loss: list[float],
+    test_accuracy: list[tuple[float, float]],
+) -> TrainingIteration:
+    loss, expected, actual = _compute_sample_loss(sample, model)
+
+    expected_str = model.tokenizer.tokens_to_str(expected)
+    actual_str = model.tokenizer.tokens_to_str(actual)
+    last_epoch_loss = None if len(test_loss) == 0 else test_loss[-1]
+    last_epoch_accuracy = None if len(test_accuracy) == 0 else test_accuracy[-1]
+    return TrainingIteration(
+        epoch,
+        iteration,
+        expected_str,
+        actual_str,
+        loss.item(),
+        last_epoch_loss,
+        last_epoch_accuracy,
+    )
 
 
 class ModelTrainer:
@@ -231,6 +255,12 @@ class ModelTrainer:
 
         optimizer = Adam(model.pytorch_model.parameters())
 
+        # TODO: Include a fine-tuning step...somewhere.
+        # The main thing is figuring out how to take the *real* error, i.e., the
+        # difference between the true numerical result and what the language
+        # model spits out, and include that into the optimization.  Simply
+        # adding it to the loss won't work since this is a constant value.
+
         for n in range(self._epochs):
             self._rng.shuffle(self._training_data)
 
@@ -239,7 +269,6 @@ class ModelTrainer:
             # sample is processed.
             model.pytorch_model.train()
             for i, sample in enumerate(self._training_data):
-                # loss, expected, actual = _compute_sample_loss(sample, model)
                 loss = _compute_training_loss(sample, model)
 
                 loss.backward()
@@ -248,28 +277,16 @@ class ModelTrainer:
 
                 if callback is not None:
                     with torch.no_grad():
-                        loss, expected, actual = _compute_sample_loss(sample, model)
-
-                    expected_str = "".join(model.tokenizer.from_tokens(expected))
-                    actual_str = "".join(model.tokenizer.from_tokens(actual))
-                    last_epoch_loss = None if len(test_loss) == 0 else test_loss[-1]
-                    last_epoch_accuracy = (
-                        None if len(test_accuracy) == 0 else test_accuracy[-1]
-                    )
-                    callback(
-                        TrainingIteration(
-                            n,
-                            i,
-                            expected_str,
-                            actual_str,
-                            loss.item(),
-                            last_epoch_loss,
-                            last_epoch_accuracy,
+                        callback(
+                            _create_callback_struct(
+                                sample, model, n, i, test_loss, test_accuracy
+                            )
                         )
-                    )
 
-            # Now run through the test samples.  This is the same calculation as
-            # used for the backprogation, but without any gradient updates.
+            # Now run through the test samples.  This is modified version of
+            # what's done for the optimization, just without any gradient
+            # calculations.  The loss is the *cumulative* prediction error
+            # rather than the "next token" prediciton error.
             with torch.no_grad():
                 model.pytorch_model.eval()
 
