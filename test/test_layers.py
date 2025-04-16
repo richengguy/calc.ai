@@ -104,6 +104,18 @@ def test_full_language_model(
     torch.testing.assert_close(output.exp().sum(dim=1), torch.ones((batch,)))
 
 
+@pytest.mark.parametrize("batch", (1, 2, 3))
+@pytest.mark.parametrize("num_hidden", (1, 2))
+def test_results_predictor(batch: int, num_hidden: int) -> None:
+    """Verify the results predictor is wired up correctly."""
+    vocab_size = 15
+    input = Tensor(range(vocab_size))
+    input = input.repeat((batch, 1))
+    model = layers.ResultPredictor(vocab_size, num_hidden=num_hidden)
+    output = model.forward(input)
+    assert output.shape == (batch, 1)
+
+
 def test_error_on_odd_embedding_size_for_position_encoding() -> None:
     """Raise an exception if the embedding space has an odd number of dimensions."""
     with pytest.raises(ValueError):

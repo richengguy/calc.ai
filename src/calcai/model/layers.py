@@ -4,7 +4,7 @@ from collections import OrderedDict
 import torch
 import torch.nn.functional as F
 from torch import Tensor
-from torch.nn import LayerNorm, Linear, Module, ReLU, Sequential
+from torch.nn import ELU, LayerNorm, Linear, Module, ReLU, Sequential
 from torch.nn.init import kaiming_uniform_
 
 
@@ -301,8 +301,8 @@ class SimpleDecoderTransformer(Module):
 
     It's a simplified decoder-only transformer architecture that will predict
     the next token from the set of provided tokens.  While the model outputs
-    logits instead of probabilities, the highest valued element corresponds to
-    the most likely token.
+    logits instead of probabilities, the highest valued element still
+    corresponds to the most likely token.
     """
 
     def __init__(
@@ -373,3 +373,57 @@ class SimpleDecoderTransformer(Module):
         last_row = output[:, -1, :]
         logits = F.log_softmax(last_row, 1)
         return logits
+
+
+class ResultPredictor(Module):
+    """A small MLP that predicts the expression output.
+
+    This network takes in the output from a :class:`SimpleDecoderTransformer`
+    and uses it to predict what the actual numerical value should be.  This is
+    meant to run as part of the training loop by allowing an error based on the
+    true calculated result to be propagated back into the source transformer
+    network.
+    """
+
+    def __init__(
+        self, vocab_size: int, *, num_hidden: int = 1, hidden_size: int | None = None
+    ) -> None:
+        super().__init__()
+
+        if vocab_size < 1:
+            raise ValueError("vocab_size must be greater than 1.")
+
+        if num_hidden < 1:
+            raise ValueError("Need at least one hidden layer.")
+
+        if hidden_size is None:
+            hidden_size = 2 * vocab_size
+
+        layers: list[tuple[str, Module]] = []
+        layers.append(("input", Linear(vocab_size, hidden_size)))
+        layers.append(("input-activation", ELU()))
+
+        for i in range(num_hidden):
+            layers.append((f"ff-{i}", Linear(hidden_size, hidden_size)))
+            layers.append((f"ln-{i}", LayerNorm(hidden_size)))
+            layers.append((f"activation-{i}", ELU()))
+
+        layers.append(("output", Linear(hidden_size, 1)))
+
+        self._layers = Sequential(OrderedDict(layers))
+
+    def forward(self, logits: Tensor) -> Tensor:
+        """Compute the predicted calculation result.
+
+        Parameters
+        ----------
+        logits : Tensor
+            a `(B, vocab_size)` tensor with the output from the
+            :class:`SimpleDecoderTransform`
+
+        Returns
+        -------
+        Tensor
+            a `(B,1)` containing the predicted computation results
+        """
+        return self._layers(logits)
