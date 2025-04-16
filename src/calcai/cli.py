@@ -14,6 +14,7 @@ from .model import CalculatorLanguageModel
 from .training import (
     ExpressionGenerator,
     ModelTrainer,
+    SampleData,
     SampleWriter,
     ScriptBuilder,
     TrainingIteration,
@@ -131,7 +132,9 @@ def generate_data(
 
 @main.command()
 @click.argument(
-    "data", type=click.Path(dir_okay=False, file_okay=True, exists=True, path_type=Path)
+    "data",
+    type=click.Path(dir_okay=False, file_okay=True, exists=True, path_type=Path),
+    nargs=-1,
 )
 @click.option(
     "-e",
@@ -157,14 +160,24 @@ def generate_data(
 )
 @click.pass_obj
 def train_model(
-    ctx: CliContext, data: Path, epochs: int, threads: int | None, seed: int | None
+    ctx: CliContext,
+    data: list[Path],
+    epochs: int,
+    threads: int | None,
+    seed: int | None,
 ) -> None:
     """Train a language model with some training data.
 
     The training data is provided in a json lines file at DATA.  A small portion
     will be reserved for validating the model after each epoch.
     """
-    samples = list(from_jsonlines(data))
+    if len(data) == 0:
+        raise click.ClickException("Missing training data!")
+
+    samples: list[SampleData] = []
+    for dataset in data:
+        samples.extend(from_jsonlines(dataset))
+
     model = CalculatorLanguageModel()
     trainer = ModelTrainer(samples, epochs=epochs, seed=seed)
 
