@@ -27,7 +27,13 @@ class TrainingIteration:
     expected: str
     """The sample the model was being trained on."""
     actual: str
-    """What the model actually generated"""
+    """What the model actually generated."""
+    predicted_result: int | None
+    """The predicted calculation result.
+
+    If `None` then the results predictor isn't being trained.  Anything from the
+    results predictor will be more or less random.
+    """
     loss: float
     """The training loss, averaged over the number of generated tokens."""
     test_loss: float | None
@@ -47,7 +53,7 @@ class TrainingIteration:
 
 def _compute_sample_loss(
     sample: SampleData, model: CalculatorLanguageModel
-) -> tuple[Tensor, list[int], list[int]]:
+) -> tuple[Tensor, Tensor, list[int], list[int]]:
     """Compute the mean sample loss.
 
     The sample loss is a modified version of the training loss used during
@@ -71,7 +77,7 @@ def _compute_sample_loss(
     num_generated = 1
 
     actual_tokens = expected_tokens[: (start_ind + 1)]
-    logit, predicted = model.inference_step(actual_tokens, init=True)
+    logit, result, predicted = model.inference_step(actual_tokens, init=True)
     while model.current_context_size < model.max_context_size:
         actual_tokens.append(predicted)
 
@@ -89,7 +95,7 @@ def _compute_sample_loss(
         if predicted == model.tokenizer.stop_token:
             break
 
-        logit, predicted = model.inference_step([predicted])
+        logit, result, predicted = model.inference_step([predicted])
 
     # Same logic as in the sampling loop.  The two sequences should have the
     # same length.
@@ -98,7 +104,7 @@ def _compute_sample_loss(
         total_loss += 10 * size_difference
 
     total_loss /= num_generated
-    return total_loss, expected_tokens, actual_tokens
+    return total_loss, result, expected_tokens, actual_tokens
 
 
 def _compute_training_loss(
@@ -127,7 +133,7 @@ def _compute_training_loss(
     num_generated = 0
 
     for i in range(start_ind + 1, len(expected_tokens)):
-        logit, _ = model.inference_step(expected_tokens[:i], init=True)
+        logit, _, _ = model.inference_step(expected_tokens[:i], init=True)
         total_loss += cross_entropy(logit, torch.tensor([expected_tokens[i]]))
         num_generated += 1
 
@@ -142,7 +148,7 @@ def _create_callback_struct(
     test_loss: list[float],
     test_accuracy: list[tuple[float, float]],
 ) -> TrainingIteration:
-    loss, expected, actual = _compute_sample_loss(sample, model)
+    loss, _, expected, actual = _compute_sample_loss(sample, model)
 
     expected_str = model.tokenizer.tokens_to_str(expected)
     actual_str = model.tokenizer.tokens_to_str(actual)
@@ -153,6 +159,7 @@ def _create_callback_struct(
         iteration,
         expected_str,
         actual_str,
+        None,
         loss.item(),
         last_epoch_loss,
         last_epoch_accuracy,
@@ -296,7 +303,7 @@ class ModelTrainer:
 
                 epoch_loss = torch.zeros((1,))
                 for sample in self._testing_data:
-                    loss, _, output = _compute_sample_loss(sample, model)
+                    loss, _, _, output = _compute_sample_loss(sample, model)
                     epoch_loss += loss
 
                     try:

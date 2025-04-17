@@ -23,11 +23,14 @@ from .training import (
 
 
 def _update_training_display(progress: Progress, iter: TrainingIteration) -> Table:
+    predicted_result = "N/A" if iter.predicted_result is None else iter.predicted_result
+
     model = Table(expand=True, show_header=False, box=box.MINIMAL)
-    model.add_row(f"Expected » {iter.expected}")
-    model.add_row(f"Actual   » {iter.actual}")
+    model.add_row(f"Ground Truth » {iter.expected}")
+    model.add_row(f"CLM Response » {iter.actual}")
+    model.add_row(f"Est. Result  » {predicted_result}")
     model.add_section()
-    model.add_row(f"Loss     » {iter.loss}")
+    model.add_row(f"Loss         » {iter.loss}")
 
     epoch_loss = "N/A" if iter.test_loss is None else iter.test_loss
     epoch_accuracy = (

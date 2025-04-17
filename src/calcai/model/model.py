@@ -68,7 +68,7 @@ class CalculatorLanguageModel:
             terminal token or the context window is exhausted
         """
         tokens = list(self.tokenizer.to_tokens(query))
-        _, predicted = self.inference_step(tokens, init=True)
+        _, _, predicted = self.inference_step(tokens, init=True)
         while self.current_context_size < self.max_context_size:
             yield self.tokenizer.reverse_map[predicted]
 
@@ -76,11 +76,11 @@ class CalculatorLanguageModel:
                 break
 
             with torch.no_grad():
-                _, predicted = self.inference_step([predicted])
+                _, _, predicted = self.inference_step([predicted])
 
     def inference_step(
         self, input: list[int], *, init: bool = False
-    ) -> tuple[Tensor, int]:
+    ) -> tuple[Tensor, Tensor, int]:
         """Perform a single inference step.
 
         Parameters
@@ -94,7 +94,9 @@ class CalculatorLanguageModel:
         Returns
         -------
         logit : Tensor
-            the logit for model's next predicted token
+            the logits vector for model's next predicted token
+        result : Tensor
+            the predicted numerical value of the token sequence
         index : int
             the index of the largest logit (highest probability token)
 
@@ -111,10 +113,13 @@ class CalculatorLanguageModel:
         if len(self._context) > self._max_context:
             raise RuntimeError("Exceeded the maximum allowed context size.")
 
+        logit: Tensor
+        result: Tensor
+
         tokens = Tensor(self._context)
-        logit: Tensor = self._model(tokens[torch.newaxis, :])
+        logit, result = self._model(tokens[torch.newaxis, :])
         index = int(logit[0, :].argmax().item())
-        return logit, index
+        return logit, result, index
 
     def reset(self) -> None:
         """Resets the model's internal state."""
