@@ -203,7 +203,6 @@ class MaskedAttentionHead(Module):
         similarity = F.softmax(masked, 2)
 
         attention = similarity @ value
-        print(f"=> {attention.shape}")
 
         return attention, similarity
 
@@ -290,11 +289,8 @@ class TransformerLayer(Module):
         Tensor
             the transformer output, same shape as the input
         """
-        print(f"-- {x.shape}")
         attention_heads = list(head(x)[0] for head in self._attention)
         concat = torch.concat(attention_heads, dim=2)
-        print(f"-- {[a.shape for a in attention_heads]}")
-        print(f"-- {concat.shape}")
         attention = self._merge(concat)
 
         # Do all of the post-attention processing.  This includes the residual
