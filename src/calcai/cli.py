@@ -107,15 +107,26 @@ def main(ctx: click.Context, models: Path) -> None:
     help="Maximum integer value in any generated expression.",
 )
 @click.option(
-    "--variable",
     "-v",
+    "--variable",
     "vars",
     multiple=True,
     help="Specify a possible variable name.  Can be repeated.",
 )
+@click.option(
+    "-s",
+    "--generate-solutions",
+    is_flag=True,
+    help="Also generate the solution steps for each sample.",
+)
 @click.argument("output", type=click.Path(path_type=Path))
 def generate_data(
-    samples: int, depth: int, max_value: int, vars: list[str], output: Path
+    samples: int,
+    depth: int,
+    max_value: int,
+    vars: list[str],
+    generate_solutions: bool,
+    output: Path,
 ) -> None:
     """Generate training data for the language model.
 
@@ -126,6 +137,7 @@ def generate_data(
         generator = ExpressionGenerator(max_value)
         builder = ScriptBuilder(generator, expr_depth=depth)
         builder.set_variables(vars)
+        builder.show_steps(generate_solutions)
         for script in builder.generate_scripts(samples):
             writer.write(script)
 

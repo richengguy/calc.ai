@@ -1,6 +1,18 @@
 # calc.ai
 Transformer-based Calculator
 
+## Training Data
+
+The training data in the [`samples/`](samples/) directory was generated using
+the `calc.ai generate-data` command.  The following arguments were used for each
+sample file:
+
+| File | `generate-data` Arguments |
+|------|-----------|
+|[`depth1.jsonl`](samples/depth1.jsonl)|`-n 5000 -d 1 -m 50`|
+|[`depth2.jsonl`](samples/depth2.jsonl)|`-n 5000 -d 2 -m 50 --generate-solutions`|
+|[`depth3.jsonl`](samples/depth3.jsonl)|`-n 5000 -d 3 -m 50 --generate-solutions`|
+
 ## Calculator Grammar
 
 ```ebnf
