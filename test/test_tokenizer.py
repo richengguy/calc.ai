@@ -50,7 +50,7 @@ def test_tokenizer_error_handling(input: str, bad_token: str) -> None:
 @pytest.mark.parametrize(
     "expr,result,expected,show_result",
     [
-        ("1 + 2", None, "{expr=}1 + 2{=expr}{result=}", False),
+        ("1 + 2", None, "{expr=}1 + 2{=expr}", False),
         ("1 + 2", 3, "{expr=}1 + 2{=expr}{result=}3{=result}", True),
         ("3 / 0", None, "{expr=}3 / 0{=expr}{result=}{null}{=result}", True),
     ],
