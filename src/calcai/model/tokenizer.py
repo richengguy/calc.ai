@@ -65,7 +65,7 @@ class Tokenizer:
         # Add in the special control tokens
         for i, tok in enumerate(ControlToken, len(self._fwd_map)):
             self._fwd_map[tok] = i
-            self._rev_map[i] = tok
+            self._rev_map[i] = str(tok)
 
         assert len(self._fwd_map) == len(self._rev_map)
 

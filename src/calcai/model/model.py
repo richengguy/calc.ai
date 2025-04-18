@@ -6,7 +6,7 @@ from torch import Tensor
 from torch.nn import Module
 
 from .layers import SimpleDecoderTransformer
-from .tokenizer import Tokenizer
+from .tokenizer import ControlToken, Tokenizer
 
 
 class CalculatorLanguageModel:
@@ -38,7 +38,10 @@ class CalculatorLanguageModel:
         """
         self.tokenizer = Tokenizer()
         self._model = SimpleDecoderTransformer(
-            self.tokenizer.num_tokens, embedding_dimensions, num_layers=5
+            self.tokenizer.num_tokens,
+            embedding_dimensions,
+            num_layers=layers,
+            attention_heads=attention_heads,
         )
         self._max_context = max_context
         self._context: list[int] = []
@@ -77,14 +80,15 @@ class CalculatorLanguageModel:
             terminal token or the context window is exhausted
         """
         tokens = list(self.tokenizer.to_tokens(query))
-        _, _, predicted = self.inference_step(tokens, init=True)
-        while self.current_context_size < self.max_context_size:
-            yield self.tokenizer.reverse_map[predicted]
 
-            if predicted == self.tokenizer.result_stop_token:
-                break
+        with torch.no_grad():
+            _, _, predicted = self.inference_step(tokens, init=True)
+            while self.current_context_size < self.max_context_size:
+                yield self.tokenizer.reverse_map[predicted]
 
-            with torch.no_grad():
+                if predicted == self.tokenizer.control_id(ControlToken.RESULT_STOP):
+                    break
+
                 _, _, predicted = self.inference_step([predicted])
 
     def inference_step(
