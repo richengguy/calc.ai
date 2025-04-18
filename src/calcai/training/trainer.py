@@ -7,7 +7,7 @@ from torch import Tensor
 from torch.nn.functional import cross_entropy
 from torch.optim import Adam
 
-from ..model import CalculatorLanguageModel, Query
+from ..model import CalculatorLanguageModel, Query, ControlToken
 from .data import SampleData
 
 TrainingCallback = Callable[["TrainingIteration"], None]
@@ -71,7 +71,7 @@ def _compute_sample_loss(
     start_ind = next(
         i
         for i, token in enumerate(expected_tokens)
-        if token == model.tokenizer.start_token
+        if token == model.tokenizer.control_id(ControlToken.EXPR_STOP)
     )
     total_loss = torch.zeros((1,))
     num_generated = 1
@@ -92,7 +92,7 @@ def _compute_sample_loss(
         else:
             total_loss += 10
 
-        if predicted == model.tokenizer.stop_token:
+        if predicted == model.tokenizer.control_id(ControlToken.RESULT_STOP):
             break
 
         logit, result, predicted = model.inference_step([predicted])
@@ -126,7 +126,7 @@ def _compute_training_loss(
     start_ind = next(
         i
         for i, token in enumerate(expected_tokens)
-        if token == model.tokenizer.start_token
+        if token == model.tokenizer.control_id(ControlToken.EXPR_STOP)
     )
 
     total_loss = torch.zeros((1,))

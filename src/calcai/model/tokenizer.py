@@ -84,16 +84,6 @@ class Tokenizer:
         """The number of tokens that the tokenizer recognizes."""
         return len(self._fwd_map)
 
-    @property
-    def start_token(self) -> int:
-        """The ID of the result "start" token."""
-        return self._fwd_map[ControlToken.RESULT_START]
-
-    @property
-    def stop_token(self) -> int:
-        """The ID of the result "stop" token."""
-        return self._fwd_map[ControlToken.RESULT_STOP]
-
     def control_id(self, token: ControlToken) -> int:
         """Get the ID for a control token."""
         return self._fwd_map[token]
@@ -282,12 +272,12 @@ class Query:
     def __str__(self) -> str:
         parts: list[str] = []
         parts.append(
-            f"{ControlToken.EXPR_START}{self.expr}{ControlToken.EXPR_STOP}{ControlToken.RESULT_START}"  # noqa: E501
+            f"{ControlToken.EXPR_START}{self.expr}{ControlToken.EXPR_STOP}"
         )
 
         if self._show_result:
             result_str = ControlToken.NULL if self.result is None else str(self.result)
-            parts.append(f"{result_str}{ControlToken.RESULT_STOP}")
+            parts.append(f"{ControlToken.RESULT_START}{result_str}{ControlToken.RESULT_STOP}")
 
         return "".join(parts)
 

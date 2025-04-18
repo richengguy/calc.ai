@@ -72,7 +72,7 @@ class CalculatorLanguageModel:
         while self.current_context_size < self.max_context_size:
             yield self.tokenizer.reverse_map[predicted]
 
-            if predicted == self.tokenizer.stop_token:
+            if predicted == self.tokenizer.result_stop_token:
                 break
 
             with torch.no_grad():
