@@ -51,6 +51,26 @@ class TrainingIteration:
     """
 
 
+@dataclass(frozen=True)
+class TrainingSummary:
+    training_loss: list[list[float]]
+    """The training loss for each iteration, by epoch."""
+    validation_loss: list[float]
+    """The test loss for each epoch.
+
+    This value is similar to the training loss, but also penalizes the CLM's
+    output if it isn't the same length as the ground truth.  These losses are
+    only used for reporting and not part of the optimization.
+    """
+    validation_accuracy: list[tuple[float, float]]
+    """The validation accuracy for each epoch.
+
+    Each element contains two values: the accuracy, which is
+    the percentage of correct answers, and the percentage of CLM outputs that
+    cannot even be parsed.
+    """
+
+
 def _compute_sample_loss(
     sample: SampleData, model: CalculatorLanguageModel
 ) -> tuple[Tensor, Tensor, list[int], list[int]]:
@@ -236,7 +256,7 @@ class ModelTrainer:
         model: CalculatorLanguageModel,
         *,
         callback: TrainingCallback | None = None,
-    ) -> tuple[list[float], list[float], list[tuple[float, float]]]:
+    ) -> TrainingSummary:
         """Train a language model.
 
         Parameters
@@ -248,17 +268,12 @@ class ModelTrainer:
 
         Returns
         -------
-        training_loss : list of float
-            per-iteration training losss
-        test_loss : list of float
-            per-epoch testing loss
-        test_accuracy : list of `(accuracy, invalid)`
-            per-epoch test accuracy (percent of correct solutions) and percent
-            results with invalid syntax
+        :class:`TrainingSummary`
+            summary of training and validation losses
         """
-        training_loss: list[float] = []
-        test_loss: list[float] = []
-        test_accuracy: list[tuple[float, float]] = []
+        training_loss: list[list[float]] = []
+        validation_loss: list[float] = []
+        validation_accuracy: list[tuple[float, float]] = []
 
         if seed := self._seed:
             torch.manual_seed(seed)
@@ -275,6 +290,7 @@ class ModelTrainer:
 
         for n in range(self._epochs):
             self._rng.shuffle(self._training_data)
+            iter_loss: list[float] = []
 
             # Run through all of the training samples and update the model
             # weights.  If a callback is provided then it is called after the
@@ -282,7 +298,7 @@ class ModelTrainer:
             model.pytorch_model.train()
             for i, sample in enumerate(self._training_data):
                 loss = _compute_training_loss(sample, model)
-                training_loss.append(loss.item())
+                iter_loss.append(loss.item())
 
                 loss.backward()
                 optimizer.step()
@@ -297,10 +313,12 @@ class ModelTrainer:
                                 n,
                                 i,
                                 loss.item(),
-                                test_loss,
-                                test_accuracy,
+                                validation_loss,
+                                validation_accuracy,
                             )
                         )
+
+            training_loss.append(iter_loss)
 
             # Now run through the test samples.  This is modified version of
             # what's done for the optimization, just without any gradient
@@ -325,9 +343,9 @@ class ModelTrainer:
                     except ValueError:
                         num_invalid += 1
 
-                test_loss.append(epoch_loss.item() / len(self._testing_data))
-                test_accuracy.append(
+                validation_loss.append(epoch_loss.item() / len(self._testing_data))
+                validation_accuracy.append(
                     (num_correct / num_samples, num_invalid / num_samples)
                 )
 
-        return training_loss, test_loss, test_accuracy
+        return TrainingSummary(training_loss, validation_loss, validation_accuracy)

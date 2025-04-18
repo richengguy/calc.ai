@@ -1,7 +1,9 @@
+import shutil
 from dataclasses import dataclass
 from pathlib import Path
 
 import click
+import jinja2
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
@@ -20,8 +22,70 @@ from .training import (
     SampleWriter,
     ScriptBuilder,
     TrainingIteration,
+    TrainingSummary,
     from_jsonlines,
 )
+
+
+def _create_report(path: Path, model_name: str, summary: TrainingSummary) -> None:
+    env = jinja2.Environment(loader=jinja2.PackageLoader(__package__))
+
+    path.mkdir(parents=True)
+
+    readme_path = path / "README.md"
+    training_loss_png = path / "training-loss.png"
+    validation_loss_png = path / "validation-loss.png"
+    validation_accuracy_png = path / "test-accuracy.png"
+
+    # Create the training loss figure.
+    training_loss: list[float] = []
+    for epoch_loss in summary.training_loss:
+        training_loss.extend(epoch_loss)
+
+    smoothed_loss = np.pad(training_loss, [25, 24], mode="edge")
+    smoothed_loss = np.convolve(smoothed_loss, np.ones(50) / 50, mode="valid")
+
+    fig, ax = plt.subplots()
+    ax.plot(training_loss, label="Original")
+    ax.plot(smoothed_loss, label="Smoothed")
+    ax.set_xlabel("Iteration")
+    ax.set_ylabel("Loss")
+    ax.legend()
+    fig.savefig(training_loss_png)
+
+    # Create the validation loss figure.
+    fig, ax = plt.subplots()
+    ax.plot(summary.validation_loss)
+    ax.set_xlabel("Epoch")
+    ax.set_ylabel("Loss")
+    fig.savefig(validation_loss_png)
+
+    # Create the validation accuracy figure.
+    fig, ax = plt.subplots()
+    ax.plot(
+        [100 * accuracy for accuracy, _ in summary.validation_accuracy],
+        label="Accuracy",
+    )
+    ax.plot(
+        [100 * invalid for _, invalid in summary.validation_accuracy], label="Invalid"
+    )
+    ax.set_xlabel("Epoch")
+    ax.set_ylabel("Percentage (%)")
+    ax.legend()
+    fig.savefig(validation_accuracy_png)
+
+    # Generate the report README.
+    template = env.get_template("report.md.j2")
+    readme = template.render(
+        model_name=model_name,
+        images={
+            "training_loss": training_loss_png,
+            "validation_loss": validation_loss_png,
+            "validation_accuracy": validation_accuracy_png,
+        },
+    )
+    with readme_path.open("wt") as f:
+        f.write(readme)
 
 
 def _update_training_display(progress: Progress, iter: TrainingIteration) -> Table:
@@ -199,7 +263,8 @@ def train_model(
     trainer = ModelTrainer(samples, epochs=epochs, seed=seed)
 
     num_files = len(list(ctx.models.glob("*.pt")))
-    model_name = f"model-{num_files + 1:03}.pt"
+    model_id = f"{num_files + 1:03}"
+    model_name = f"model-{model_id}.pt"
 
     clear_screen()
 
@@ -236,25 +301,14 @@ def train_model(
             if iter.iteration == 0 or (iter.iteration % 100) == 0:
                 live.update(_update_training_display(progress, iter))
 
-        training_losses, test_losses, test_accuracy = trainer.train(
-            model, callback=progress_callback
-        )
-
-    # Generate a training report
-    fig, ax = plt.subplots(1, 2)
-    ax[0].plot(training_losses)
-    ax[0].plot(np.convolve(training_losses, np.ones(10) / 10, mode="same"))
-    ax[1].plot(test_losses)
-    fig.savefig("training-loss.png")
-
-    fig, ax = plt.subplots()
-    ax.plot([accuracy for accuracy, _ in test_accuracy], label="Accuracy")
-    ax.plot([invalid for _, invalid in test_accuracy], label="Invalid")
-    ax.legend()
-    fig.savefig("test-accuracy.png")
+        summary = trainer.train(model, callback=progress_callback)
 
     # Save the trained model
     model.save(ctx.models / model_name)
+
+    # Generate the training report
+    report_path = ctx.models / f"report-{model_id}"
+    _create_report(report_path, model_name, summary)
 
 
 @main.command()
@@ -268,13 +322,21 @@ def repl() -> None:
 def clean(ctx: CliContext) -> None:
     """Remove any existing models in the models storage directory."""
     model_files = ctx.models.glob("*.pt")
+    reports = ctx.models.glob("report-*")
 
     num_files = 0
     for model in model_files:
         model.unlink()
         num_files += 1
 
-    print(f"Removed {num_files} from {ctx.models.resolve()}.")
+    print(f"Removed {num_files} models from {ctx.models.resolve()}.")
+
+    num_reports = 0
+    for report in reports:
+        shutil.rmtree(report)
+        num_reports += 1
+
+    print(f"Removed {num_reports} reports from {ctx.models.resolve()}.")
 
 
 if __name__ == "__main__":
