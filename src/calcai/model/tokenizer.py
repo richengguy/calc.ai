@@ -237,7 +237,9 @@ class Query:
     responses.
     """
 
-    def __init__(self, expr: str, *, result: int | None = None) -> None:
+    def __init__(
+        self, expr: str, *, result: int | None = None, steps: str | None = None
+    ) -> None:
         """
         Parameters
         ----------
@@ -245,6 +247,9 @@ class Query:
             input expression
         result : int, optional
             if set, the query will also contain result output tags
+        steps : str, optional
+            if set, the query also contains the steps for calculating the final
+            result
         """
 
         self.expr = expr
@@ -253,7 +258,11 @@ class Query:
         self.result = result
         """The solution to a given expression."""
 
+        self.steps = steps
+        """The steps for calculating the result."""
+
         self._show_result = result is not None
+        self._show_steps = steps is not None
 
     def show_result(self, show: bool) -> None:
         """Enable/disable showing the contents of the result tags.
@@ -269,9 +278,26 @@ class Query:
         """
         self._show_result = show
 
+    def show_steps(self, show: bool) -> None:
+        """Enable/disable showing the contents of the 'solution' tags.
+
+        The default behaviour is to only show this if one was provided.
+
+        Parameters
+        ----------
+        show : bool
+            enable/disable showing the solution steps
+        """
+        self._show_steps = show
+
     def __str__(self) -> str:
         parts: list[str] = []
         parts.append(f"{ControlToken.EXPR_START}{self.expr}{ControlToken.EXPR_STOP}")
+
+        if self._show_steps:
+            parts.append(
+                f"{ControlToken.SOLUTION_START}{self.steps}{ControlToken.SOLUTION_STOP}"
+            )
 
         if self._show_result:
             result_str = ControlToken.NULL if self.result is None else str(self.result)
@@ -314,57 +340,94 @@ class Query:
         else:
             token_stream = iter(query)
 
-        # Make sure that we're in the start of an expression statement.
+        # The query is expected to take the following form:
+        #
+        # {expr=}string{=expr}[{solution=}string{=solution}][{result=}number{=result}]
+        #
+        # The solution and result tags are optional, while the expression must
+        # always be present.  The tags must also always appear in this order.
+
         if next(token_stream) != tokenizer.control_id(ControlToken.EXPR_START):
-            raise ValueError(f"Query must start with a {ControlToken.EXPR_START}.")
+            raise ValueError(f"Query must start with a '{ControlToken.EXPR_START}'.")
 
-        # Collect all of the tokens in the expression statement.  Any control
-        # tokens inside of this section means something is wrong with the query.
-        hit_expr_stop = False
-        expr_tokens: list[int] = []
-        for token in token_stream:
-            if ctrl_token := tokenizer.control_token_from_id(token):
-                if ctrl_token == ControlToken.EXPR_STOP:
-                    hit_expr_stop = True
-                    break
-                else:
-                    raise ValueError(f"Unexpected {ctrl_token} control token.")
+        expr_tokens = _collect_tokens(token_stream, tokenizer, ControlToken.EXPR_STOP)
 
-            expr_tokens.append(token)
-
-        if not hit_expr_stop:
-            raise ValueError(f"Did not encounter a closing {ControlToken.EXPR_STOP}.")
-
-        expr = "".join(tokenizer.from_tokens(expr_tokens))
-
-        # Check to see if there's anything more to process.  If not, create a
-        # query.  If there is more to process then it must be the token used to
-        # indicate the start of a result statement.
+        # Check to see if there's anything more to process.  This will be either
+        # a solution or result section.  Otherwise, resturn a new query.
         try:
-            if next(token_stream) != tokenizer.control_id(ControlToken.RESULT_START):
-                raise ValueError(
-                    f"Result must start with a {ControlToken.RESULT_START}."
-                )
+            next_token = next(token_stream)
         except StopIteration:
-            return Query("".join(tokenizer.from_tokens(expr_tokens)))
+            return Query(tokenizer.tokens_to_str(expr_tokens))
 
-        # Now collect the contents of the result statement.
-        hit_result_stop = False
+        solution_tokens: list[int] = []
         result_tokens: list[int] = []
-        for token in token_stream:
-            if ctrl_token := tokenizer.control_token_from_id(token):
-                if ctrl_token == ControlToken.RESULT_STOP:
-                    hit_result_stop = True
-                    break
-                elif ctrl_token != ControlToken.NULL:
-                    raise ValueError(f"Unexpected {ctrl_token} control token.")
 
-            result_tokens.append(token)
+        if next_token == tokenizer.control_id(ControlToken.SOLUTION_START):
+            solution_tokens = _collect_tokens(
+                token_stream, tokenizer, ControlToken.SOLUTION_STOP
+            )
+        elif next_token == tokenizer.control_id(ControlToken.RESULT_START):
+            result_tokens = _collect_tokens(
+                token_stream, tokenizer, ControlToken.RESULT_STOP
+            )
+        else:
+            raise ValueError(
+                f"Unexpected control token '{tokenizer.control_token_from_id(next_token)}'"
+            )
 
-        if not hit_result_stop:
-            raise ValueError(f"Did not encounter a closing {ControlToken.RESULT_STOP}.")
+        # Check again to see if there are any more tokens.
+        try:
+            next_token = next(token_stream)
+        except StopIteration:
+            return _assemble_query(
+                tokenizer, expr_tokens, solution_tokens, result_tokens
+            )
 
-        result_str = "".join(tokenizer.from_tokens(result_tokens))
-        result = None if result_str == ControlToken.NULL else int(result_str)
+        # Finally, collect the remaining results section.
+        if next_token != ControlToken.RESULT_START:
+            raise ValueError(
+                f"Final section must start with '{ControlToken.RESULT_START}'."
+            )
 
-        return Query(expr, result=result)
+        result_tokens = _collect_tokens(
+            token_stream, tokenizer, ControlToken.RESULT_STOP
+        )
+        return _assemble_query(tokenizer, expr_tokens, solution_tokens, result_tokens)
+
+
+def _assemble_query(
+    tokenizer: Tokenizer, expr: list[int], steps: list[int], result: list[int]
+) -> Query:
+    expr_str = tokenizer.tokens_to_str(expr)
+    steps_str = None if len(steps) == 0 else tokenizer.tokens_to_str(steps)
+    result_str = None if len(result) == 0 else tokenizer.tokens_to_str(result)
+    result_value: int | None = None
+
+    if result_str is not None:
+        result_value = None if result_str == ControlToken.NULL else int(result_str)
+
+    return Query(expr_str, result=result_value, steps=steps_str)
+
+
+def _collect_tokens(
+    tokens: Iterator[int], tokenizer: Tokenizer, stop: ControlToken
+) -> list[int]:
+    hit_stop = False
+    section_tokens: list[int] = []
+    for token in tokens:
+        if ctrl_token := tokenizer.control_token_from_id(token):
+            if ctrl_token == stop:
+                hit_stop = True
+                break
+            elif ctrl_token == ControlToken.NULL:
+                # Do nothing; '{null}' isn't a special signalling token
+                pass
+            else:
+                raise ValueError(f"Unexpected {ctrl_token} control token.")
+
+        section_tokens.append(token)
+
+    if not hit_stop:
+        raise ValueError(f"Expected a closing {stop} token.")
+
+    return section_tokens
