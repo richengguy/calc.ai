@@ -85,7 +85,15 @@ class Interpreter:
         last_output = ""
         for line in self.parse(script):
             while not isinstance(line.input, ast.NumberExpr):
-                line.input = self._simplify_ast(line.input)
+                try:
+                    line.input = self._simplify_ast(line.input)
+                except ZeroDivisionError:
+                    # This is a bit of a hack, but it allows a division-by-zero
+                    # to be represented as a variable and then stop the
+                    # simplification process.
+                    line.input = ast.VariableExpr("DIV_BY_ZERO")
+                    yield line
+                    break
 
                 # This check is because an expression like "-(1)" will end up
                 # turning into multiple steps, with the first being to remove

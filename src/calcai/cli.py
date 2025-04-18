@@ -200,6 +200,7 @@ def train_model(
     print(f"Storage: {ctx.models.resolve()}", indent=2)
     print(f"Threads: {threads}", indent=2)
     print(f"Model  : {model_name}", indent=2)
+    print(f"Epochs : {epochs}", indent=2)
 
     progress = Progress(console=console)
     task_total = progress.add_task("Overall", total=epochs * trainer.training_samples)
