@@ -149,7 +149,7 @@ class ExpressionGenerator:
         selected = prng.choices(_NODE_CHOICES, cum_weights=_NODE_CUM_WEIGHTS)[0]
 
         # Do another selection if the parent is an expression to avoid an
-        # unnecessary '((()))' situation.  The parse can handle this but it
+        # unnecessary '((()))' situation.  The parser can handle this but it
         # doesn't convey anything useful.  It also avoids an infinite recursion
         # situation.
         if (
@@ -196,7 +196,7 @@ class ExpressionGenerator:
 
                 return NegateExpr(left)
             case ExpressionType.EXPRESSION:
-                # As expression doesn't decrease the depth because it's a method
+                # An expression doesn't decrease the depth because it's a method
                 # for prioritizing calculations.  It's possible to remove them
                 # from AST and still have the same result.
                 left = self._create_ast(depth, ExpressionType.EXPRESSION, vars, prng)
