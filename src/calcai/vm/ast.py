@@ -61,26 +61,14 @@ class _NullaryExpr(ExprBase): ...
 class _UnaryExpr(ExprBase):
     def __init__(self, type: ExpressionType, input: ExprBase) -> None:
         super().__init__(type)
-        self._input = input
-
-    @property
-    def input(self) -> ExprBase:
-        return self._input
+        self.input = input
 
 
 class _BinaryExpr(ExprBase):
     def __init__(self, type: ExpressionType, left: ExprBase, right: ExprBase) -> None:
         super().__init__(type)
-        self._left = left
-        self._right = right
-
-    @property
-    def left(self) -> ExprBase:
-        return self._left
-
-    @property
-    def right(self) -> ExprBase:
-        return self._right
+        self.left = left
+        self.right = right
 
 
 # Top-level Expression
