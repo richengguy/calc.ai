@@ -17,7 +17,12 @@ class CalculatorLanguageModel:
     """
 
     def __init__(
-        self, *, embedding_dimensions: int = 16, max_context: int = 256, layers: int = 4, attention_heads: int = 2
+        self,
+        *,
+        embedding_dimensions: int = 16,
+        max_context: int = 256,
+        layers: int = 4,
+        attention_heads: int = 2,
     ) -> None:
         """
         Parameters

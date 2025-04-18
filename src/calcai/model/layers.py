@@ -356,7 +356,13 @@ class SimpleDecoderTransformer(Module):
             generation_layers.append(
                 (
                     f"transformer{i}",
-                    TransformerLayer(num_dim, attention_heads=attention_heads, d_k=d_k, d_v=d_v, d_ff=d_ff),
+                    TransformerLayer(
+                        num_dim,
+                        attention_heads=attention_heads,
+                        d_k=d_k,
+                        d_v=d_v,
+                        d_ff=d_ff,
+                    ),
                 )
             )
 

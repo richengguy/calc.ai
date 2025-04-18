@@ -76,7 +76,7 @@ def _create_report(path: Path, model_name: str, summary: TrainingSummary) -> Non
 
     # Generate the report README.
     template = env.get_template("report.md.j2")
-    final_accuracy, final_invalids = summary.validation_accuracy[-]
+    final_accuracy, final_invalids = summary.validation_accuracy[-1]
     readme = template.render(
         model_name=model_name,
         epochs=summary.epochs,
