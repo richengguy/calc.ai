@@ -48,18 +48,56 @@ def test_tokenizer_error_handling(input: str, bad_token: str) -> None:
 
 
 @pytest.mark.parametrize(
-    "expr,result,expected,show_result",
+    "expr,result,steps,expected,show_result,show_steps",
     [
-        ("1 + 2", None, "{expr=}1 + 2{=expr}", False),
-        ("1 + 2", 3, "{expr=}1 + 2{=expr}{result=}3{=result}", True),
-        ("3 / 0", None, "{expr=}3 / 0{=expr}{result=}{null}{=result}", True),
+        ("1 + 2", None, None, "{expr=}1 + 2{=expr}", False, False),
+        ("1 + 2", 3, None, "{expr=}1 + 2{=expr}{result=}3{=result}", True, False),
+        (
+            "1 + 2 * 2",
+            5,
+            "1 + 4",
+            "{expr=}1 + 2 * 2{=expr}{solution=}1 + 4{=solution}{result=}5{=result}",
+            True,
+            True,
+        ),
+        (
+            "1 + 2 * 2",
+            5,
+            "1 + 4",
+            "{expr=}1 + 2 * 2{=expr}{result=}5{=result}",
+            True,
+            False,
+        ),
+        (
+            "1 + 2 * 2",
+            5,
+            "1 + 4",
+            "{expr=}1 + 2 * 2{=expr}{solution=}1 + 4{=solution}",
+            False,
+            True,
+        ),
+        ("1 + 2 * 2", 5, "1 + 4", "{expr=}1 + 2 * 2{=expr}", False, False),
+        (
+            "3 / 0",
+            None,
+            None,
+            "{expr=}3 / 0{=expr}{result=}{null}{=result}",
+            True,
+            False,
+        ),
     ],
 )
 def test_create_query(
-    expr: str, result: int | None, expected: str, show_result: bool
+    expr: str,
+    result: int | None,
+    steps: str | None,
+    expected: str,
+    show_result: bool,
+    show_steps: bool,
 ) -> None:
-    query = Query(expr, result=result)
+    query = Query(expr, steps=steps, result=result)
     query.show_result(show_result)
+    query.show_steps(show_steps)
     assert str(query) == expected
 
 
@@ -87,6 +125,7 @@ def test_parse_valid_queries(query: str, expr: str, result: int | None) -> None:
         "{expr=}1 + 2{=expr}{result=}3",
         "{expr=}1 + 2{=expr}{result=}abc{=result}",
         "{expr=}1 + 2{=expr}{expr=}{result=}3{=result}",
+        "{expr=}1 + 2{=expr}{expr=}{result=}3{=result}{solution=}abc{=solution}",
     ],
 )
 def test_parse_invalid_queries(query: str) -> None:

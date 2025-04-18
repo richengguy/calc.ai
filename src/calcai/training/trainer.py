@@ -7,8 +7,10 @@ from torch import Tensor
 from torch.nn.functional import cross_entropy
 from torch.optim import Adam
 
-from ..model import CalculatorLanguageModel, Query
+from ..model import CalculatorLanguageModel, ControlToken, Query
 from .data import SampleData
+
+TrainingCallback = Callable[["TrainingIteration"], None]
 
 
 @dataclass(frozen=True)
@@ -25,7 +27,13 @@ class TrainingIteration:
     expected: str
     """The sample the model was being trained on."""
     actual: str
-    """What the model actually generated"""
+    """What the model actually generated."""
+    predicted_result: int | None
+    """The predicted calculation result.
+
+    If `None` then the results predictor isn't being trained.  Anything from the
+    results predictor will be more or less random.
+    """
     loss: float
     """The training loss, averaged over the number of generated tokens."""
     test_loss: float | None
@@ -43,45 +51,145 @@ class TrainingIteration:
     """
 
 
-TrainingCallback = Callable[[TrainingIteration], None]
+@dataclass(frozen=True)
+class TrainingSummary:
+    training_loss: list[list[float]]
+    """The training loss for each iteration, by epoch."""
+    validation_loss: list[float]
+    """The test loss for each epoch.
+
+    This value is similar to the training loss, but also penalizes the CLM's
+    output if it isn't the same length as the ground truth.  These losses are
+    only used for reporting and not part of the optimization.
+    """
+    validation_accuracy: list[tuple[float, float]]
+    """The validation accuracy for each epoch.
+
+    Each element contains two values: the accuracy, which is
+    the percentage of correct answers, and the percentage of CLM outputs that
+    cannot even be parsed.
+    """
+
+    @property
+    def epochs(self) -> int:
+        return len(self.validation_loss)
 
 
 def _compute_sample_loss(
     sample: SampleData, model: CalculatorLanguageModel
-) -> tuple[Tensor, list[int], list[int]]:
-    query = Query(sample.script, result=sample.result)
+) -> tuple[Tensor, Tensor, list[int], list[int]]:
+    """Compute the mean sample loss.
 
+    The sample loss is a modified version of the training loss used during
+    validation.  Here, it will continue generating predictions until the model
+    returns a "RESULT_STOP" token.  A penalty term, proportional to the length
+    difference, is added when the two sequences don't match.
+    """
+    query = Query(sample.script, result=sample.result, steps=sample.steps)
     query.show_result(True)
+
     expected_str = str(query)
-
-    query.show_result(False)
-    query_str = str(query)
-
     expected_tokens = list(model.tokenizer.to_tokens(expected_str))
-    actual_tokens = list(model.tokenizer.to_tokens(query_str))
+    actual_tokens = []
 
-    start_expected = len(actual_tokens)
-
-    sample_loss = torch.zeros((1,))
+    start_ind = next(
+        i
+        for i, token in enumerate(expected_tokens)
+        if token == model.tokenizer.control_id(ControlToken.EXPR_STOP)
+    )
+    total_loss = torch.zeros((1,))
     num_generated = 1
 
-    logit, token = model.inference_step(actual_tokens, init=True)
-    for expected in expected_tokens[start_expected:]:
-        # Compute the token loss and add it to the total sample loss.  It will
-        # be averages across all samples.
-        token_loss = cross_entropy(logit, torch.tensor([expected]))
-        sample_loss += token_loss
+    actual_tokens = expected_tokens[: (start_ind + 1)]
+    logit, result, predicted = model.inference_step(actual_tokens, init=True)
+    while model.current_context_size < model.max_context_size:
+        actual_tokens.append(predicted)
 
-        # Keep track of what the model actual produces.
-        actual_tokens.append(token)
+        # If we can still address an expected token, then we can compare the
+        # model's output from the expected output.  If not, then it means the
+        # model is still generating characters and we should apply a blanket
+        # penalty.  The choice of '10' is from the fact that this corresponds to
+        # a very low likelihood, e.g., exp(-10) << 1
+        i = start_ind + num_generated
+        if i < len(expected_tokens):
+            total_loss += cross_entropy(logit, torch.tensor([expected_tokens[i]]))
+        else:
+            total_loss += 10
 
-        # Generate the next token and see how close it got to the expected
-        # result.
-        logit, token = model.inference_step(actual_tokens)
+        if predicted == model.tokenizer.control_id(ControlToken.RESULT_STOP):
+            break
+
+        logit, result, predicted = model.inference_step([predicted])
         num_generated += 1
 
-    sample_loss /= num_generated
-    return sample_loss, expected_tokens, actual_tokens
+    # Same logic as in the sampling loop.  The two sequences should have the
+    # same length.
+    size_difference = len(actual_tokens) - len(expected_tokens)
+    if size_difference > 0:
+        total_loss += 10 * size_difference
+
+    total_loss /= num_generated
+    return total_loss, result, expected_tokens, actual_tokens
+
+
+def _compute_training_loss(
+    sample: SampleData, model: CalculatorLanguageModel
+) -> Tensor:
+    """Compute the training loss.
+
+    The training loss is computed by seeing how close the predicted sequence is
+    to the actual input sequence.  The length of the output is dictated by the
+    length of the input, since this is asking the model to generate the same
+    number of tokens.  This is what's used for backpropagation.
+    """
+    query = Query(sample.script, result=sample.result, steps=sample.steps)
+    query.show_result(True)
+
+    expected_str = str(query)
+    expected_tokens = list(model.tokenizer.to_tokens(expected_str))
+
+    start_ind = next(
+        i
+        for i, token in enumerate(expected_tokens)
+        if token == model.tokenizer.control_id(ControlToken.EXPR_STOP)
+    )
+
+    total_loss = torch.zeros((1,))
+    num_generated = 0
+
+    for i in range(start_ind + 1, len(expected_tokens)):
+        logit, _, _ = model.inference_step(expected_tokens[:i], init=True)
+        total_loss += cross_entropy(logit, torch.tensor([expected_tokens[i]]))
+        num_generated += 1
+
+    return total_loss / num_generated
+
+
+def _create_callback_struct(
+    sample: SampleData,
+    model: CalculatorLanguageModel,
+    epoch: int,
+    iteration: int,
+    sammple_loss: float,
+    test_loss: list[float],
+    test_accuracy: list[tuple[float, float]],
+) -> TrainingIteration:
+    _, _, expected, actual = _compute_sample_loss(sample, model)
+
+    expected_str = model.tokenizer.tokens_to_str(expected)
+    actual_str = model.tokenizer.tokens_to_str(actual)
+    last_epoch_loss = None if len(test_loss) == 0 else test_loss[-1]
+    last_epoch_accuracy = None if len(test_accuracy) == 0 else test_accuracy[-1]
+    return TrainingIteration(
+        epoch,
+        iteration,
+        expected_str,
+        actual_str,
+        None,
+        sammple_loss,
+        last_epoch_loss,
+        last_epoch_accuracy,
+    )
 
 
 class ModelTrainer:
@@ -152,7 +260,7 @@ class ModelTrainer:
         model: CalculatorLanguageModel,
         *,
         callback: TrainingCallback | None = None,
-    ) -> tuple[list[float], list[float]]:
+    ) -> TrainingSummary:
         """Train a language model.
 
         Parameters
@@ -164,14 +272,12 @@ class ModelTrainer:
 
         Returns
         -------
-        training_loss : list of float
-            per-iteration training losss
-        test_loss : list of float
-            per-epoch testing loss
+        :class:`TrainingSummary`
+            summary of training and validation losses
         """
-        training_loss: list[float] = []
-        test_loss: list[float] = []
-        test_accuracy: list[tuple[float, float]] = []
+        training_loss: list[list[float]] = []
+        validation_loss: list[float] = []
+        validation_accuracy: list[tuple[float, float]] = []
 
         if seed := self._seed:
             torch.manual_seed(seed)
@@ -180,41 +286,48 @@ class ModelTrainer:
 
         optimizer = Adam(model.pytorch_model.parameters())
 
+        # TODO: Include a fine-tuning step...somewhere.
+        # The main thing is figuring out how to take the *real* error, i.e., the
+        # difference between the true numerical result and what the language
+        # model spits out, and include that into the optimization.  Simply
+        # adding it to the loss won't work since this is a constant value.
+
         for n in range(self._epochs):
             self._rng.shuffle(self._training_data)
+            iter_loss: list[float] = []
 
             # Run through all of the training samples and update the model
             # weights.  If a callback is provided then it is called after the
             # sample is processed.
             model.pytorch_model.train()
             for i, sample in enumerate(self._training_data):
-                loss, expected, actual = _compute_sample_loss(sample, model)
+                loss = _compute_training_loss(sample, model)
+                iter_loss.append(loss.item())
 
                 loss.backward()
                 optimizer.step()
                 optimizer.zero_grad()
 
                 if callback is not None:
-                    expected_str = "".join(model.tokenizer.from_tokens(expected))
-                    actual_str = "".join(model.tokenizer.from_tokens(actual))
-                    last_epoch_loss = None if len(test_loss) == 0 else test_loss[-1]
-                    last_epoch_accuracy = (
-                        None if len(test_accuracy) == 0 else test_accuracy[-1]
-                    )
-                    callback(
-                        TrainingIteration(
-                            n,
-                            i,
-                            expected_str,
-                            actual_str,
-                            loss.item(),
-                            last_epoch_loss,
-                            last_epoch_accuracy,
+                    with torch.no_grad():
+                        callback(
+                            _create_callback_struct(
+                                sample,
+                                model,
+                                n,
+                                i,
+                                loss.item(),
+                                validation_loss,
+                                validation_accuracy,
+                            )
                         )
-                    )
 
-            # Now run through the test samples.  This is the same calculation as
-            # used for the backprogation, but without any gradient updates.
+            training_loss.append(iter_loss)
+
+            # Now run through the test samples.  This is modified version of
+            # what's done for the optimization, just without any gradient
+            # calculations.  The loss is the *cumulative* prediction error
+            # rather than the "next token" prediciton error.
             with torch.no_grad():
                 model.pytorch_model.eval()
 
@@ -224,7 +337,7 @@ class ModelTrainer:
 
                 epoch_loss = torch.zeros((1,))
                 for sample in self._testing_data:
-                    loss, _, output = _compute_sample_loss(sample, model)
+                    loss, _, _, output = _compute_sample_loss(sample, model)
                     epoch_loss += loss
 
                     try:
@@ -234,9 +347,9 @@ class ModelTrainer:
                     except ValueError:
                         num_invalid += 1
 
-                test_loss.append(epoch_loss.item() / len(self._testing_data))
-                test_accuracy.append(
+                validation_loss.append(epoch_loss.item() / len(self._testing_data))
+                validation_accuracy.append(
                     (num_correct / num_samples, num_invalid / num_samples)
                 )
 
-        return training_loss, test_loss
+        return TrainingSummary(training_loss, validation_loss, validation_accuracy)

@@ -232,6 +232,42 @@ def test_multiline_script() -> None:
     assert vm.working_space.load("y") == 15
 
 
+@pytest.mark.parametrize(
+    "expr,expected",
+    [
+        ("1", []),
+        ("1 + 2", ["3"]),
+        ("(1)", ["1"]),
+        ("-(1)", ["-1"]),
+        (
+            "(1 + 2) * (3 + 4)",
+            ["(3) * (3 + 4)", "3 * (3 + 4)", "3 * (7)", "3 * 7", "21"],
+        ),
+        (
+            "(5 * (1 + 2) - 8 * (1)) + 5",
+            [
+                "(5 * (3) - 8 * (1)) + 5",
+                "(5 * 3 - 8 * (1)) + 5",
+                "(15 - 8 * (1)) + 5",
+                "(15 - 8 * 1) + 5",
+                "(15 - 8) + 5",
+                "(7) + 5",
+                "7 + 5",
+                "12",
+            ],
+        ),
+    ],
+)
+def test_solution_steps(expr: str, expected: list[str]) -> None:
+    """Have the interpreter show how to solve an expression."""
+    vm = Interpreter()
+    steps: list[str] = []
+    for step in vm.solution_steps(expr):
+        steps.append(step.print())
+    print("\n".join(steps))
+    assert steps == expected
+
+
 def test_exception_on_empty_input() -> None:
     with pytest.raises(RuntimeError) as exc:
         vm = Interpreter()

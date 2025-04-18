@@ -6,7 +6,7 @@ from torch import Tensor
 from torch.nn import Module
 
 from .layers import SimpleDecoderTransformer
-from .tokenizer import Tokenizer
+from .tokenizer import ControlToken, Tokenizer
 
 
 class CalculatorLanguageModel:
@@ -17,7 +17,12 @@ class CalculatorLanguageModel:
     """
 
     def __init__(
-        self, *, embedding_dimensions: int = 16, max_context: int = 256
+        self,
+        *,
+        embedding_dimensions: int = 16,
+        max_context: int = 256,
+        layers: int = 4,
+        attention_heads: int = 2,
     ) -> None:
         """
         Parameters
@@ -26,13 +31,29 @@ class CalculatorLanguageModel:
             size of the token embedding space; defaults to 16
         max_context : int
             maximum number of tokens the model can work with; defaults to 256
+        layers : int
+            the number of layers in the transformer
+        attention_heads : int
+            the number of parallel attention heads in each layer
         """
         self.tokenizer = Tokenizer()
         self._model = SimpleDecoderTransformer(
-            self.tokenizer.num_tokens, embedding_dimensions
+            self.tokenizer.num_tokens,
+            embedding_dimensions,
+            num_layers=layers,
+            attention_heads=attention_heads,
         )
         self._max_context = max_context
         self._context: list[int] = []
+
+    @property
+    def current_context_size(self) -> int:
+        """Current context window size.
+
+        This corresponds to how much data the model will process the next time
+        it performs an inference.
+        """
+        return len(self._context)
 
     @property
     def max_context_size(self) -> int:
@@ -58,30 +79,21 @@ class CalculatorLanguageModel:
             the set of tokens produced by the model; this will go up to a
             terminal token or the context window is exhausted
         """
-        context = torch.zeros((self._max_context,))
-        for i, token in enumerate(self.tokenizer.to_tokens(query)):
-            context[i] = token
+        tokens = list(self.tokenizer.to_tokens(query))
 
-        start_ind = i
-        stop_token = self.tokenizer.stop_token
-        self._model.eval()
         with torch.no_grad():
-            for i in range(start_ind, self._max_context - 1):
-                logits: Tensor = self._model(context[torch.newaxis, 0:i])
+            _, _, predicted = self.inference_step(tokens, init=True)
+            while self.current_context_size < self.max_context_size:
+                yield self.tokenizer.reverse_map[predicted]
 
-                # Use the highest probability token as the result.
-                token = int(logits[0, :].argmax().item())
-                yield self.tokenizer.reverse_map[token]
-
-                # Stop processing if we see a "result end" token.
-                if token == stop_token:
+                if predicted == self.tokenizer.control_id(ControlToken.RESULT_STOP):
                     break
 
-                context[i + 1] = token
+                _, _, predicted = self.inference_step([predicted])
 
     def inference_step(
         self, input: list[int], *, init: bool = False
-    ) -> tuple[Tensor, int]:
+    ) -> tuple[Tensor, Tensor, int]:
         """Perform a single inference step.
 
         Parameters
@@ -95,7 +107,9 @@ class CalculatorLanguageModel:
         Returns
         -------
         logit : Tensor
-            the logit for model's next predicted token
+            the logits vector for model's next predicted token
+        result : Tensor
+            the predicted numerical value of the token sequence
         index : int
             the index of the largest logit (highest probability token)
 
@@ -112,10 +126,13 @@ class CalculatorLanguageModel:
         if len(self._context) > self._max_context:
             raise RuntimeError("Exceeded the maximum allowed context size.")
 
+        logit: Tensor
+        result: Tensor
+
         tokens = Tensor(self._context)
-        logit: Tensor = self._model(tokens[torch.newaxis, :])
+        logit, result = self._model(tokens[torch.newaxis, :])
         index = int(logit[0, :].argmax().item())
-        return logit, index
+        return logit, result, index
 
     def reset(self) -> None:
         """Resets the model's internal state."""

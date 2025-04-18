@@ -51,6 +51,7 @@ class ScriptBuilder:
         self._expr_depth = expr_depth
         self._seed = 0
         self._vars: list[str] | None = None
+        self._show_steps = False
 
     def reset(self) -> None:
         """Reset the internal state."""
@@ -68,6 +69,16 @@ class ScriptBuilder:
             self._vars = None
         else:
             self._vars = list(vars)
+
+    def show_steps(self, show: bool) -> None:
+        """Have the build also show the steps for computing a particular result.
+
+        Parameters
+        ----------
+        show : bool
+            enable/disable showing intermediate steps
+        """
+        self._show_steps = show
 
     def generate_scripts(self, num_scripts: int) -> Iterator[SampleData]:
         """Randomly generate a set of scripts.
@@ -109,4 +120,17 @@ class ScriptBuilder:
             except RuntimeError as e:
                 raise RuntimeError(f"[{init_seed}] -> {e}") from e
 
-            yield SampleData(init_seed, script, result)
+            soln_steps: list[str] = []
+            if self._show_steps:
+                if self._vars is None:
+                    for step in vm.solution_steps(script):
+                        step_str = step.print()
+                        if step_str != str(result):
+                            soln_steps.append(step_str)
+                else:
+                    raise NotImplementedError(
+                        "Generating solutions with variables is not supported."
+                    )
+
+            steps = None if len(soln_steps) == 0 else "\n".join(soln_steps)
+            yield SampleData(init_seed, script, steps, result)

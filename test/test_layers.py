@@ -99,9 +99,10 @@ def test_full_language_model(
     input = Tensor([i % vocab_size for i in range(num_tokens)])
     input = input.repeat((batch, 1))
     model = layers.SimpleDecoderTransformer(vocab_size, num_dim)
-    output = model.forward(input)
-    assert output.shape == (batch, vocab_size)
-    torch.testing.assert_close(output.exp().sum(dim=1), torch.ones((batch,)))
+    logits, prediction = model.forward(input)
+    assert logits.shape == (batch, vocab_size)
+    assert prediction.shape == (batch,)
+    torch.testing.assert_close(logits.exp().sum(dim=1), torch.ones((batch,)))
 
 
 def test_error_on_odd_embedding_size_for_position_encoding() -> None:

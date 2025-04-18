@@ -251,22 +251,30 @@ class TransformerLayer(Module):
         d_v = num_dim if d_v is None else d_v
         d_ff = 4 * num_dim if d_ff is None else d_ff
 
+        if attention_heads < 1:
+            raise ValueError("Need at least one attention head.")
+
+        if attention_heads == 1 and d_v != num_dim:
+            raise ValueError(
+                "'num_dim' must equal 'd_v' when there is one attention head."
+            )
+
         if d_ff < 1:
             raise ValueError("The value of d_ff must be greater than zero.")
 
         self._attention = list(
             MaskedAttentionHead(num_dim, d_k, d_v) for _ in range(attention_heads)
         )
-        self._merge = Linear(attention_heads * num_dim, num_dim)
-        self._post_attention_layer_norm = LayerNorm(num_dim)
+        self._merge = Linear(attention_heads * d_v, d_v)
+        self._post_attention_layer_norm = LayerNorm(d_v)
         # fmt: off
         self._fully_connected = Sequential(
-            Linear(num_dim, d_ff),
+            Linear(d_v, d_ff),
             ReLU(),
-            Linear(d_ff, num_dim)
+            Linear(d_ff, d_v)
         )
         # fmt: on
-        self._post_fcn_layer_norm = LayerNorm(num_dim)
+        self._post_fcn_layer_norm = LayerNorm(d_v)
 
     def forward(self, x: Tensor) -> Tensor:
         """Apply the transformer layer.
@@ -301,8 +309,8 @@ class SimpleDecoderTransformer(Module):
 
     It's a simplified decoder-only transformer architecture that will predict
     the next token from the set of provided tokens.  While the model outputs
-    logits instead of probabilities, the highest valued element corresponds to
-    the most likely token.
+    logits instead of probabilities, the highest valued element still
+    corresponds to the most likely token.
     """
 
     def __init__(
@@ -311,6 +319,7 @@ class SimpleDecoderTransformer(Module):
         num_dim: int,
         *,
         num_layers: int = 4,
+        attention_heads: int = 2,
         d_k: int | None = None,
         d_v: int | None = None,
         d_ff: int | None = None,
@@ -338,24 +347,36 @@ class SimpleDecoderTransformer(Module):
         """
         super().__init__()
 
-        layers: list[tuple[str, Module]] = []
-
-        layers.append(("embedding", TokenEmbedding(vocab_size, num_dim)))
-        layers.append(("position-encoding", PositionEncoding(num_dim)))
+        generation_layers: list[tuple[str, Module]] = [
+            ("embedding", TokenEmbedding(vocab_size, num_dim)),
+            ("position-encoding", PositionEncoding(num_dim)),
+        ]
 
         for i in range(num_layers):
-            layers.append(
+            generation_layers.append(
                 (
                     f"transformer{i}",
-                    TransformerLayer(num_dim, d_k=d_k, d_v=d_v, d_ff=d_ff),
+                    TransformerLayer(
+                        num_dim,
+                        attention_heads=attention_heads,
+                        d_k=d_k,
+                        d_v=d_v,
+                        d_ff=d_ff,
+                    ),
                 )
             )
 
-        layers.append(("decoding", Linear(num_dim, vocab_size)))
+        generation_layers.append(("decoding", Linear(num_dim, vocab_size)))
 
-        self._layers = Sequential(OrderedDict(layers))
+        prediction_layers = [
+            ("transformer", TransformerLayer(vocab_size, attention_heads=1)),
+            ("projection", Linear(vocab_size, 1)),
+        ]
 
-    def forward(self, x: Tensor) -> Tensor:
+        self._generator = Sequential(OrderedDict(generation_layers))
+        self._predictor = Sequential(OrderedDict(prediction_layers))
+
+    def forward(self, x: Tensor) -> tuple[Tensor, Tensor]:
         """Compute the likelihood of the next token.
 
         Parameters
@@ -365,11 +386,14 @@ class SimpleDecoderTransformer(Module):
 
         Returns
         -------
-        Tensor
+        logits : Tensor
             a tensor of *logits* shaped `(B, vocab_size)`; to get
-            probabities take the `exp()` of this tensor
+            probabilities take the `exp()` of this tensor
+        result : Tensor
+            a batch-sized tensor, i.e., `(B,)`, containing the predicted
+            numerical result of the input token sequence
         """
-        output: Tensor = self._layers(x)
-        last_row = output[:, -1, :]
-        logits = F.log_softmax(last_row, 1)
-        return logits
+        output: Tensor = self._generator(x)
+        result: Tensor = self._predictor(output)
+        logits = F.log_softmax(output[:, -1, :], 1)
+        return logits, result[:, -1, 0]

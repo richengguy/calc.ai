@@ -29,8 +29,9 @@ u * v
 @pytest.mark.parametrize(
     "data",
     [
-        [SampleData(1, "1 + 2", 3), SampleData(2, "5 * 2", 10)],
-        [SampleData(1, _MULTILINE_1, 3), SampleData(2, _MULTILINE_2, 10)]
+        [SampleData(1, "1 + 2", None, 3), SampleData(2, "5 * 2", None, 10)],
+        [SampleData(1, "2 * (1 + 2)", "2 * 3", 3), SampleData(2, "2 + 3", None, 5)],
+        [SampleData(1, _MULTILINE_1, None, 3), SampleData(2, _MULTILINE_2, None, 10)]
     ]
 )
 # fmt: on
@@ -105,15 +106,32 @@ def test_var_name_collection(expr: str, vars: set[str]) -> None:
 
 
 @pytest.mark.parametrize("vars", [[], ["x"], ["x", "y"], ["x", "y", "z"]])
+@pytest.mark.timeout(1)
 def test_script_builder(vars: list[str]) -> None:
     """Script builder generates valid scripts."""
     g = ExpressionGenerator(10)
     builder = ScriptBuilder(g)
     builder.set_variables(vars)
+    builder.show_steps(len(vars) == 0)
 
     for i, output in enumerate(builder.generate_scripts(100)):
         print(f"[{i}::{output.seed}]")
         print(output.script)
+        if output.steps is not None:
+            print("-")
+            print(output.steps)
         print(f"=> {output.result}")
         print("--")
         assert output.seed >= i
+
+
+@pytest.mark.timeout(1)
+def test_error_when_showing_steps_with_vars() -> None:
+    """Ensure that using variables with solution steps is (currently) disabled."""
+    g = ExpressionGenerator(10)
+    builder = ScriptBuilder(g)
+    builder.set_variables(["x", "y"])
+    builder.show_steps(True)
+
+    with pytest.raises(NotImplementedError):
+        next(builder.generate_scripts(1))

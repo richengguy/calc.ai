@@ -12,6 +12,13 @@ class SampleData:
     script: str
     """The script or characters that will be sent into the language model."""
 
+    steps: str | None
+    """Show the steps used to solve this particular script.
+
+    This may be omitted and set to ``None``.  Some expressions, such as "x = 1"
+    or "2 + 3", don't have any intermediate steps.
+    """
+
     result: int | None
     """The output from running the script through the VM.
 
@@ -29,7 +36,12 @@ class SampleData:
         str
             a JSON-encoded string
         """
-        data = {"seed": self.seed, "script": self.script, "result": self.result}
+        data = {
+            "seed": self.seed,
+            "script": self.script,
+            "steps": self.steps,
+            "result": self.result,
+        }
         return json.dumps(data, separators=(",", ":"), indent=None)
 
     @staticmethod
@@ -48,7 +60,9 @@ class SampleData:
         """
         data = json.loads(string)
         try:
-            return SampleData(data["seed"], data["script"], data["result"])
+            return SampleData(
+                data["seed"], data["script"], data["steps"], data["result"]
+            )
         except KeyError as exc:
             raise RuntimeError(
                 f"JSON object is missing the {exc.args[0]} key."

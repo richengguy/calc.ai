@@ -1,0 +1,11 @@
+# {{ model_name }} Report
+
+| Summary | |
+|---------|-|
+| Epochs | {{ epochs }} |
+| Accuracy | {{ 100 * accuracy }} % |
+| Invalid | {{ 100 * invalid }} % |
+
+![Training Loss]({{ images.training_loss.name }})
+![Validation Loss]({{ images.validation_loss.name }})
+![Validation Accuracy]({{ images.validation_accuracy.name }})
