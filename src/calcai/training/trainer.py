@@ -61,7 +61,7 @@ def _compute_sample_loss(
     returns a "RESULT_STOP" token.  A penalty term, proportional to the length
     difference, is added when the two sequences don't match.
     """
-    query = Query(sample.script, result=sample.result)
+    query = Query(sample.script, result=sample.result, steps=sample.steps)
     query.show_result(True)
 
     expected_str = str(query)
@@ -118,7 +118,7 @@ def _compute_training_loss(
     length of the input, since this is asking the model to generate the same
     number of tokens.  This is what's used for backpropagation.
     """
-    query = Query(sample.script, result=sample.result)
+    query = Query(sample.script, result=sample.result, steps=sample.steps)
     query.show_result(True)
 
     expected_str = str(query)
