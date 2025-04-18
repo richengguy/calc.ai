@@ -236,7 +236,7 @@ class ModelTrainer:
         model: CalculatorLanguageModel,
         *,
         callback: TrainingCallback | None = None,
-    ) -> tuple[list[float], list[float]]:
+    ) -> tuple[list[float], list[float], list[tuple[float, float]]]:
         """Train a language model.
 
         Parameters
@@ -252,6 +252,9 @@ class ModelTrainer:
             per-iteration training losss
         test_loss : list of float
             per-epoch testing loss
+        test_accuracy : list of `(accuracy, invalid)`
+            per-epoch test accuracy (percent of correct solutions) and percent
+            results with invalid syntax
         """
         training_loss: list[float] = []
         test_loss: list[float] = []
@@ -279,6 +282,7 @@ class ModelTrainer:
             model.pytorch_model.train()
             for i, sample in enumerate(self._training_data):
                 loss = _compute_training_loss(sample, model)
+                training_loss.append(loss.item())
 
                 loss.backward()
                 optimizer.step()
@@ -326,4 +330,4 @@ class ModelTrainer:
                     (num_correct / num_samples, num_invalid / num_samples)
                 )
 
-        return training_loss, test_loss
+        return training_loss, test_loss, test_accuracy

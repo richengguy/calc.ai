@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import click
+import matplotlib.pyplot as plt
+import numpy as np
 import torch
 from rich import box
 from rich.live import Live
@@ -221,7 +223,22 @@ def train_model(
             if iter.iteration == 0 or (iter.iteration % 100) == 0:
                 live.update(_update_training_display(progress, iter))
 
-        trainer.train(model, callback=progress_callback)
+        training_losses, test_losses, test_accuracy = trainer.train(
+            model, callback=progress_callback
+        )
+
+    # Generate a training report
+    fig, ax = plt.subplots(1, 2)
+    ax[0].plot(training_losses)
+    ax[0].plot(np.convolve(training_losses, np.ones(10) / 10, mode="same"))
+    ax[1].plot(test_losses)
+    fig.savefig("training-loss.png")
+
+    fig, ax = plt.subplots()
+    ax.plot([accuracy for accuracy, _ in test_accuracy], label="Accuracy")
+    ax.plot([invalid for _, invalid in test_accuracy], label="Invalid")
+    ax.legend()
+    fig.savefig("test-accuracy.png")
 
     # Save the trained model
     model.save(ctx.models / model_name)
