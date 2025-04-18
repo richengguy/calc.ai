@@ -78,6 +78,8 @@ def _create_report(path: Path, model_name: str, summary: TrainingSummary) -> Non
     template = env.get_template("report.md.j2")
     readme = template.render(
         model_name=model_name,
+        epochs=summary.epochs,
+        accuracy=summary.validation_accuracy[-1][0],
         images={
             "training_loss": training_loss_png,
             "validation_loss": validation_loss_png,

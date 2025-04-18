@@ -70,6 +70,10 @@ class TrainingSummary:
     cannot even be parsed.
     """
 
+    @property
+    def epochs(self) -> int:
+        return len(self.validation_loss)
+
 
 def _compute_sample_loss(
     sample: SampleData, model: CalculatorLanguageModel
