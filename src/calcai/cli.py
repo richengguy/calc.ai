@@ -76,10 +76,12 @@ def _create_report(path: Path, model_name: str, summary: TrainingSummary) -> Non
 
     # Generate the report README.
     template = env.get_template("report.md.j2")
+    final_accuracy, final_invalids = summary.validation_accuracy[-]
     readme = template.render(
         model_name=model_name,
         epochs=summary.epochs,
-        accuracy=summary.validation_accuracy[-1][0],
+        accuracy=final_accuracy,
+        invalid=final_invalids,
         images={
             "training_loss": training_loss_png,
             "validation_loss": validation_loss_png,
@@ -261,7 +263,7 @@ def train_model(
     for dataset in data:
         samples.extend(from_jsonlines(dataset))
 
-    model = CalculatorLanguageModel()
+    model = CalculatorLanguageModel(attention_heads=4, layers=6)
     trainer = ModelTrainer(samples, epochs=epochs, seed=seed)
 
     num_files = len(list(ctx.models.glob("*.pt")))

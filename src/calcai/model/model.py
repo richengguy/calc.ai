@@ -17,7 +17,7 @@ class CalculatorLanguageModel:
     """
 
     def __init__(
-        self, *, embedding_dimensions: int = 16, max_context: int = 256
+        self, *, embedding_dimensions: int = 16, max_context: int = 256, layers: int = 4, attention_heads: int = 2
     ) -> None:
         """
         Parameters
@@ -26,10 +26,14 @@ class CalculatorLanguageModel:
             size of the token embedding space; defaults to 16
         max_context : int
             maximum number of tokens the model can work with; defaults to 256
+        layers : int
+            the number of layers in the transformer
+        attention_heads : int
+            the number of parallel attention heads in each layer
         """
         self.tokenizer = Tokenizer()
         self._model = SimpleDecoderTransformer(
-            self.tokenizer.num_tokens, embedding_dimensions
+            self.tokenizer.num_tokens, embedding_dimensions, num_layers=5
         )
         self._max_context = max_context
         self._context: list[int] = []

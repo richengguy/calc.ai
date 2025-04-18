@@ -319,6 +319,7 @@ class SimpleDecoderTransformer(Module):
         num_dim: int,
         *,
         num_layers: int = 4,
+        attention_heads: int = 2,
         d_k: int | None = None,
         d_v: int | None = None,
         d_ff: int | None = None,
@@ -355,7 +356,7 @@ class SimpleDecoderTransformer(Module):
             generation_layers.append(
                 (
                     f"transformer{i}",
-                    TransformerLayer(num_dim, d_k=d_k, d_v=d_v, d_ff=d_ff),
+                    TransformerLayer(num_dim, attention_heads=attention_heads, d_k=d_k, d_v=d_v, d_ff=d_ff),
                 )
             )
 
