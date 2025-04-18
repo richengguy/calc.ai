@@ -271,13 +271,13 @@ class Query:
 
     def __str__(self) -> str:
         parts: list[str] = []
-        parts.append(
-            f"{ControlToken.EXPR_START}{self.expr}{ControlToken.EXPR_STOP}"
-        )
+        parts.append(f"{ControlToken.EXPR_START}{self.expr}{ControlToken.EXPR_STOP}")
 
         if self._show_result:
             result_str = ControlToken.NULL if self.result is None else str(self.result)
-            parts.append(f"{ControlToken.RESULT_START}{result_str}{ControlToken.RESULT_STOP}")
+            parts.append(
+                f"{ControlToken.RESULT_START}{result_str}{ControlToken.RESULT_STOP}"
+            )
 
         return "".join(parts)
 

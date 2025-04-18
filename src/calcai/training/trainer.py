@@ -7,7 +7,7 @@ from torch import Tensor
 from torch.nn.functional import cross_entropy
 from torch.optim import Adam
 
-from ..model import CalculatorLanguageModel, Query, ControlToken
+from ..model import CalculatorLanguageModel, ControlToken, Query
 from .data import SampleData
 
 TrainingCallback = Callable[["TrainingIteration"], None]
@@ -96,6 +96,7 @@ def _compute_sample_loss(
             break
 
         logit, result, predicted = model.inference_step([predicted])
+        num_generated += 1
 
     # Same logic as in the sampling loop.  The two sequences should have the
     # same length.
@@ -145,10 +146,11 @@ def _create_callback_struct(
     model: CalculatorLanguageModel,
     epoch: int,
     iteration: int,
+    sammple_loss: float,
     test_loss: list[float],
     test_accuracy: list[tuple[float, float]],
 ) -> TrainingIteration:
-    loss, _, expected, actual = _compute_sample_loss(sample, model)
+    _, _, expected, actual = _compute_sample_loss(sample, model)
 
     expected_str = model.tokenizer.tokens_to_str(expected)
     actual_str = model.tokenizer.tokens_to_str(actual)
@@ -160,7 +162,7 @@ def _create_callback_struct(
         expected_str,
         actual_str,
         None,
-        loss.item(),
+        sammple_loss,
         last_epoch_loss,
         last_epoch_accuracy,
     )
@@ -286,7 +288,13 @@ class ModelTrainer:
                     with torch.no_grad():
                         callback(
                             _create_callback_struct(
-                                sample, model, n, i, test_loss, test_accuracy
+                                sample,
+                                model,
+                                n,
+                                i,
+                                loss.item(),
+                                test_loss,
+                                test_accuracy,
                             )
                         )
 
