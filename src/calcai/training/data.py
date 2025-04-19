@@ -12,14 +12,14 @@ class SampleData:
     script: str
     """The script or characters that will be sent into the language model."""
 
-    steps: str | None
+    steps: str | None = None
     """Show the steps used to solve this particular script.
 
     This may be omitted and set to ``None``.  Some expressions, such as "x = 1"
     or "2 + 3", don't have any intermediate steps.
     """
 
-    result: int | None
+    result: int | None = None
     """The output from running the script through the VM.
 
     This will be ``None`` if the sample contains a division by zero.

@@ -189,6 +189,14 @@ def main(ctx: click.Context, models: Path) -> None:
     is_flag=True,
     help="Also generate the solution steps for each sample.",
 )
+@click.option(
+    "--numbers-only",
+    is_flag=True,
+    help=(
+        "Only generate samples that are 'x = x'.  All integers between '-max' "
+        "and 'max' are generated."
+    )
+)
 @click.argument("output", type=click.Path(path_type=Path))
 def generate_data(
     samples: int,
@@ -196,6 +204,7 @@ def generate_data(
     max_value: int,
     vars: list[str],
     generate_solutions: bool,
+    numbers_only: bool,
     output: Path,
 ) -> None:
     """Generate training data for the language model.
@@ -203,6 +212,16 @@ def generate_data(
     The training data is saved into OUTPUT as a JSONL file, where each line is a
     single JSON object.
     """
+    if numbers_only:
+        with SampleWriter(output) as writer:
+            writer.write(SampleData(0, "0", None, 0))
+            for i in range(1, max_value+1):
+                writer.write(SampleData(2*i-1, f"{i}", None, i))
+                writer.write(SampleData(2*i, f"{-i}", None, -i))
+
+        print(f"Generated samples between {-max_value} and {max_value}")
+        return
+
     with SampleWriter(output) as writer:
         generator = ExpressionGenerator(max_value)
         builder = ScriptBuilder(generator, expr_depth=depth)
