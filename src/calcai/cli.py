@@ -195,7 +195,7 @@ def main(ctx: click.Context, models: Path) -> None:
     help=(
         "Only generate samples that are 'x = x'.  All integers between '-max' "
         "and 'max' are generated."
-    )
+    ),
 )
 @click.argument("output", type=click.Path(path_type=Path))
 def generate_data(
@@ -215,9 +215,9 @@ def generate_data(
     if numbers_only:
         with SampleWriter(output) as writer:
             writer.write(SampleData(0, "0", None, 0))
-            for i in range(1, max_value+1):
-                writer.write(SampleData(2*i-1, f"{i}", None, i))
-                writer.write(SampleData(2*i, f"{-i}", None, -i))
+            for i in range(1, max_value + 1):
+                writer.write(SampleData(2 * i - 1, f"{i}", None, i))
+                writer.write(SampleData(2 * i, f"{-i}", None, -i))
 
         print(f"Generated samples between {-max_value} and {max_value}")
         return
@@ -264,6 +264,15 @@ def generate_data(
     type=int,
     help="The seed used for initializing all RNGs during training.",
 )
+@click.option(
+    "--cuda",
+    "use_cuda",
+    is_flag=True,
+    help=(
+        "Use CUDA for training.  This is off by default and will fall back to "
+        "the CPU if CUDA isn't supported."
+    ),
+)
 @click.pass_obj
 def train_model(
     ctx: CliContext,
@@ -271,6 +280,7 @@ def train_model(
     epochs: int,
     threads: int | None,
     seed: int | None,
+    use_cuda: bool,
 ) -> None:
     """Train a language model with some training data.
 
@@ -284,8 +294,15 @@ def train_model(
     for dataset in data:
         samples.extend(from_jsonlines(dataset))
 
-    model = CalculatorLanguageModel(attention_heads=4, layers=6)
-    trainer = ModelTrainer(samples, epochs=epochs, seed=seed)
+    device = torch.device("cpu")
+    if use_cuda:
+        if torch.cuda.is_available():
+            device = torch.device("cuda")
+        else:
+            print("[bold yellow]Warning:[/] CUDA is not available.")
+
+    model = CalculatorLanguageModel(attention_heads=4, layers=6, device=device)
+    trainer = ModelTrainer(samples, epochs=epochs, seed=seed, device=device)
 
     num_files = len(list(ctx.models.glob("*.pt")))
     model_id = f"{num_files + 1:03}"
@@ -300,6 +317,7 @@ def train_model(
     threads = torch.get_num_threads() if threads is None else threads
     torch.set_num_threads(threads)
     print(f"Storage: {ctx.models.resolve()}", indent=2)
+    print(f"Device : {device.type}", indent=2)
     print(f"Threads: {threads}", indent=2)
     print(f"Model  : {model_name}", indent=2)
     print(f"Epochs : {epochs}", indent=2)

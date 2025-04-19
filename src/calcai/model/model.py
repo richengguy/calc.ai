@@ -23,6 +23,7 @@ class CalculatorLanguageModel:
         max_context: int = 256,
         layers: int = 4,
         attention_heads: int = 2,
+        device: torch.device | None = None,
     ) -> None:
         """
         Parameters
@@ -35,6 +36,8 @@ class CalculatorLanguageModel:
             the number of layers in the transformer
         attention_heads : int
             the number of parallel attention heads in each layer
+        device : torch.device, optional
+            set the device the model runs on; defaults to 'cpu'
         """
         self.tokenizer = Tokenizer()
         self._model = SimpleDecoderTransformer(
@@ -45,6 +48,11 @@ class CalculatorLanguageModel:
         )
         self._max_context = max_context
         self._context: list[int] = []
+        self._device = torch.device("cpu")
+
+        # Have the model use the given inference device
+        if device is not None:
+            self.inference_device = device
 
     @property
     def current_context_size(self) -> int:
@@ -54,6 +62,16 @@ class CalculatorLanguageModel:
         it performs an inference.
         """
         return len(self._context)
+
+    @property
+    def inference_device(self) -> torch.device:
+        """The device (i.e. CPU or GPU) the model is running on."""
+        return self._device
+
+    @inference_device.setter
+    def inference_device(self, device: torch.device) -> None:
+        self._device = device
+        self._model.to(device)
 
     @property
     def max_context_size(self) -> int:
@@ -129,7 +147,7 @@ class CalculatorLanguageModel:
         logit: Tensor
         result: Tensor
 
-        tokens = Tensor(self._context)
+        tokens = torch.tensor(self._context, device=self._device)
         logit, result = self._model(tokens[torch.newaxis, :])
         index = int(logit[0, :].argmax().item())
         return logit, result, index

@@ -4,7 +4,7 @@ from collections import OrderedDict
 import torch
 import torch.nn.functional as F
 from torch import Tensor
-from torch.nn import LayerNorm, Linear, Module, ReLU, Sequential
+from torch.nn import LayerNorm, Linear, Module, ModuleList, ReLU, Sequential
 from torch.nn.init import kaiming_uniform_
 
 
@@ -262,7 +262,7 @@ class TransformerLayer(Module):
         if d_ff < 1:
             raise ValueError("The value of d_ff must be greater than zero.")
 
-        self._attention = list(
+        self._attention = ModuleList(
             MaskedAttentionHead(num_dim, d_k, d_v) for _ in range(attention_heads)
         )
         self._merge = Linear(attention_heads * d_v, d_v)
@@ -289,8 +289,7 @@ class TransformerLayer(Module):
         Tensor
             the transformer output, same shape as the input
         """
-        attention_heads = list(head(x)[0] for head in self._attention)
-        concat = torch.concat(attention_heads, dim=2)
+        concat = torch.concat([head(x)[0] for head in self._attention], dim=2)
         attention = self._merge(concat)
 
         # Do all of the post-attention processing.  This includes the residual

@@ -75,133 +75,6 @@ class TrainingSummary:
         return len(self.validation_loss)
 
 
-def _compute_sample_loss(
-    sample: SampleData, model: CalculatorLanguageModel
-) -> tuple[Tensor, Tensor, list[int], list[int]]:
-    """Compute the mean sample loss.
-
-    The sample loss is a modified version of the training loss used during
-    validation.  Here, it will continue generating predictions until the model
-    returns a "RESULT_STOP" token.  A penalty term, proportional to the length
-    difference, is added when the two sequences don't match.
-    """
-    query = Query(sample.script, result=sample.result, steps=sample.steps)
-    query.show_result(True)
-
-    expected_str = str(query)
-    expected_tokens = list(model.tokenizer.to_tokens(expected_str))
-    actual_tokens = []
-
-    start_ind = next(
-        i
-        for i, token in enumerate(expected_tokens)
-        if token == model.tokenizer.control_id(ControlToken.EXPR_STOP)
-    )
-    total_loss = torch.zeros((1,))
-    num_generated = 1
-
-    actual_tokens = expected_tokens[: (start_ind + 1)]
-    logit, result, predicted = model.inference_step(actual_tokens, init=True)
-    while model.current_context_size < model.max_context_size:
-        actual_tokens.append(predicted)
-
-        # Stop generating tokens if the number of generated tokens is larger
-        # (picking 20 tokens as a reasonable cutoff) than the ground truth.
-        # There is no reason to keep running inference at this point.
-        if (len(actual_tokens) - len(expected_tokens)) > 20:
-            break
-
-        # If we can still address an expected token, then we can compare the
-        # model's output from the expected output.  If not, then it means the
-        # model is still generating characters and we should apply a blanket
-        # penalty.  The choice of '10' is from the fact that this corresponds to
-        # a very low likelihood, e.g., exp(-10) << 1
-        i = start_ind + num_generated
-        if i < len(expected_tokens):
-            total_loss += cross_entropy(logit, torch.tensor([expected_tokens[i]]))
-        else:
-            total_loss += 10
-
-        if predicted == model.tokenizer.control_id(ControlToken.RESULT_STOP):
-            break
-
-        logit, result, predicted = model.inference_step([predicted])
-        num_generated += 1
-
-    # Same logic as in the sampling loop.  The two sequences should have the
-    # same length.
-    size_difference = len(actual_tokens) - len(expected_tokens)
-    if size_difference > 0:
-        total_loss += 10 * size_difference
-
-    total_loss /= num_generated
-    return total_loss, result, expected_tokens, actual_tokens
-
-
-def _compute_training_loss(
-    sample: SampleData, model: CalculatorLanguageModel
-) -> Tensor:
-    """Compute the training loss.
-
-    The training loss is computed by seeing how close the predicted sequence is
-    to the actual input sequence.  The length of the output is dictated by the
-    length of the input, since this is asking the model to generate the same
-    number of tokens.  This is what's used for backpropagation.
-    """
-    query = Query(sample.script, result=sample.result, steps=sample.steps)
-    query.show_result(True)
-
-    expected_str = str(query)
-    expected_tokens = list(model.tokenizer.to_tokens(expected_str))
-
-    start_ind = next(
-        i
-        for i, token in enumerate(expected_tokens)
-        if token == model.tokenizer.control_id(ControlToken.EXPR_STOP)
-    )
-
-    total_loss = torch.zeros((1,))
-    prediction_loss = torch.zeros((1,))
-    num_generated = 0
-
-    for i in range(start_ind + 1, len(expected_tokens)):
-        logit, predicted, _ = model.inference_step(expected_tokens[:i], init=True)
-        total_loss += cross_entropy(logit, torch.tensor([expected_tokens[i]]))
-        # TODO: Figure out how/when to train the predictor.
-        # if sample.result is not None:
-        #     prediction_loss += torch.abs(predicted - sample.result)
-        num_generated += 1
-
-    return total_loss / num_generated + prediction_loss / num_generated
-
-
-def _create_callback_struct(
-    sample: SampleData,
-    model: CalculatorLanguageModel,
-    epoch: int,
-    iteration: int,
-    sammple_loss: float,
-    test_loss: list[float],
-    test_accuracy: list[tuple[float, float]],
-) -> TrainingIteration:
-    _, result, expected, actual = _compute_sample_loss(sample, model)
-
-    expected_str = model.tokenizer.tokens_to_str(expected)
-    actual_str = model.tokenizer.tokens_to_str(actual)
-    last_epoch_loss = None if len(test_loss) == 0 else test_loss[-1]
-    last_epoch_accuracy = None if len(test_accuracy) == 0 else test_accuracy[-1]
-    return TrainingIteration(
-        epoch,
-        iteration,
-        expected_str,
-        actual_str,
-        result.item(),
-        sammple_loss,
-        last_epoch_loss,
-        last_epoch_accuracy,
-    )
-
-
 class ModelTrainer:
     """Trains the language model using auto-generated training data.
 
@@ -221,6 +94,7 @@ class ModelTrainer:
         epochs: int = 5,
         whitespace_rate: float | None = None,
         seed: int | None = None,
+        device: torch.device | None = None,
     ) -> None:
         """
         Parameters
@@ -238,6 +112,8 @@ class ModelTrainer:
             to a training sample; defaults to `None` or "off"
         seed : int, optional
             controls the PRNG seed used for the various training steps
+        device : torch.device, optional
+            device used for training; defaults to 'cpu'
         """
         if whitespace_rate is not None:
             raise NotImplementedError("Data augmentation is not yet implemented.")
@@ -253,6 +129,7 @@ class ModelTrainer:
         self._rng = Random(seed)
         self._seed = seed
         self._epochs = epochs
+        self._device = torch.device("cpu") if device is None else device
 
         # This is how Python recommends shuffling an immutable list
         # See https://docs.python.org/3.12/library/random.html#random.shuffle
@@ -311,7 +188,7 @@ class ModelTrainer:
             # sample is processed.
             model.pytorch_model.train()
             for i, sample in enumerate(self._training_data):
-                loss = _compute_training_loss(sample, model)
+                loss = self._compute_training_loss(sample, model)
                 iter_loss.append(loss.item())
 
                 loss.backward()
@@ -321,7 +198,7 @@ class ModelTrainer:
                 if callback is not None:
                     with torch.no_grad():
                         callback(
-                            _create_callback_struct(
+                            self._create_callback_struct(
                                 sample,
                                 model,
                                 n,
@@ -347,7 +224,7 @@ class ModelTrainer:
 
                 epoch_loss = torch.zeros((1,))
                 for sample in self._testing_data:
-                    loss, _, _, output = _compute_sample_loss(sample, model)
+                    loss, _, _, output = self._compute_sample_loss(sample, model)
                     epoch_loss += loss
 
                     try:
@@ -363,3 +240,130 @@ class ModelTrainer:
                 )
 
         return TrainingSummary(training_loss, validation_loss, validation_accuracy)
+
+    def _compute_sample_loss(
+        self, sample: SampleData, model: CalculatorLanguageModel
+    ) -> tuple[Tensor, Tensor, list[int], list[int]]:
+        """Compute the mean sample loss.
+
+        The sample loss is a modified version of the training loss used during
+        validation.  Here, it will continue generating predictions until the
+        model returns a "RESULT_STOP" token.  A penalty term, proportional to
+        the length difference, is added when the two sequences don't match.
+        """
+        query = Query(sample.script, result=sample.result, steps=sample.steps)
+        query.show_result(True)
+
+        expected_str = str(query)
+        expected_tokens = list(model.tokenizer.to_tokens(expected_str))
+        actual_tokens = []
+
+        start_ind = next(
+            i
+            for i, token in enumerate(expected_tokens)
+            if token == model.tokenizer.control_id(ControlToken.EXPR_STOP)
+        )
+        total_loss = torch.zeros((1,), device=self._device)
+        num_generated = 1
+
+        actual_tokens = expected_tokens[: (start_ind + 1)]
+        logit, result, predicted = model.inference_step(actual_tokens, init=True)
+        while model.current_context_size < model.max_context_size:
+            actual_tokens.append(predicted)
+
+            # Stop generating tokens if the number of generated tokens is larger
+            # (picking 20 tokens as a reasonable cutoff) than the ground truth.
+            # There is no reason to keep running inference at this point.
+            if (len(actual_tokens) - len(expected_tokens)) > 20:
+                break
+
+            # If we can still address an expected token, then we can compare the
+            # model's output from the expected output.  If not, then it means the
+            # model is still generating characters and we should apply a blanket
+            # penalty.  The choice of '10' is from the fact that this
+            # corresponds to a very low likelihood, e.g., exp(-10) << 1
+            i = start_ind + num_generated
+            if i < len(expected_tokens):
+                ground_truth = torch.tensor([expected_tokens[i]], device=self._device)
+                total_loss += cross_entropy(logit, ground_truth)
+            else:
+                total_loss += 10
+
+            if predicted == model.tokenizer.control_id(ControlToken.RESULT_STOP):
+                break
+
+            logit, result, predicted = model.inference_step([predicted])
+            num_generated += 1
+
+        # Same logic as in the sampling loop.  The two sequences should have the
+        # same length.
+        size_difference = len(actual_tokens) - len(expected_tokens)
+        if size_difference > 0:
+            total_loss += 10 * size_difference
+
+        total_loss /= num_generated
+        return total_loss, result, expected_tokens, actual_tokens
+
+    def _create_callback_struct(
+        self,
+        sample: SampleData,
+        model: CalculatorLanguageModel,
+        epoch: int,
+        iteration: int,
+        sammple_loss: float,
+        test_loss: list[float],
+        test_accuracy: list[tuple[float, float]],
+    ) -> TrainingIteration:
+        _, result, expected, actual = self._compute_sample_loss(sample, model)
+
+        expected_str = model.tokenizer.tokens_to_str(expected)
+        actual_str = model.tokenizer.tokens_to_str(actual)
+        last_epoch_loss = None if len(test_loss) == 0 else test_loss[-1]
+        last_epoch_accuracy = None if len(test_accuracy) == 0 else test_accuracy[-1]
+        return TrainingIteration(
+            epoch,
+            iteration,
+            expected_str,
+            actual_str,
+            result.item(),
+            sammple_loss,
+            last_epoch_loss,
+            last_epoch_accuracy,
+        )
+
+    def _compute_training_loss(
+        self, sample: SampleData, model: CalculatorLanguageModel
+    ) -> Tensor:
+        """Compute the training loss.
+
+        The training loss is computed by seeing how close the predicted sequence
+        is to the actual input sequence.  The length of the output is dictated
+        by the length of the input, since this is asking the model to generate
+        the same number of tokens.  This is what's used for backpropagation.
+        """
+        query = Query(sample.script, result=sample.result, steps=sample.steps)
+        query.show_result(True)
+
+        expected_str = str(query)
+        expected_tokens = list(model.tokenizer.to_tokens(expected_str))
+
+        start_ind = next(
+            i
+            for i, token in enumerate(expected_tokens)
+            if token == model.tokenizer.control_id(ControlToken.EXPR_STOP)
+        )
+
+        total_loss = torch.zeros((1,), device=self._device)
+        prediction_loss = torch.zeros((1,), device=self._device)
+        num_generated = 0
+
+        for i in range(start_ind + 1, len(expected_tokens)):
+            logit, _, _ = model.inference_step(expected_tokens[:i], init=True)
+            ground_truth = torch.tensor([expected_tokens[i]], device=self._device)
+            total_loss += cross_entropy(logit, ground_truth)
+            # TODO: Figure out how/when to train the predictor.
+            # if sample.result is not None:
+            #     prediction_loss += torch.abs(predicted - sample.result)
+            num_generated += 1
+
+        return total_loss / num_generated + prediction_loss / num_generated
