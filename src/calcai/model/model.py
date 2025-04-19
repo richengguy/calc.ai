@@ -193,12 +193,12 @@ class CalculatorLanguageModel:
             if isinstance(input, list):
                 input = torch.tensor(input, dtype=self._context.dtype)
 
-            self._context[start : self._next_insert].copy_(input)
+            self._context[start:self._next_insert].copy_(input)
 
         logit: Tensor
         result: Tensor
 
-        logit, result = self._model(self._context[torch.newaxis, 0 : self._next_insert])
+        logit, result = self._model(self._context[torch.newaxis, 0:self._next_insert])
         index = int(logit[0, :].argmax().item())
         return logit, result, index
 
