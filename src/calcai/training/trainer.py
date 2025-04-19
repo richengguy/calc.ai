@@ -28,7 +28,7 @@ class TrainingIteration:
     """The sample the model was being trained on."""
     actual: str
     """What the model actually generated."""
-    predicted_result: int | None
+    predicted_result: float | None
     """The predicted calculation result.
 
     If `None` then the results predictor isn't being trained.  Anything from the
@@ -161,14 +161,18 @@ def _compute_training_loss(
     )
 
     total_loss = torch.zeros((1,))
+    prediction_loss = torch.zeros((1,))
     num_generated = 0
 
     for i in range(start_ind + 1, len(expected_tokens)):
-        logit, _, _ = model.inference_step(expected_tokens[:i], init=True)
+        logit, predicted, _ = model.inference_step(expected_tokens[:i], init=True)
         total_loss += cross_entropy(logit, torch.tensor([expected_tokens[i]]))
+        # TODO: Figure out how/when to train the predictor.
+        # if sample.result is not None:
+        #     prediction_loss += torch.abs(predicted - sample.result)
         num_generated += 1
 
-    return total_loss / num_generated
+    return total_loss / num_generated + prediction_loss / num_generated
 
 
 def _create_callback_struct(
@@ -180,7 +184,7 @@ def _create_callback_struct(
     test_loss: list[float],
     test_accuracy: list[tuple[float, float]],
 ) -> TrainingIteration:
-    _, _, expected, actual = _compute_sample_loss(sample, model)
+    _, result, expected, actual = _compute_sample_loss(sample, model)
 
     expected_str = model.tokenizer.tokens_to_str(expected)
     actual_str = model.tokenizer.tokens_to_str(actual)
@@ -191,7 +195,7 @@ def _create_callback_struct(
         iteration,
         expected_str,
         actual_str,
-        None,
+        result.item(),
         sammple_loss,
         last_epoch_loss,
         last_epoch_accuracy,
