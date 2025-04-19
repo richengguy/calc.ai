@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Iterator
+from typing import Iterator, overload
 
 import torch
 from torch import Tensor
@@ -46,8 +46,8 @@ class CalculatorLanguageModel:
             num_layers=layers,
             attention_heads=attention_heads,
         )
-        self._max_context = max_context
-        self._context: list[int] = []
+        self._next_insert = 0
+        self._context = torch.zeros((max_context,), dtype=torch.uint32)
         self._device = torch.device("cpu")
 
         # Have the model use the given inference device
@@ -61,7 +61,7 @@ class CalculatorLanguageModel:
         This corresponds to how much data the model will process the next time
         it performs an inference.
         """
-        return len(self._context)
+        return self._next_insert
 
     @property
     def inference_device(self) -> torch.device:
@@ -72,11 +72,12 @@ class CalculatorLanguageModel:
     def inference_device(self, device: torch.device) -> None:
         self._device = device
         self._model.to(device)
+        self._context = self._context.to(device)
 
     @property
     def max_context_size(self) -> int:
         """Maximum context window size."""
-        return self._max_context
+        return len(self._context)
 
     @property
     def pytorch_model(self) -> Module:
@@ -107,17 +108,18 @@ class CalculatorLanguageModel:
                 if predicted == self.tokenizer.control_id(ControlToken.RESULT_STOP):
                     break
 
-                _, _, predicted = self.inference_step([predicted])
+                _, _, predicted = self.inference_step(predicted)
 
+    @overload
     def inference_step(
-        self, input: list[int], *, init: bool = False
+        self, input: list[int] | Tensor, *, init: bool = False
     ) -> tuple[Tensor, Tensor, int]:
         """Perform a single inference step.
 
         Parameters
         ----------
-        input : str
-            input string
+        input : list[int] or Tensor
+            set of input tokens
         init : bool
             if ``True`` then this resets the model's context window to indicate
             the start of a new training sequence
@@ -136,25 +138,74 @@ class CalculatorLanguageModel:
         RuntimeError
             if the maximum allowable context window size is exceeded
         """
+
+    @overload
+    def inference_step(self, input: int) -> tuple[Tensor, Tensor, int]:
+        """Perform a single inference step.
+
+        This assumes the context window has already been initialized.  This will
+        append the token to the end of the context window.
+
+        Parameters
+        ----------
+        input : int
+            next input token
+
+        Returns
+        -------
+        logit : Tensor
+            the logits vector for model's next predicted token
+        result : Tensor
+            the predicted numerical value of the token sequence
+        index : int
+            the index of the largest logit (highest probability token)
+
+        Raises
+        ------
+        RuntimeError
+            if the maximum allowable context window size is exceeded
+        """
+
+    def inference_step(
+        self, input: list[int] | Tensor | int, *, init: bool = False
+    ) -> tuple[Tensor, Tensor, int]:
         if init:
-            self._context = list()
+            self.reset()
 
-        self._context.extend(input)
+        if isinstance(input, int):
+            if (self._next_insert + 1) > self.max_context_size:
+                raise RuntimeError(
+                    f"Exceeded maximum allowed context size ({self.max_context_size})"
+                )
 
-        if len(self._context) > self._max_context:
-            raise RuntimeError("Exceeded the maximum allowed context size.")
+            self._context[self._next_insert] = input
+            self._next_insert += 1
+        else:
+            input_length = len(input)
+            start = self._next_insert
+            self._next_insert += input_length
+
+            if self._next_insert > self.max_context_size:
+                raise RuntimeError(
+                    f"Exceeded maximum allowed context size ({self.max_context_size})"
+                )
+
+            if isinstance(input, list):
+                input = torch.tensor(input, dtype=self._context.dtype)
+
+            self._context[start : self._next_insert].copy_(input)
 
         logit: Tensor
         result: Tensor
 
-        tokens = torch.tensor(self._context, device=self._device)
-        logit, result = self._model(tokens[torch.newaxis, :])
+        logit, result = self._model(self._context[torch.newaxis, 0 : self._next_insert])
         index = int(logit[0, :].argmax().item())
         return logit, result, index
 
     def reset(self) -> None:
         """Resets the model's internal state."""
-        self._context.clear()
+        self._context[:] = 0
+        self._next_insert = 0
 
     def save(self, path: Path) -> None:
         """Save the model.
@@ -168,7 +219,7 @@ class CalculatorLanguageModel:
         torch.save(
             {
                 "_tokenizer": self.tokenizer.version_hash(),
-                "_max_context": self._max_context,
+                "_max_context": self._next_insert,
                 "_model": self._model.state_dict(),
             },
             path,

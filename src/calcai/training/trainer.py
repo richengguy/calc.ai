@@ -292,7 +292,7 @@ class ModelTrainer:
             if predicted == model.tokenizer.control_id(ControlToken.RESULT_STOP):
                 break
 
-            logit, result, predicted = model.inference_step([predicted])
+            logit, result, predicted = model.inference_step(predicted)
             num_generated += 1
 
         # Same logic as in the sampling loop.  The two sequences should have the
@@ -345,7 +345,9 @@ class ModelTrainer:
         query.show_result(True)
 
         expected_str = str(query)
-        expected_tokens = list(model.tokenizer.to_tokens(expected_str))
+        expected_tokens = torch.tensor(
+            list(model.tokenizer.to_tokens(expected_str)), device=self._device
+        )
 
         start_ind = next(
             i
@@ -359,8 +361,7 @@ class ModelTrainer:
 
         for i in range(start_ind + 1, len(expected_tokens)):
             logit, _, _ = model.inference_step(expected_tokens[:i], init=True)
-            ground_truth = torch.tensor([expected_tokens[i]], device=self._device)
-            total_loss += cross_entropy(logit, ground_truth)
+            total_loss += cross_entropy(logit, expected_tokens[torch.newaxis, i])
             # TODO: Figure out how/when to train the predictor.
             # if sample.result is not None:
             #     prediction_loss += torch.abs(predicted - sample.result)
