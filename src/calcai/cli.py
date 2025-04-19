@@ -91,6 +91,8 @@ def _create_report(path: Path, model_name: str, summary: TrainingSummary) -> Non
     with readme_path.open("wt") as f:
         f.write(readme)
 
+    print(f"Saved report to {path}")
+
 
 def _update_training_display(progress: Progress, iter: TrainingIteration) -> Table:
     predicted_result = "N/A" if iter.predicted_result is None else iter.predicted_result

@@ -105,6 +105,12 @@ def _compute_sample_loss(
     while model.current_context_size < model.max_context_size:
         actual_tokens.append(predicted)
 
+        # Stop generating tokens if the number of generated tokens is larger
+        # (picking 20 tokens as a reasonable cutoff) than the ground truth.
+        # There is no reason to keep running inference at this point.
+        if (len(actual_tokens) - len(expected_tokens)) > 20:
+            break
+
         # If we can still address an expected token, then we can compare the
         # model's output from the expected output.  If not, then it means the
         # model is still generating characters and we should apply a blanket
