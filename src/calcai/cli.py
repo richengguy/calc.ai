@@ -265,6 +265,17 @@ def generate_data(
     help="The seed used for initializing all RNGs during training.",
 )
 @click.option(
+    "-r",
+    "--retrain",
+    "model_file",
+    metavar="MODEL",
+    type=click.Path(dir_okay=False, file_okay=True, exists=True, path_type=Path),
+    help=(
+        "Retrain (really, fine-tune) a model on another data set.  The "
+        "original model file is not modified."
+    ),
+)
+@click.option(
     "--cuda",
     "use_cuda",
     is_flag=True,
@@ -280,6 +291,7 @@ def train_model(
     epochs: int,
     threads: int | None,
     seed: int | None,
+    model_file: Path | None,
     use_cuda: bool,
 ) -> None:
     """Train a language model with some training data.
@@ -301,7 +313,10 @@ def train_model(
         else:
             print("[bold yellow]Warning:[/] CUDA is not available.")
 
-    model = CalculatorLanguageModel(attention_heads=4, layers=6, device=device)
+    if model_file is None:
+        model = CalculatorLanguageModel(attention_heads=4, layers=6, device=device)
+    else:
+        model = CalculatorLanguageModel.load(model_file)
     trainer = ModelTrainer(samples, epochs=epochs, seed=seed, device=device)
 
     num_files = len(list(ctx.models.glob("*.pt")))
