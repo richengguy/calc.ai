@@ -396,3 +396,20 @@ class SimpleDecoderTransformer(Module):
         result: Tensor = self._predictor(output)
         logits = F.log_softmax(output[:, -1, :], 1)
         return logits, result[:, -1, 0]
+
+
+# Ensure that the model layers can be serialized.
+torch.serialization.add_safe_globals(
+    [
+        SimpleDecoderTransformer,
+        Sequential,
+        TokenEmbedding,
+        Linear,
+        PositionEncoding,
+        TransformerLayer,
+        ModuleList,
+        MaskedAttentionHead,
+        LayerNorm,
+        ReLU,
+    ]
+)

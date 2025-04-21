@@ -24,6 +24,7 @@ class CalculatorLanguageModel:
         layers: int = 4,
         attention_heads: int = 2,
         device: torch.device | None = None,
+        model: Module | None = None,
     ) -> None:
         """
         Parameters
@@ -38,14 +39,25 @@ class CalculatorLanguageModel:
             the number of parallel attention heads in each layer
         device : torch.device, optional
             set the device the model runs on; defaults to 'cpu'
+        model: Module, optional
+            used when deserializing the language model
         """
         self.tokenizer = Tokenizer()
-        self._model = SimpleDecoderTransformer(
-            self.tokenizer.num_tokens,
-            embedding_dimensions,
-            num_layers=layers,
-            attention_heads=attention_heads,
-        )
+
+        if model is None:
+            self._model = SimpleDecoderTransformer(
+                self.tokenizer.num_tokens,
+                embedding_dimensions,
+                num_layers=layers,
+                attention_heads=attention_heads,
+            )
+        else:
+            if not isinstance(model, SimpleDecoderTransformer):
+                raise ValueError(
+                    f"Model must be a {SimpleDecoderTransformer}, not a {type(model)}."
+                )
+            self._model = model
+
         self._next_insert = 0
         self._context = torch.zeros((max_context,), dtype=torch.uint32)
         self._device = torch.device("cpu")
@@ -193,12 +205,12 @@ class CalculatorLanguageModel:
             if isinstance(input, list):
                 input = torch.tensor(input, dtype=self._context.dtype)
 
-            self._context[start:self._next_insert].copy_(input)
+            self._context[start : self._next_insert].copy_(input)
 
         logit: Tensor
         result: Tensor
 
-        logit, result = self._model(self._context[torch.newaxis, 0:self._next_insert])
+        logit, result = self._model(self._context[torch.newaxis, 0 : self._next_insert])
         index = int(logit[0, :].argmax().item())
         return logit, result, index
 
@@ -219,8 +231,8 @@ class CalculatorLanguageModel:
         torch.save(
             {
                 "_tokenizer": self.tokenizer.version_hash(),
-                "_max_context": self._next_insert,
-                "_model": self._model.state_dict(),
+                "_max_context": self.max_context_size,
+                "_model": self._model,
             },
             path,
         )
@@ -240,13 +252,14 @@ class CalculatorLanguageModel:
             deserialized model
         """
         expected_hash = Tokenizer().version_hash()
-        serialized = torch.load(path, weights_only=True)
+        serialized = torch.load(path)
         if expected_hash != serialized["_tokenizer"]:
             raise RuntimeError(
                 f"Expected tokenizer hash ({expected_hash}) does not match "
                 f"serialized hash ({serialized['_tokenizer']})"
             )
 
-        model = CalculatorLanguageModel(max_context=serialized["_max_context"])
-        model.pytorch_model.load_state_dict(serialized["_model"], strict=False)
+        model = CalculatorLanguageModel(
+            max_context=serialized["_max_context"], model=serialized["_model"]
+        )
         return model
