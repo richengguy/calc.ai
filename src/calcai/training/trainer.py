@@ -356,7 +356,7 @@ class ModelTrainer:
         )
 
         total_loss = torch.zeros((1,), device=self._device)
-        prediction_loss = torch.zeros((1,), device=self._device)
+        # prediction_loss = torch.zeros((1,), device=self._device)
         num_generated = 0
 
         for i in range(start_ind + 1, len(expected_tokens)):
@@ -367,4 +367,4 @@ class ModelTrainer:
             #     prediction_loss += torch.abs(predicted - sample.result)
             num_generated += 1
 
-        return total_loss / num_generated + prediction_loss / num_generated
+        return total_loss / num_generated  # + prediction_loss / num_generated
