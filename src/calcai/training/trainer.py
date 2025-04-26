@@ -6,6 +6,7 @@ import torch
 from torch import Tensor
 from torch.nn.functional import cross_entropy
 from torch.optim import Adam
+from torch.optim.lr_scheduler import CosineAnnealingLR
 
 from ..model import CalculatorLanguageModel, ControlToken, Query
 from .data import SampleData
@@ -172,12 +173,7 @@ class ModelTrainer:
             torch.seed()
 
         optimizer = Adam(model.pytorch_model.parameters())
-
-        # TODO: Include a fine-tuning step...somewhere.
-        # The main thing is figuring out how to take the *real* error, i.e., the
-        # difference between the true numerical result and what the language
-        # model spits out, and include that into the optimization.  Simply
-        # adding it to the loss won't work since this is a constant value.
+        scheduler = CosineAnnealingLR(optimizer, self._epochs)
 
         for n in range(self._epochs):
             self._rng.shuffle(self._training_data)
@@ -208,6 +204,9 @@ class ModelTrainer:
                                 validation_accuracy,
                             )
                         )
+
+            if self._epochs > 2:
+                scheduler.step()
 
             training_loss.append(iter_loss)
 
