@@ -155,7 +155,7 @@ class StatusDisplay:
         self._layout["overall"].minimum_size = 40
         self._layout["overall"].ratio = 2
         self._layout["overall"]["progress"].update(
-            Panel(self._overall_pane, title="Overall")
+            Panel(self._overall_pane, title="Progress")
         )
         self._layout["overall"]["logging"].update(Panel(self._console, title="Console"))
         self._layout["overall"]["logging"].visible = False

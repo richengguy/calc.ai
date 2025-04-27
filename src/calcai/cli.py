@@ -234,6 +234,10 @@ def train_model(
     report = SessionReport()
     output = report.write(model_name, summary, report_path)
     print(f"Saved report to {output}")
+    print("Training Results:")
+    print(f"      Loss : {summary.validation_loss[-1]}", indent=2)
+    print(f"  Accuracy : {100 * summary.validation_accuracy[-1][0]:.3g}%", indent=2)
+    print(f"   Invalid : {100 * summary.validation_accuracy[-1][1]:.3g}%", indent=2)
 
 
 @main.command()
