@@ -21,7 +21,7 @@ class _TrainingSample:
     expected: str
     tokens: Tensor
     input_end: int
-    answer: int
+    answer: int | None
 
 
 class _TrainingDataset(Dataset[_TrainingSample]):
