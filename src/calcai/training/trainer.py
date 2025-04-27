@@ -7,11 +7,56 @@ from torch import Tensor
 from torch.nn.functional import cross_entropy
 from torch.optim import Adam
 from torch.optim.lr_scheduler import CosineAnnealingLR
+from torch.utils.data import DataLoader, Dataset
 
 from ..model import CalculatorLanguageModel, ControlToken, Query
+from ..model.tokenizer import Tokenizer
 from .data import SampleData
 
 TrainingCallback = Callable[["TrainingIteration"], None]
+
+
+@dataclass
+class _TrainingSample:
+    expected: str
+    tokens: Tensor
+    input_end: int
+    answer: int
+
+
+class _TrainingDataset(Dataset[_TrainingSample]):
+    def __init__(
+        self, samples: list[SampleData], tokenizer: Tokenizer, device: torch.device
+    ) -> None:
+        self._data: list[_TrainingSample] = []
+        for sample in samples:
+            query = Query(sample.script, result=sample.result, steps=sample.steps)
+            query.show_result(True)
+
+            expected = str(query)
+            tokens = torch.tensor(
+                tokenizer.str_to_tokens(expected), dtype=torch.long, device=device
+            )
+
+            input_end = next(
+                i
+                for i, token in enumerate(tokens)
+                if token == tokenizer.control_id(ControlToken.EXPR_STOP)
+            )
+
+            self._data.append(
+                _TrainingSample(expected, tokens, input_end, sample.result)
+            )
+
+    def __getitem__(self, index: int) -> _TrainingSample:
+        return self._data[index]
+
+    def __len__(self) -> int:
+        return len(self._data)
+
+
+def _convert_tensor(t: Tensor) -> list[int]:
+    return [int(t[i].item()) for i in range(t.shape[0])]
 
 
 @dataclass(frozen=True)
@@ -135,7 +180,7 @@ class ModelTrainer:
         # This is how Python recommends shuffling an immutable list
         # See https://docs.python.org/3.12/library/random.html#random.shuffle
         shuffled_data = self._rng.sample(data, k=len(data))
-        self._testing_data = shuffled_data[:num_test]
+        self._validation_data = shuffled_data[:num_test]
         self._training_data = shuffled_data[num_test:]
 
     @property
@@ -175,15 +220,39 @@ class ModelTrainer:
         optimizer = Adam(model.pytorch_model.parameters())
         scheduler = CosineAnnealingLR(optimizer, self._epochs)
 
+        training_dataset = _TrainingDataset(
+            self._training_data, model.tokenizer, self._device
+        )
+        validation_dataset = _TrainingDataset(
+            self._validation_data, model.tokenizer, self._device
+        )
+
+        training_loader = DataLoader(
+            training_dataset,
+            batch_size=None,
+            shuffle=True,
+            pin_memory=True,
+            pin_memory_device=str(self._device),
+        )
+        validation_loader = DataLoader(
+            validation_dataset,
+            batch_size=None,
+            shuffle=False,
+            pin_memory=True,
+            pin_memory_device=str(self._device),
+        )
+
         for n in range(self._epochs):
             self._rng.shuffle(self._training_data)
             iter_loss: list[float] = []
+
+            sample: _TrainingSample
 
             # Run through all of the training samples and update the model
             # weights.  If a callback is provided then it is called after the
             # sample is processed.
             model.pytorch_model.train()
-            for i, sample in enumerate(self._training_data):
+            for i, sample in enumerate(training_loader):
                 loss = self._compute_training_loss(sample, model)
                 iter_loss.append(loss.item())
 
@@ -217,23 +286,23 @@ class ModelTrainer:
             with torch.no_grad():
                 model.pytorch_model.eval()
 
-                num_samples = len(self._testing_data)
+                num_samples = len(self._validation_data)
                 num_correct = 0
                 num_invalid = 0
 
                 epoch_loss = torch.zeros((1,))
-                for sample in self._testing_data:
-                    loss, _, _, output = self._compute_sample_loss(sample, model)
+                for sample in validation_loader:
+                    loss, _, output = self._compute_sample_loss(sample, model)
                     epoch_loss += loss
 
                     try:
-                        answer = Query.parse(output, model.tokenizer)
-                        if answer.result == sample.result:
+                        answer = Query.parse(_convert_tensor(output), model.tokenizer)
+                        if answer.result == sample.answer:
                             num_correct += 1
                     except ValueError:
                         num_invalid += 1
 
-                validation_loss.append(epoch_loss.item() / len(self._testing_data))
+                validation_loss.append(epoch_loss.item() / len(self._validation_data))
                 validation_accuracy.append(
                     (num_correct / num_samples, num_invalid / num_samples)
                 )
@@ -241,8 +310,8 @@ class ModelTrainer:
         return TrainingSummary(training_loss, validation_loss, validation_accuracy)
 
     def _compute_sample_loss(
-        self, sample: SampleData, model: CalculatorLanguageModel
-    ) -> tuple[Tensor, Tensor, list[int], list[int]]:
+        self, sample: _TrainingSample, model: CalculatorLanguageModel
+    ) -> tuple[Tensor, Tensor, Tensor]:
         """Compute the mean sample loss.
 
         The sample loss is a modified version of the training loss used during
@@ -250,62 +319,56 @@ class ModelTrainer:
         model returns a "RESULT_STOP" token.  A penalty term, proportional to
         the length difference, is added when the two sequences don't match.
         """
-        query = Query(sample.script, result=sample.result, steps=sample.steps)
-        query.show_result(True)
-
-        expected_str = str(query)
-        expected_tokens = list(model.tokenizer.to_tokens(expected_str))
-        actual_tokens = []
-
-        start_ind = next(
-            i
-            for i, token in enumerate(expected_tokens)
-            if token == model.tokenizer.control_id(ControlToken.EXPR_STOP)
+        NUM_OVERFLOW_TOKENS = 20
+        STOP_TOKEN = torch.tensor(
+            model.tokenizer.control_id(ControlToken.RESULT_STOP), device=self._device
         )
+        output_length = sample.tokens.shape[0] + NUM_OVERFLOW_TOKENS
+
         total_loss = torch.zeros((1,), device=self._device)
         num_generated = 1
 
-        actual_tokens = expected_tokens[: (start_ind + 1)]
-        logit, result, predicted = model.inference_step(actual_tokens, init=True)
-        while model.current_context_size < model.max_context_size:
-            actual_tokens.append(predicted)
+        # Initialize the memory used for tracking the model output.
+        input_tokens = sample.tokens[: (sample.input_end + 1)]
+        actual_tokens = torch.zeros(
+            (output_length,), device=self._device, dtype=torch.long
+        )
+        actual_tokens[: (sample.input_end + 1)].copy_(input_tokens)
 
-            # Stop generating tokens if the number of generated tokens is larger
-            # (picking 20 tokens as a reasonable cutoff) than the ground truth.
-            # There is no reason to keep running inference at this point.
-            if (len(actual_tokens) - len(expected_tokens)) > 20:
-                break
+        # Run the inference loop, but don't bother if it goes beyond a certain
+        # length.
+        logit, result = model.inference_step(input_tokens, init=True)
+        for i in range(sample.input_end + 1, output_length):
+            actual_tokens[i] = logit[0, :].argmax()
 
             # If we can still address an expected token, then we can compare the
             # model's output from the expected output.  If not, then it means the
             # model is still generating characters and we should apply a blanket
             # penalty.  The choice of '10' is from the fact that this
             # corresponds to a very low likelihood, e.g., exp(-10) << 1
-            i = start_ind + num_generated
-            if i < len(expected_tokens):
-                ground_truth = torch.tensor([expected_tokens[i]], device=self._device)
-                total_loss += cross_entropy(logit, ground_truth)
+            if i < sample.tokens.shape[0]:
+                total_loss += cross_entropy(logit, sample.tokens[torch.newaxis, i])
             else:
                 total_loss += 10
 
-            if predicted == model.tokenizer.control_id(ControlToken.RESULT_STOP):
+            if actual_tokens[i] == STOP_TOKEN:
                 break
 
-            logit, result, predicted = model.inference_step(predicted)
+            logit, result = model.inference_step(actual_tokens[i])
             num_generated += 1
 
         # Same logic as in the sampling loop.  The two sequences should have the
         # same length.
-        size_difference = len(actual_tokens) - len(expected_tokens)
+        size_difference = i - sample.tokens.shape[0]
         if size_difference > 0:
             total_loss += 10 * size_difference
 
         total_loss /= num_generated
-        return total_loss, result, expected_tokens, actual_tokens
+        return total_loss, result, actual_tokens[: (i + 1)]
 
     def _create_callback_struct(
         self,
-        sample: SampleData,
+        sample: _TrainingSample,
         model: CalculatorLanguageModel,
         epoch: int,
         iteration: int,
@@ -313,16 +376,16 @@ class ModelTrainer:
         test_loss: list[float],
         test_accuracy: list[tuple[float, float]],
     ) -> TrainingIteration:
-        _, result, expected, actual = self._compute_sample_loss(sample, model)
+        _, result, actual = self._compute_sample_loss(sample, model)
+        actual = actual.cpu()
 
-        expected_str = model.tokenizer.tokens_to_str(expected)
-        actual_str = model.tokenizer.tokens_to_str(actual)
+        actual_str = model.tokenizer.tokens_to_str(_convert_tensor(actual))
         last_epoch_loss = None if len(test_loss) == 0 else test_loss[-1]
         last_epoch_accuracy = None if len(test_accuracy) == 0 else test_accuracy[-1]
         return TrainingIteration(
             epoch,
             iteration,
-            expected_str,
+            sample.expected,
             actual_str,
             result.item(),
             sammple_loss,
@@ -331,7 +394,7 @@ class ModelTrainer:
         )
 
     def _compute_training_loss(
-        self, sample: SampleData, model: CalculatorLanguageModel
+        self, sample: _TrainingSample, model: CalculatorLanguageModel
     ) -> Tensor:
         """Compute the training loss.
 
@@ -340,27 +403,13 @@ class ModelTrainer:
         by the length of the input, since this is asking the model to generate
         the same number of tokens.  This is what's used for backpropagation.
         """
-        query = Query(sample.script, result=sample.result, steps=sample.steps)
-        query.show_result(True)
-
-        expected_str = str(query)
-        expected_tokens = torch.tensor(
-            list(model.tokenizer.to_tokens(expected_str)), device=self._device
-        )
-
-        start_ind = next(
-            i
-            for i, token in enumerate(expected_tokens)
-            if token == model.tokenizer.control_id(ControlToken.EXPR_STOP)
-        )
-
         total_loss = torch.zeros((1,), device=self._device)
         # prediction_loss = torch.zeros((1,), device=self._device)
         num_generated = 0
 
-        for i in range(start_ind + 1, len(expected_tokens)):
-            logit, _, _ = model.inference_step(expected_tokens[:i], init=True)
-            total_loss += cross_entropy(logit, expected_tokens[torch.newaxis, i])
+        for i in range(sample.input_end + 1, len(sample.tokens)):
+            logit, _ = model.inference_step(sample.tokens[:i], init=True)
+            total_loss += cross_entropy(logit, sample.tokens[torch.newaxis, i])
             # TODO: Figure out how/when to train the predictor.
             # if sample.result is not None:
             #     prediction_loss += torch.abs(predicted - sample.result)

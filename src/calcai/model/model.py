@@ -113,19 +113,21 @@ class CalculatorLanguageModel:
         tokens = list(self.tokenizer.to_tokens(query))
 
         with torch.no_grad():
-            _, _, predicted = self.inference_step(tokens, init=True)
+            logits, _ = self.inference_step(tokens, init=True)
+            predicted = int(logits[0, :].argmax().item())
             while self.current_context_size < self.max_context_size:
                 yield self.tokenizer.reverse_map[predicted]
 
                 if predicted == self.tokenizer.control_id(ControlToken.RESULT_STOP):
                     break
 
-                _, _, predicted = self.inference_step(predicted)
+                logits, _ = self.inference_step(predicted)
+                predicted = int(logits[0, :].argmax().item())
 
     @overload
     def inference_step(
         self, input: list[int] | Tensor, *, init: bool = False
-    ) -> tuple[Tensor, Tensor, int]:
+    ) -> tuple[Tensor, Tensor]:
         """Perform a single inference step.
 
         Parameters
@@ -152,7 +154,7 @@ class CalculatorLanguageModel:
         """
 
     @overload
-    def inference_step(self, input: int) -> tuple[Tensor, Tensor, int]:
+    def inference_step(self, input: int) -> tuple[Tensor, Tensor]:
         """Perform a single inference step.
 
         This assumes the context window has already been initialized.  This will
@@ -180,7 +182,7 @@ class CalculatorLanguageModel:
 
     def inference_step(
         self, input: list[int] | Tensor | int, *, init: bool = False
-    ) -> tuple[Tensor, Tensor, int]:
+    ) -> tuple[Tensor, Tensor]:
         if init:
             self.reset()
 
@@ -193,7 +195,11 @@ class CalculatorLanguageModel:
             self._context[self._next_insert] = input
             self._next_insert += 1
         else:
-            input_length = len(input)
+            if isinstance(input, list):
+                input_length = len(input)
+            else:
+                input_length = 1 if len(input.shape) == 0 else input.shape[0]
+
             start = self._next_insert
             self._next_insert += input_length
 
@@ -203,16 +209,17 @@ class CalculatorLanguageModel:
                 )
 
             if isinstance(input, list):
-                input = torch.tensor(input, dtype=self._context.dtype)
+                input = torch.tensor(
+                    input, dtype=self._context.dtype, device=self._device
+                )
 
-            self._context[start : self._next_insert].copy_(input)
+            self._context[start : self._next_insert].copy_(input, True)
 
         logit: Tensor
         result: Tensor
 
         logit, result = self._model(self._context[torch.newaxis, 0 : self._next_insert])
-        index = int(logit[0, :].argmax().item())
-        return logit, result, index
+        return logit, result
 
     def reset(self) -> None:
         """Resets the model's internal state."""
