@@ -4,64 +4,19 @@ from pathlib import Path
 
 import click
 import torch
-from rich import box
-from rich.live import Live
-from rich.panel import Panel
-from rich.progress import Progress
-from rich.table import Table
 
-from ._console import clear_screen, console, print
+from ._console import console, print
 from .model import CalculatorLanguageModel
 from .training import (
     ExpressionGenerator,
     ModelTrainer,
-    Report,
     SampleData,
     SampleWriter,
     ScriptBuilder,
-    TrainingIteration,
+    SessionReport,
+    StatusDisplay,
     from_jsonlines,
 )
-
-
-def _update_training_display(progress: Progress, iter: TrainingIteration) -> Table:
-    predicted_result = "N/A" if iter.predicted_result is None else iter.predicted_result
-
-    model = Table(expand=True, show_header=False, box=box.MINIMAL)
-    model.add_row(f"Ground Truth » {iter.expected}")
-    model.add_row(f"CLM Response » {iter.actual}")
-    model.add_row(f"Est. Result  » {predicted_result}")
-    model.add_section()
-    model.add_row(f"Loss         » {iter.loss}")
-
-    epoch_loss = "N/A" if iter.test_loss is None else iter.test_loss
-    epoch_accuracy = (
-        "N/A" if iter.test_accuracy is None else f"{iter.test_accuracy[0] * 100}%"
-    )
-    epoch_invalid = (
-        "N/A" if iter.test_accuracy is None else f"{iter.test_accuracy[1] * 100}%"
-    )
-
-    overall = Table.grid()
-    overall.add_row(progress)
-    overall.add_row("")
-    overall.add_row(f"Test Loss :arrow_forward: {epoch_loss}")
-    overall.add_row(f" Accuracy :arrow_forward: {epoch_accuracy}")
-    overall.add_row(f"  Invalid :arrow_forward: {epoch_invalid}")
-
-    table = Table.grid(expand=True)
-    table.add_column(width=40, min_width=40, max_width=40)
-    table.add_column(justify="left", width=80)
-    table.add_row(
-        Panel(overall, title="Training Progress", width=40, padding=(1, 0)),
-        Panel(
-            model,
-            box=box.SQUARE,
-            title=f"Epoch {iter.epoch} :: Iteration {iter.iteration}",
-        ),
-    )
-
-    return table
 
 
 @dataclass(frozen=True)
@@ -253,50 +208,30 @@ def train_model(
     model_id = f"{num_files + 1:03}"
     model_name = f"model-{model_id}.pt"
 
-    clear_screen()
-
     print("Starting model training.")
-    if seed is not None:
-        print(f"Seed {seed}", indent=2)
 
     threads = torch.get_num_threads() if threads is None else threads
     torch.set_num_threads(threads)
-    print(f"Storage: {ctx.models.resolve()}", indent=2)
-    print(f"Device : {device.type}", indent=2)
-    print(f"Threads: {threads}", indent=2)
-    print(f"Model  : {model_name}", indent=2)
-    print(f"Epochs : {epochs}", indent=2)
 
-    progress = Progress(console=console)
-    task_total = progress.add_task("Overall", total=epochs * trainer.training_samples)
+    with StatusDisplay(console, epochs, trainer.training_samples) as status:
 
-    with Live(console=console) as live:
+        if seed is not None:
+            status.print(f"Seed {seed}")
 
-        def progress_callback(iter: TrainingIteration) -> None:
-            if iter.iteration == 0:
-                if iter.epoch > 0:
-                    task_epoch = progress.task_ids[-1]
-                    progress.remove_task(task_epoch)
-                task_epoch = progress.add_task(
-                    f"Epoch {iter.epoch}", total=trainer.training_samples
-                )
-            else:
-                task_epoch = progress.task_ids[-1]
+        status.print(f"Storage: {ctx.models.resolve()}")
+        status.print(f"Device : {device.type}")
+        status.print(f"Threads: {threads}")
+        status.print(f"Model  : {model_name}")
+        status.print(f"Epochs : {epochs}")
 
-            progress.update(task_total, advance=1)
-            progress.update(task_epoch, advance=1)
-
-            if iter.iteration == 0 or (iter.iteration % 100) == 0:
-                live.update(_update_training_display(progress, iter))
-
-        summary = trainer.train(model, callback=progress_callback)
+        summary = trainer.train(model, callback=status.update)
 
     # Save the trained model
     model.save(ctx.models / model_name)
 
     # Generate the training report
     report_path = ctx.models / f"report-{model_id}"
-    report = Report()
+    report = SessionReport()
     output = report.write(model_name, summary, report_path)
     print(f"Saved report to {output}")
 
