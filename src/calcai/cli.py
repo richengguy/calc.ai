@@ -202,7 +202,7 @@ def train_model(
         model = CalculatorLanguageModel(attention_heads=4, layers=6, device=device)
     else:
         model = CalculatorLanguageModel.load(model_file)
-    trainer = ModelTrainer(samples[:100], epochs=epochs, seed=seed, device=device)
+    trainer = ModelTrainer(samples, epochs=epochs, seed=seed, device=device)
 
     num_files = len(list(ctx.models.glob("*.pt")))
     model_id = f"{num_files + 1:03}"
