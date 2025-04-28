@@ -202,7 +202,7 @@ def train_model(
         model = CalculatorLanguageModel(attention_heads=4, layers=6, device=device)
     else:
         model = CalculatorLanguageModel.load(model_file)
-    trainer = ModelTrainer(samples, epochs=epochs, seed=seed, device=device)
+    trainer = ModelTrainer(samples[:100], epochs=epochs, seed=seed, device=device)
 
     num_files = len(list(ctx.models.glob("*.pt")))
     model_id = f"{num_files + 1:03}"
@@ -216,13 +216,19 @@ def train_model(
     with StatusDisplay(console, epochs, trainer.training_samples) as status:
 
         if seed is not None:
-            status.print(f"Seed {seed}")
+            status.print(f"Seed    : {seed}")
 
-        status.print(f"Storage: {ctx.models.resolve()}")
-        status.print(f"Device : {device.type}")
-        status.print(f"Threads: {threads}")
-        status.print(f"Model  : {model_name}")
-        status.print(f"Epochs : {epochs}")
+        if model_file is not None:
+            status.print(f"Retrain : {model_file}")
+
+        status.print(f"Storage : {ctx.models.resolve()}")
+        status.print(f"Model   : {model_name}")
+        status.print(f"Device  : {device.type}")
+        status.print(f"Threads : {threads}")
+        status.print(f"Epochs  : {epochs}")
+        status.print("Data    :")
+        for dataset in data:
+            status.print(f"  :arrow_forward: {dataset}")
 
         summary = trainer.train(model, callback=status.update)
 

@@ -60,6 +60,16 @@ def _convert_tensor(t: Tensor) -> list[int]:
 
 
 @dataclass(frozen=True)
+class ValidationResult:
+    """Model output generated during validation."""
+
+    ground_truth: str
+    model_output: str
+    passed: bool
+    valid: bool
+
+
+@dataclass(frozen=True)
 class TrainingIteration:
     """Information about a training iteration.
 
@@ -115,6 +125,9 @@ class TrainingSummary:
     the percentage of correct answers, and the percentage of CLM outputs that
     cannot even be parsed.
     """
+
+    results: list[ValidationResult]
+    """The model output after the final validation stage."""
 
     @property
     def epochs(self) -> int:
@@ -211,6 +224,7 @@ class ModelTrainer:
         training_loss: list[list[float]] = []
         validation_loss: list[float] = []
         validation_accuracy: list[tuple[float, float]] = []
+        final_results: list[ValidationResult] = []
 
         if seed := self._seed:
             torch.manual_seed(seed)
@@ -295,19 +309,36 @@ class ModelTrainer:
                     loss, _, output = self._compute_sample_loss(sample, model)
                     epoch_loss += loss
 
+                    correct = False
+                    valid = True
+
                     try:
                         answer = Query.parse(_convert_tensor(output), model.tokenizer)
-                        if answer.result == sample.answer:
+                        correct = answer.result == sample.answer
+                        if correct:
                             num_correct += 1
                     except ValueError:
+                        valid = False
                         num_invalid += 1
+
+                    # Record the validation results on the last epoch.
+                    if n == (self._epochs - 1):
+                        actual = model.tokenizer.tokens_to_str(_convert_tensor(output))
+                        expected = model.tokenizer.tokens_to_str(
+                            _convert_tensor(sample.tokens)
+                        )
+                        final_results.append(
+                            ValidationResult(expected, actual, correct, valid)
+                        )
 
                 validation_loss.append(epoch_loss.item() / len(self._validation_data))
                 validation_accuracy.append(
                     (num_correct / num_samples, num_invalid / num_samples)
                 )
 
-        return TrainingSummary(training_loss, validation_loss, validation_accuracy)
+        return TrainingSummary(
+            training_loss, validation_loss, validation_accuracy, final_results
+        )
 
     def _compute_sample_loss(
         self, sample: _TrainingSample, model: CalculatorLanguageModel

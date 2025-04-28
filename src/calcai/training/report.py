@@ -13,6 +13,7 @@ from rich.live import Live
 from rich.panel import Panel
 from rich.progress import Progress, TaskID
 from rich.table import Table
+from rich.text import Text
 
 from .trainer import TrainingIteration, TrainingSummary
 
@@ -99,7 +100,7 @@ class ConsoleDisplay:
         self._max_lines = options.height or options.size.height
         table = Table.grid()
         for line in self._lines:
-            table.add_row(line)
+            table.add_row(Text.from_markup(line, overflow="ellipsis"))
         yield table
 
 
@@ -194,7 +195,11 @@ class SessionReport:
     """Generates a report showing the results of a training session."""
 
     def __init__(self, *, smoothing_window: int = 50) -> None:
-        self._env = jinja2.Environment(loader=jinja2.PackageLoader(__package__))
+        self._env = jinja2.Environment(
+            loader=jinja2.PackageLoader(__package__),
+            trim_blocks=True,
+            lstrip_blocks=True,
+        )
 
         pad_lower = smoothing_window // 2
         pad_upper = smoothing_window // 2
@@ -271,6 +276,7 @@ class SessionReport:
                 "validation_loss": validation_loss_png,
                 "validation_accuracy": validation_accuracy_png,
             },
+            results=summary.results,
         )
         with readme_path.open("wt") as f:
             f.write(readme)
