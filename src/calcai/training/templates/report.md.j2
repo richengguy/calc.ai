@@ -1,0 +1,33 @@
+# {{ model_name }} Report
+
+| Summary | |
+|---------|-|
+| Epochs | {{ epochs }} |
+| Accuracy | {{ 100 * accuracy }} % |
+| Invalid | {{ 100 * invalid }} % |
+
+![Training Loss]({{ images.training_loss.name }})
+![Validation Loss]({{ images.validation_loss.name }})
+![Validation Accuracy]({{ images.validation_accuracy.name }})
+
+{% macro results_table(name, results) %}
+### {{ name }}
+{% if results | length > 0 %}
+| Ground Truth | Model Output |
+|--------------|--------------|
+{% for result in results %}
+| `{{ result.ground_truth }}` | `{{ result.model_output }}` |
+{% endfor %}
+{% else %}
+No results.
+{% endif %}
+
+{% endmacro %}
+
+{% set correct_results = results | selectattr("passed") | list %}
+{% set incorrect_results = results | rejectattr("passed") | selectattr("valid") | list %}
+{% set invalid_results = results | rejectattr("valid") | list %}
+
+{{ results_table("Correct Results", correct_results) }}
+{{ results_table("Incorrect Results", incorrect_results) }}
+{{ results_table("Invalid Results", invalid_results) }}

@@ -26,16 +26,16 @@ class ControlToken(StrEnum):
     EXPR_STOP = "{=expr}"
     """Denotes the end of a arithmetic expression script."""
 
-    SOLUTION_START = "{solution=}"
-    """Denotes the start of a solution block.
+    STEPS_START = "{steps=}"
+    """Denotes the start of a "steps", or solution, block.
 
     A solution lists out out how to solve the expression inside of an expression
     block.  There may be multiple parts to the solution, all separated by a
     newline.
     """
 
-    SOLUTION_STOP = "{=solution}"
-    """Denotes the end of a solution block."""
+    STEPS_STOP = "{=steps}"
+    """Denotes the end of a steps block."""
 
     RESULT_START = "{result=}"
     """Denotes the start of a result block.
@@ -296,7 +296,7 @@ class Query:
 
         if self._show_steps:
             parts.append(
-                f"{ControlToken.SOLUTION_START}{self.steps}{ControlToken.SOLUTION_STOP}"
+                f"{ControlToken.STEPS_START}{self.steps}{ControlToken.STEPS_STOP}"
             )
 
         if self._show_result:
@@ -362,9 +362,9 @@ class Query:
         solution_tokens: list[int] = []
         result_tokens: list[int] = []
 
-        if next_token == tokenizer.control_id(ControlToken.SOLUTION_START):
+        if next_token == tokenizer.control_id(ControlToken.STEPS_START):
             solution_tokens = _collect_tokens(
-                token_stream, tokenizer, ControlToken.SOLUTION_STOP
+                token_stream, tokenizer, ControlToken.STEPS_STOP
             )
         elif next_token == tokenizer.control_id(ControlToken.RESULT_START):
             result_tokens = _collect_tokens(

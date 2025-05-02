@@ -3,17 +3,9 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import click
-import jinja2
-import matplotlib.pyplot as plt
-import numpy as np
 import torch
-from rich import box
-from rich.live import Live
-from rich.panel import Panel
-from rich.progress import Progress
-from rich.table import Table
 
-from ._console import clear_screen, console, print
+from ._console import console, print
 from .model import CalculatorLanguageModel
 from .training import (
     ExpressionGenerator,
@@ -21,115 +13,10 @@ from .training import (
     SampleData,
     SampleWriter,
     ScriptBuilder,
-    TrainingIteration,
-    TrainingSummary,
+    SessionReport,
+    StatusDisplay,
     from_jsonlines,
 )
-
-
-def _create_report(path: Path, model_name: str, summary: TrainingSummary) -> None:
-    env = jinja2.Environment(loader=jinja2.PackageLoader(__package__))
-
-    path.mkdir(parents=True)
-
-    readme_path = path / "README.md"
-    training_loss_png = path / "training-loss.png"
-    validation_loss_png = path / "validation-loss.png"
-    validation_accuracy_png = path / "test-accuracy.png"
-
-    # Create the training loss figure.
-    training_loss: list[float] = []
-    for epoch_loss in summary.training_loss:
-        training_loss.extend(epoch_loss)
-
-    smoothed_loss = np.pad(training_loss, [25, 24], mode="edge")
-    smoothed_loss = np.convolve(smoothed_loss, np.ones(50) / 50, mode="valid")
-
-    fig, ax = plt.subplots()
-    ax.plot(training_loss, label="Original")
-    ax.plot(smoothed_loss, label="Smoothed")
-    ax.set_xlabel("Iteration")
-    ax.set_ylabel("Loss")
-    ax.legend()
-    fig.savefig(training_loss_png)
-
-    # Create the validation loss figure.
-    fig, ax = plt.subplots()
-    ax.plot(summary.validation_loss)
-    ax.set_xlabel("Epoch")
-    ax.set_ylabel("Loss")
-    fig.savefig(validation_loss_png)
-
-    # Create the validation accuracy figure.
-    fig, ax = plt.subplots()
-    ax.plot(
-        [100 * accuracy for accuracy, _ in summary.validation_accuracy],
-        label="Accuracy",
-    )
-    ax.plot(
-        [100 * invalid for _, invalid in summary.validation_accuracy], label="Invalid"
-    )
-    ax.set_xlabel("Epoch")
-    ax.set_ylabel("Percentage (%)")
-    ax.legend()
-    fig.savefig(validation_accuracy_png)
-
-    # Generate the report README.
-    template = env.get_template("report.md.j2")
-    final_accuracy, final_invalids = summary.validation_accuracy[-1]
-    readme = template.render(
-        model_name=model_name,
-        epochs=summary.epochs,
-        accuracy=final_accuracy,
-        invalid=final_invalids,
-        images={
-            "training_loss": training_loss_png,
-            "validation_loss": validation_loss_png,
-            "validation_accuracy": validation_accuracy_png,
-        },
-    )
-    with readme_path.open("wt") as f:
-        f.write(readme)
-
-
-def _update_training_display(progress: Progress, iter: TrainingIteration) -> Table:
-    predicted_result = "N/A" if iter.predicted_result is None else iter.predicted_result
-
-    model = Table(expand=True, show_header=False, box=box.MINIMAL)
-    model.add_row(f"Ground Truth » {iter.expected}")
-    model.add_row(f"CLM Response » {iter.actual}")
-    model.add_row(f"Est. Result  » {predicted_result}")
-    model.add_section()
-    model.add_row(f"Loss         » {iter.loss}")
-
-    epoch_loss = "N/A" if iter.test_loss is None else iter.test_loss
-    epoch_accuracy = (
-        "N/A" if iter.test_accuracy is None else f"{iter.test_accuracy[0] * 100}%"
-    )
-    epoch_invalid = (
-        "N/A" if iter.test_accuracy is None else f"{iter.test_accuracy[1] * 100}%"
-    )
-
-    overall = Table.grid()
-    overall.add_row(progress)
-    overall.add_row("")
-    overall.add_row(f"Test Loss :arrow_forward: {epoch_loss}")
-    overall.add_row(f" Accuracy :arrow_forward: {epoch_accuracy}")
-    overall.add_row(f"  Invalid :arrow_forward: {epoch_invalid}")
-
-    table = Table.grid(expand=True)
-    table.add_column(width=40, min_width=40, max_width=40)
-    table.add_column(justify="left", width=80)
-    table.add_row(
-        Panel(overall, title="Training Progress", width=40, padding=(1, 0)),
-        Panel(
-            model,
-            box=box.SQUARE,
-            title=f"Epoch {iter.epoch} :: Iteration {iter.iteration}",
-        ),
-    )
-
-    return table
 
 
 @dataclass(frozen=True)
@@ -187,6 +74,14 @@ def main(ctx: click.Context, models: Path) -> None:
     is_flag=True,
     help="Also generate the solution steps for each sample.",
 )
+@click.option(
+    "--numbers-only",
+    is_flag=True,
+    help=(
+        "Only generate samples that are 'x = x'.  All integers between '-max' "
+        "and 'max' are generated."
+    ),
+)
 @click.argument("output", type=click.Path(path_type=Path))
 def generate_data(
     samples: int,
@@ -194,6 +89,7 @@ def generate_data(
     max_value: int,
     vars: list[str],
     generate_solutions: bool,
+    numbers_only: bool,
     output: Path,
 ) -> None:
     """Generate training data for the language model.
@@ -201,6 +97,16 @@ def generate_data(
     The training data is saved into OUTPUT as a JSONL file, where each line is a
     single JSON object.
     """
+    if numbers_only:
+        with SampleWriter(output) as writer:
+            writer.write(SampleData(0, "0", None, 0))
+            for i in range(1, max_value + 1):
+                writer.write(SampleData(2 * i - 1, f"{i}", None, i))
+                writer.write(SampleData(2 * i, f"{-i}", None, -i))
+
+        print(f"Generated samples between {-max_value} and {max_value}")
+        return
+
     with SampleWriter(output) as writer:
         generator = ExpressionGenerator(max_value)
         builder = ScriptBuilder(generator, expr_depth=depth)
@@ -243,6 +149,26 @@ def generate_data(
     type=int,
     help="The seed used for initializing all RNGs during training.",
 )
+@click.option(
+    "-r",
+    "--retrain",
+    "model_file",
+    metavar="MODEL",
+    type=click.Path(dir_okay=False, file_okay=True, exists=True, path_type=Path),
+    help=(
+        "Retrain (really, fine-tune) a model on another data set.  The "
+        "original model file is not modified."
+    ),
+)
+@click.option(
+    "--cuda",
+    "use_cuda",
+    is_flag=True,
+    help=(
+        "Use CUDA for training.  This is off by default and will fall back to "
+        "the CPU if CUDA isn't supported."
+    ),
+)
 @click.pass_obj
 def train_model(
     ctx: CliContext,
@@ -250,6 +176,8 @@ def train_model(
     epochs: int,
     threads: int | None,
     seed: int | None,
+    model_file: Path | None,
+    use_cuda: bool,
 ) -> None:
     """Train a language model with some training data.
 
@@ -263,56 +191,59 @@ def train_model(
     for dataset in data:
         samples.extend(from_jsonlines(dataset))
 
-    model = CalculatorLanguageModel(attention_heads=4, layers=6)
-    trainer = ModelTrainer(samples, epochs=epochs, seed=seed)
+    device = torch.device("cpu")
+    if use_cuda:
+        if torch.cuda.is_available():
+            device = torch.device("cuda")
+        else:
+            print("[bold yellow]Warning:[/] CUDA is not available.")
+
+    if model_file is None:
+        model = CalculatorLanguageModel(attention_heads=4, layers=6, device=device)
+    else:
+        model = CalculatorLanguageModel.load(model_file)
+    trainer = ModelTrainer(samples, epochs=epochs, seed=seed, device=device)
 
     num_files = len(list(ctx.models.glob("*.pt")))
     model_id = f"{num_files + 1:03}"
     model_name = f"model-{model_id}.pt"
 
-    clear_screen()
-
     print("Starting model training.")
-    if seed is not None:
-        print(f"Seed {seed}", indent=2)
 
     threads = torch.get_num_threads() if threads is None else threads
     torch.set_num_threads(threads)
-    print(f"Storage: {ctx.models.resolve()}", indent=2)
-    print(f"Threads: {threads}", indent=2)
-    print(f"Model  : {model_name}", indent=2)
-    print(f"Epochs : {epochs}", indent=2)
 
-    progress = Progress(console=console)
-    task_total = progress.add_task("Overall", total=epochs * trainer.training_samples)
+    with StatusDisplay(console, epochs, trainer.training_samples) as status:
 
-    with Live(console=console) as live:
+        if seed is not None:
+            status.print(f"Seed    : {seed}")
 
-        def progress_callback(iter: TrainingIteration) -> None:
-            if iter.iteration == 0:
-                if iter.epoch > 0:
-                    task_epoch = progress.task_ids[-1]
-                    progress.remove_task(task_epoch)
-                task_epoch = progress.add_task(
-                    f"Epoch {iter.epoch}", total=trainer.training_samples
-                )
-            else:
-                task_epoch = progress.task_ids[-1]
+        if model_file is not None:
+            status.print(f"Retrain : {model_file}")
 
-            progress.update(task_total, advance=1)
-            progress.update(task_epoch, advance=1)
+        status.print(f"Storage : {ctx.models.resolve()}")
+        status.print(f"Model   : {model_name}")
+        status.print(f"Device  : {device.type}")
+        status.print(f"Threads : {threads}")
+        status.print(f"Epochs  : {epochs}")
+        status.print("Data    :")
+        for dataset in data:
+            status.print(f"  :arrow_forward: {dataset}")
 
-            if iter.iteration == 0 or (iter.iteration % 100) == 0:
-                live.update(_update_training_display(progress, iter))
-
-        summary = trainer.train(model, callback=progress_callback)
+        summary = trainer.train(model, callback=status.update)
 
     # Save the trained model
     model.save(ctx.models / model_name)
 
     # Generate the training report
     report_path = ctx.models / f"report-{model_id}"
-    _create_report(report_path, model_name, summary)
+    report = SessionReport()
+    output = report.write(model_name, summary, report_path)
+    print(f"Saved report to {output}")
+    print("Training Results:")
+    print(f"      Loss : {summary.validation_loss[-1]}", indent=2)
+    print(f"  Accuracy : {100 * summary.validation_accuracy[-1][0]:.3g}%", indent=2)
+    print(f"   Invalid : {100 * summary.validation_accuracy[-1][1]:.3g}%", indent=2)
 
 
 @main.command()
