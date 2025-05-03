@@ -6,7 +6,7 @@ from torch import Tensor
 from torch.nn import Module
 
 from .layers import SimpleDecoderTransformer
-from .tokenizer import ControlToken, Tokenizer
+from .tokenizer import ControlToken, Tokenizer, Query
 
 
 class CalculatorLanguageModel:
@@ -110,7 +110,11 @@ class CalculatorLanguageModel:
             the set of tokens produced by the model; this will go up to a
             terminal token or the context window is exhausted
         """
-        tokens = list(self.tokenizer.to_tokens(query))
+        query_str = str(Query(query))
+        tokens = self.tokenizer.str_to_tokens(query_str)
+
+        for ch in query_str:
+            yield ch
 
         with torch.no_grad():
             logits, _ = self.inference_step(tokens, init=True)
