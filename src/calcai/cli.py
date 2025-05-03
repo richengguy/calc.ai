@@ -7,6 +7,7 @@ import torch
 
 from ._console import console, print
 from .model import CalculatorLanguageModel
+from .repl import Repl
 from .training import (
     ExpressionGenerator,
     ModelTrainer,
@@ -247,8 +248,26 @@ def train_model(
 
 
 @main.command()
-def repl() -> None:
+@click.option(
+    "-m",
+    "--model",
+    "model_file",
+    type=click.Path(exists=True, file_okay=True, dir_okay=False, path_type=Path),
+    help="Trained CLM the REPL will interact with.",
+)
+@click.pass_obj
+def repl(ctx: CliContext, model_file: Path | None) -> None:
     """Run the interactive command interface."""
+    if model_file is None:
+        files = sorted(list(ctx.models.glob("*.pt")))
+        model_file = files[-1]
+
+    print(f"Using {model_file}")
+
+    model = CalculatorLanguageModel.load(model_file)
+
+    repl = Repl(model)
+    repl.launch()
 
 
 @main.command()
