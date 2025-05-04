@@ -6,7 +6,7 @@ from torch import Tensor
 from torch.nn import Module
 
 from .layers import SimpleDecoderTransformer
-from .tokenizer import ControlToken, Tokenizer
+from .tokenizer import ControlToken, Query, Tokenizer
 
 
 class CalculatorLanguageModel:
@@ -110,10 +110,14 @@ class CalculatorLanguageModel:
             the set of tokens produced by the model; this will go up to a
             terminal token or the context window is exhausted
         """
-        tokens = list(self.tokenizer.to_tokens(query))
+        query_str = str(Query(query))
+        tokens = self.tokenizer.str_to_tokens(query_str)
+
+        for ch in query_str:
+            yield ch
 
         with torch.no_grad():
-            logits, _ = self.inference_step(tokens, init=True)
+            logits = self.inference_step(tokens, init=True)
             predicted = int(logits[0, :].argmax().item())
             while self.current_context_size < self.max_context_size:
                 yield self.tokenizer.reverse_map[predicted]
@@ -121,13 +125,13 @@ class CalculatorLanguageModel:
                 if predicted == self.tokenizer.control_id(ControlToken.RESULT_STOP):
                     break
 
-                logits, _ = self.inference_step(predicted)
+                logits = self.inference_step(predicted)
                 predicted = int(logits[0, :].argmax().item())
 
     @overload
     def inference_step(
         self, input: list[int] | Tensor, *, init: bool = False
-    ) -> tuple[Tensor, Tensor]:
+    ) -> Tensor:
         """Perform a single inference step.
 
         Parameters
@@ -142,10 +146,6 @@ class CalculatorLanguageModel:
         -------
         logit : Tensor
             the logits vector for model's next predicted token
-        result : Tensor
-            the predicted numerical value of the token sequence
-        index : int
-            the index of the largest logit (highest probability token)
 
         Raises
         ------
@@ -154,7 +154,7 @@ class CalculatorLanguageModel:
         """
 
     @overload
-    def inference_step(self, input: int) -> tuple[Tensor, Tensor]:
+    def inference_step(self, input: int) -> Tensor:
         """Perform a single inference step.
 
         This assumes the context window has already been initialized.  This will
@@ -169,10 +169,6 @@ class CalculatorLanguageModel:
         -------
         logit : Tensor
             the logits vector for model's next predicted token
-        result : Tensor
-            the predicted numerical value of the token sequence
-        index : int
-            the index of the largest logit (highest probability token)
 
         Raises
         ------
@@ -182,7 +178,7 @@ class CalculatorLanguageModel:
 
     def inference_step(
         self, input: list[int] | Tensor | int, *, init: bool = False
-    ) -> tuple[Tensor, Tensor]:
+    ) -> Tensor:
         if init:
             self.reset()
 
@@ -216,10 +212,9 @@ class CalculatorLanguageModel:
             self._context[start : self._next_insert].copy_(input, True)
 
         logit: Tensor
-        result: Tensor
 
-        logit, result = self._model(self._context[torch.newaxis, 0 : self._next_insert])
-        return logit, result
+        logit = self._model(self._context[torch.newaxis, 0 : self._next_insert])
+        return logit
 
     def reset(self) -> None:
         """Resets the model's internal state."""

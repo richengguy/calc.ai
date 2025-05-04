@@ -99,9 +99,8 @@ def test_full_language_model(
     input = Tensor([i % vocab_size for i in range(num_tokens)])
     input = input.repeat((batch, 1))
     model = layers.SimpleDecoderTransformer(vocab_size, num_dim)
-    logits, prediction = model.forward(input)
+    logits = model.forward(input)
     assert logits.shape == (batch, vocab_size)
-    assert prediction.shape == (batch,)
     torch.testing.assert_close(logits.exp().sum(dim=1), torch.ones((batch,)))
 
 
