@@ -117,7 +117,7 @@ class CalculatorLanguageModel:
             yield ch
 
         with torch.no_grad():
-            logits, _ = self.inference_step(tokens, init=True)
+            logits = self.inference_step(tokens, init=True)
             predicted = int(logits[0, :].argmax().item())
             while self.current_context_size < self.max_context_size:
                 yield self.tokenizer.reverse_map[predicted]
@@ -125,7 +125,7 @@ class CalculatorLanguageModel:
                 if predicted == self.tokenizer.control_id(ControlToken.RESULT_STOP):
                     break
 
-                logits, _ = self.inference_step(predicted)
+                logits = self.inference_step(predicted)
                 predicted = int(logits[0, :].argmax().item())
 
     @overload

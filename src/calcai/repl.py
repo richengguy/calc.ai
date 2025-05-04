@@ -38,6 +38,16 @@ class Repl:
         prompt: str = ">",
         prompt_alt: str = "-",
     ) -> None:
+        """
+        Parameters
+        ----------
+        model : :class:`CalculatorLanguageModel`
+            model the REPL will interact with
+        prompt : str
+            the primary prompt
+        prompt_alt : str
+            the secondary prompt, used for line continuation
+        """
         self._model = model
         self._interpreter = Interpreter()
         self._prompt = prompt
@@ -87,8 +97,15 @@ class Repl:
                 console.print(f"[red bold]Error:[/] {exc}")
 
     def _eval(self, script: str) -> None:
-        ground_truth = self._interpreter.run(script)
-        model_output = "".join(self._model.predict(script))
+        try:
+            ground_truth = self._interpreter.run(script)
+            model_output = "".join(self._model.predict(script))
+        except ValueError as e:
+            raise _ReplError(str(e)) from e
+        except RuntimeError as e:
+            raise _ReplError(str(e)) from e
+        except KeyError as e:
+            raise _ReplError(f"Unknown variable {e}.") from e
 
         output = Table.grid(padding=(0, 1))
         output.add_column()
@@ -103,7 +120,7 @@ class Repl:
             output.add_row("[i]Model Result[/]", f"{parsed.result}")
             matched = ground_truth == parsed.result
         except ValueError:
-            output.add_row("[i]Model Output[/]", model_output)
+            output.add_row("[i]Raw Output[/]", model_output)
 
         output.add_row("[i]Ground Truth[/]", f"{ground_truth}")
         console.print(output)
