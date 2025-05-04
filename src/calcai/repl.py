@@ -55,13 +55,24 @@ class Repl:
             _Command.CLEAR: console.clear,
         }
 
-    def launch(self) -> None:
+    def launch(self, *, enable_readline: bool = True) -> None:
         """Launches the REPL.
 
         This will block until the user signals that the interactive session is
         over or an error occurs.
+
+        Parameters
+        ----------
+        readline : bool
+            enable/disable console history support via readline
         """
         cprint("Get help with ':h' or ':help'.")
+
+        try:
+            if enable_readline:
+                import readline  # noqa: F401
+        except ImportError:
+            pass
 
         while True:
             try:
@@ -109,10 +120,10 @@ class Repl:
     def _get_input(self) -> str:
         line = ""
         while len(line) == 0:
-            line = console.input(f"{self._prompt} ").rstrip()
+            line = input(f"{self._prompt} ").rstrip()
 
         while line[-1] == ";":
-            line += console.input(f"{self._prompt_alt} ").rstrip()
+            line += input(f"{self._prompt_alt} ").rstrip()
 
         return line.replace(";", "\n")
 
