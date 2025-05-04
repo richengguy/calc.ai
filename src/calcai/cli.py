@@ -259,7 +259,12 @@ def train_model(
 def repl(ctx: CliContext, model_file: Path | None) -> None:
     """Run the interactive command interface."""
     if model_file is None:
+        print(f"Looking for model in '{ctx.models}'.")
         files = sorted(list(ctx.models.glob("*.pt")))
+        if len(files) == 0:
+            raise click.ClickException(
+                f"Cannot start REPL; '{ctx.models}' directory is empty!"
+            )
         model_file = files[-1]
 
     print(f"Using {model_file}")
