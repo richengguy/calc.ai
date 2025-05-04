@@ -5,7 +5,7 @@ from rich.table import Table
 
 from ._console import console
 from ._console import print as cprint
-from .model import CalculatorLanguageModel
+from .model import CalculatorLanguageModel, Query
 from .vm import Interpreter
 
 _COMMAND_CHAR = ":"
@@ -71,9 +71,40 @@ class Repl:
                         break
                     self.cmd_action[cmd]()
                 else:
-                    console.print(user_input)
+                    self._eval(user_input)
             except _ReplError as exc:
                 console.print(f"[red bold]Error:[/] {exc}")
+
+    def _eval(self, script: str) -> None:
+        ground_truth = self._interpreter.run(script)
+        model_output = "".join(self._model.predict(script))
+
+        output = Table.grid(padding=(0, 1))
+        output.add_column()
+        output.add_column()
+
+        matched = False
+
+        try:
+            parsed = Query.parse(model_output, self._model.tokenizer)
+            if steps := parsed.steps:
+                output.add_row("[i]Steps[/]", steps)
+            output.add_row("[i]Model Result[/]", f"{parsed.result}")
+            matched = ground_truth == parsed.result
+        except ValueError:
+            output.add_row("[i]Model Output[/]", model_output)
+
+        output.add_row("[i]Ground Truth[/]", f"{ground_truth}")
+        console.print(output)
+
+        if matched:
+            mark = "[green bold]\u2713[/]"
+            message = "Correct"
+        else:
+            mark = "[red bold]\u2718[/]"
+            message = "Incorrect"
+
+        console.print(f"{mark} \u2026 {message}")
 
     def _get_input(self) -> str:
         line = ""

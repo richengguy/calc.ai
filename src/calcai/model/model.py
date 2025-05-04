@@ -6,7 +6,7 @@ from torch import Tensor
 from torch.nn import Module
 
 from .layers import SimpleDecoderTransformer
-from .tokenizer import ControlToken, Tokenizer, Query
+from .tokenizer import ControlToken, Query, Tokenizer
 
 
 class CalculatorLanguageModel:
