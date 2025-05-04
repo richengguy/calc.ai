@@ -65,14 +65,9 @@ class ProgressDisplay:
 
 class TrainingDisplay:
     def __init__(self, step: TrainingIteration) -> None:
-        predicted_result = (
-            "N/A" if step.predicted_result is None else step.predicted_result
-        )
-
         model = Table(expand=True, show_header=False, box=box.MINIMAL)
         model.add_row(f"Ground Truth » {step.expected}")
         model.add_row(f"CLM Response » {step.actual}")
-        model.add_row(f"Est. Result  » {predicted_result}")
         model.add_section()
         model.add_row(f"Loss         » {step.loss}")
 

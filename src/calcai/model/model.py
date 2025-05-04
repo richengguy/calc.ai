@@ -131,7 +131,7 @@ class CalculatorLanguageModel:
     @overload
     def inference_step(
         self, input: list[int] | Tensor, *, init: bool = False
-    ) -> tuple[Tensor, Tensor]:
+    ) -> Tensor:
         """Perform a single inference step.
 
         Parameters
@@ -146,10 +146,6 @@ class CalculatorLanguageModel:
         -------
         logit : Tensor
             the logits vector for model's next predicted token
-        result : Tensor
-            the predicted numerical value of the token sequence
-        index : int
-            the index of the largest logit (highest probability token)
 
         Raises
         ------
@@ -158,7 +154,7 @@ class CalculatorLanguageModel:
         """
 
     @overload
-    def inference_step(self, input: int) -> tuple[Tensor, Tensor]:
+    def inference_step(self, input: int) -> Tensor:
         """Perform a single inference step.
 
         This assumes the context window has already been initialized.  This will
@@ -173,10 +169,6 @@ class CalculatorLanguageModel:
         -------
         logit : Tensor
             the logits vector for model's next predicted token
-        result : Tensor
-            the predicted numerical value of the token sequence
-        index : int
-            the index of the largest logit (highest probability token)
 
         Raises
         ------
@@ -186,7 +178,7 @@ class CalculatorLanguageModel:
 
     def inference_step(
         self, input: list[int] | Tensor | int, *, init: bool = False
-    ) -> tuple[Tensor, Tensor]:
+    ) -> Tensor:
         if init:
             self.reset()
 
@@ -220,10 +212,9 @@ class CalculatorLanguageModel:
             self._context[start : self._next_insert].copy_(input, True)
 
         logit: Tensor
-        result: Tensor
 
-        logit, result = self._model(self._context[torch.newaxis, 0 : self._next_insert])
-        return logit, result
+        logit = self._model(self._context[torch.newaxis, 0 : self._next_insert])
+        return logit
 
     def reset(self) -> None:
         """Resets the model's internal state."""

@@ -84,12 +84,6 @@ class TrainingIteration:
     """The sample the model was being trained on."""
     actual: str
     """What the model actually generated."""
-    predicted_result: float | None
-    """The predicted calculation result.
-
-    If `None` then the results predictor isn't being trained.  Anything from the
-    results predictor will be more or less random.
-    """
     loss: float
     """The training loss, averaged over the number of generated tokens."""
     test_loss: float | None
@@ -306,7 +300,7 @@ class ModelTrainer:
 
                 epoch_loss = torch.zeros((1,))
                 for sample in validation_loader:
-                    loss, _, output = self._compute_sample_loss(sample, model)
+                    loss, output = self._compute_sample_loss(sample, model)
                     epoch_loss += loss
 
                     correct = False
@@ -342,7 +336,7 @@ class ModelTrainer:
 
     def _compute_sample_loss(
         self, sample: _TrainingSample, model: CalculatorLanguageModel
-    ) -> tuple[Tensor, Tensor, Tensor]:
+    ) -> tuple[Tensor, Tensor]:
         """Compute the mean sample loss.
 
         The sample loss is a modified version of the training loss used during
@@ -368,7 +362,7 @@ class ModelTrainer:
 
         # Run the inference loop, but don't bother if it goes beyond a certain
         # length.
-        logit, result = model.inference_step(input_tokens, init=True)
+        logit = model.inference_step(input_tokens, init=True)
         for i in range(sample.input_end + 1, output_length):
             actual_tokens[i] = logit[0, :].argmax()
 
@@ -385,7 +379,7 @@ class ModelTrainer:
             if actual_tokens[i] == STOP_TOKEN:
                 break
 
-            logit, result = model.inference_step(actual_tokens[i])
+            logit = model.inference_step(actual_tokens[i])
             num_generated += 1
 
         # Same logic as in the sampling loop.  The two sequences should have the
@@ -395,7 +389,7 @@ class ModelTrainer:
             total_loss += 10 * size_difference
 
         total_loss /= num_generated
-        return total_loss, result, actual_tokens[: (i + 1)]
+        return total_loss, actual_tokens[: (i + 1)]
 
     def _create_callback_struct(
         self,
@@ -407,7 +401,7 @@ class ModelTrainer:
         test_loss: list[float],
         test_accuracy: list[tuple[float, float]],
     ) -> TrainingIteration:
-        _, result, actual = self._compute_sample_loss(sample, model)
+        _, actual = self._compute_sample_loss(sample, model)
         actual = actual.cpu()
 
         actual_str = model.tokenizer.tokens_to_str(_convert_tensor(actual))
@@ -418,7 +412,6 @@ class ModelTrainer:
             iteration,
             sample.expected,
             actual_str,
-            result.item(),
             sammple_loss,
             last_epoch_loss,
             last_epoch_accuracy,
@@ -435,15 +428,11 @@ class ModelTrainer:
         the same number of tokens.  This is what's used for backpropagation.
         """
         total_loss = torch.zeros((1,), device=self._device)
-        # prediction_loss = torch.zeros((1,), device=self._device)
         num_generated = 0
 
         for i in range(sample.input_end + 1, len(sample.tokens)):
-            logit, _ = model.inference_step(sample.tokens[:i], init=True)
+            logit = model.inference_step(sample.tokens[:i], init=True)
             total_loss += cross_entropy(logit, sample.tokens[torch.newaxis, i])
-            # TODO: Figure out how/when to train the predictor.
-            # if sample.result is not None:
-            #     prediction_loss += torch.abs(predicted - sample.result)
             num_generated += 1
 
-        return total_loss / num_generated  # + prediction_loss / num_generated
+        return total_loss / num_generated

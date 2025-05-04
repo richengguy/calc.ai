@@ -366,16 +366,10 @@ class SimpleDecoderTransformer(Module):
             )
 
         generation_layers.append(("decoding", Linear(num_dim, vocab_size)))
+        self.generator = Sequential(OrderedDict(generation_layers))
+        """The transformer model *without* the final softmax layer."""
 
-        prediction_layers = [
-            ("transformer", TransformerLayer(vocab_size, attention_heads=1)),
-            ("projection", Linear(vocab_size, 1)),
-        ]
-
-        self._generator = Sequential(OrderedDict(generation_layers))
-        self._predictor = Sequential(OrderedDict(prediction_layers))
-
-    def forward(self, x: Tensor) -> tuple[Tensor, Tensor]:
+    def forward(self, x: Tensor) -> Tensor:
         """Compute the likelihood of the next token.
 
         Parameters
@@ -388,14 +382,10 @@ class SimpleDecoderTransformer(Module):
         logits : Tensor
             a tensor of *logits* shaped `(B, vocab_size)`; to get
             probabilities take the `exp()` of this tensor
-        result : Tensor
-            a batch-sized tensor, i.e., `(B,)`, containing the predicted
-            numerical result of the input token sequence
         """
-        output: Tensor = self._generator(x)
-        result: Tensor = self._predictor(output)
+        output: Tensor = self.generator(x)
         logits = F.log_softmax(output[:, -1, :], 1)
-        return logits, result[:, -1, 0]
+        return logits
 
 
 # Ensure that the model layers can be serialized.
