@@ -384,7 +384,7 @@ class Query:
             )
 
         # Finally, collect the remaining results section.
-        if next_token != ControlToken.RESULT_START:
+        if next_token != tokenizer.control_id(ControlToken.RESULT_START):
             raise ValueError(
                 f"Final section must start with '{ControlToken.RESULT_START}'."
             )
