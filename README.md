@@ -15,6 +15,10 @@ sample file:
 
 ## Calculator Grammar
 
+The grammar below is used by the interpreter that generates and validates the
+language model's output.  The language model itself may, or may not, be able to
+parse this grammar.  It depends entirely on how the model is trained.
+
 ```ebnf
 script = { line }, EOF;
 
