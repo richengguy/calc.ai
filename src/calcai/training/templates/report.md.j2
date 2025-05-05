@@ -16,7 +16,7 @@
 | Ground Truth | Model Output |
 |--------------|--------------|
 {% for result in results %}
-| `{{ result.ground_truth }}` | `{{ result.model_output }}` |
+| `{{ result.ground_truth | replace("\n", "\\n") }}` | `{{ result.model_output | replace("\n", "\\n") }}` |
 {% endfor %}
 {% else %}
 No results.
