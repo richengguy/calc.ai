@@ -125,7 +125,6 @@ text.
 clm_input = expr_tag;                              (* Expected CLM input structure.  *)
 clm_output = expr_tag, [ steps_tag ], result_tag;  (* Expected CLM output structure. *)
 
-
 (*
     An expression tag will contain the arithmetic expression that the CLM is
     being asked to solve.
