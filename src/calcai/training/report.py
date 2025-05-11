@@ -153,7 +153,7 @@ class StatusDisplay:
         self._layout["overall"]["progress"].update(
             Panel(self._overall_pane, title="Progress")
         )
-        self._layout["overall"]["logging"].update(Panel(self._console, title="Console"))
+        self._layout["overall"]["logging"].update(Panel(self._console, title="Info"))
         self._layout["overall"]["logging"].visible = False
 
         self._display = Live(console=console, screen=True)
