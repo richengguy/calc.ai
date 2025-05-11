@@ -57,7 +57,7 @@ class Tokenizer:
 
         # Add in all the usual alphanumeric characters, including punctuation
         # and whitespace (only ' ' and '\n', no tabs)
-        valid_chars = string.ascii_letters + string.digits + "+-*/^()_" + " \n"
+        valid_chars = string.ascii_letters + string.digits + "+-*/^()_=" + " \n"
         for i, c in enumerate(valid_chars):
             self._fwd_map[c] = i
             self._rev_map[i] = c
