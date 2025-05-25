@@ -77,6 +77,16 @@ sample file:
 |[`depth2.jsonl`](samples/depth2.jsonl)|`-n 5000 -d 2 -m 50 --generate-solutions`|
 |[`depth3.jsonl`](samples/depth3.jsonl)|`-n 5000 -d 3 -m 50 --generate-solutions`|
 
+### Pretrained Models
+
+There are two pretrained models in the [`pretrained`](./pretrained/) directory:
+
+* `depth1.pt` ([Training Report](./pretrained/report-depth1/README.md))
+* `depth2.pt` ([Training Report](./pretrained/report-depth2/README.md))
+
+Use `calc.ai repl -m pretrained/<model-file>` to launch the REPL with one of
+these models.
+
 ## Grammars
 
 ### Interpreter Grammar
